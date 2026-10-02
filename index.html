@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAE - Exercício</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* HEADER COM PROGRESSO */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            flex: 1;
+            background: rgba(255,255,255,0.3);
+            height: 4px;
+            border-radius: 2px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            width: 57%; /* 4 de 7 exercícios */
+            transition: width 0.3s ease;
+        }
+
+        .exercise-counter {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* CONTEÚDO */
+        .content {
+            padding: 30px;
+        }
+
+        .exercise-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .exercise-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .exercise-type {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        /* EXERCÍCIO ESPECÍFICO */
+        .exercise-body {
+            margin-bottom: 30px;
+        }
+
+        .instruction {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .instruction strong {
+            color: #667eea;
+        }
+
+        /* TIPOS DE EXERCÍCIO */
+
+        /* TIPO 1: Múltipla Escolha */
+        .option {
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f5f3ff;
+        }
+
+        .option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .option label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f5f3ff;
+        }
+
+        .option.correct {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .option.incorrect {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        /* TIPO 2: Resposta Aberta */
+        .textarea-container {
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            resize: vertical;
+            transition: border-color 0.2s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .char-count {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        /* TIPO 3: Preencher Lacuna */
+        .fill-blank {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .blank {
+            display: inline-block;
+            border-bottom: 2px solid #667eea;
+            padding: 4px 8px;
+            min-width: 80px;
+            text-align: center;
+            background: white;
+            margin: 0 4px;
+        }
+
+        .blank input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+            padding: 0;
+        }
+
+        .blank input:focus {
+            outline: none;
+        }
+
+        /* FEEDBACK */
+        .feedback {
+            background: #f5f3ff;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #f0fdf4;
+            border-left-color: #10b981;
+        }
+
+        .feedback.incorrect {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+        }
+
+        .feedback-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .feedback-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .feedback-icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        /* BOTÕES */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+        }
+
+        /* CELEBRAÇÃO */
+        .celebration {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .celebration.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .celebration-emoji {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .celebration-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+
+        .celebration-text {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .xp-gained {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        /* MOBILE */
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px;
+            }
+
+            .exercise-title {
+                font-size: 20px;
+            }
+
+            .instruction {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- HEADER COM PROGRESSO -->
+    <div class="header">
+        <span class="exercise-counter">4/7</span>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <span style="font-size: 14px;">⏱️ 1 min</span>
+    </div>
+
+    <!-- CONTEÚDO DO EXERCÍCIO -->
+    <div class="content">
+        
+        <div class="exercise-title">Estruture uma ideia</div>
+        <div class="exercise-subtitle">Dia 1 - Aula "Estrutura em 3 Partes"</div>
+        
+        <span class="exercise-type">APLICAR</span>
+
+        <div class="exercise-body">
+            <div class="instruction">
+                <strong>Tarefa:</strong> Estruture essa ideia em 3 partes (Abertura, Desenvolvimento, Fechamento):
+            </div>
+
+            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                <strong>Ideia:</strong> "Por que aprender a se comunicar bem é mais importante que ser inteligente"
+            </div>
+
+            <!-- EXERCÍCIO: Resposta Aberta -->
+            <div class="textarea-container">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                    ✍️ Digite sua resposta:
+                </label>
+                <textarea id="resposta" placeholder="Abertura: ...&#10;Desenvolvimento: ...&#10;Fechamento: ..."></textarea>
+                <div class="char-count"><span id="charCount">0</span> / 300 caracteres</div>
+            </div>
+
+            <!-- FEEDBACK (Aparece depois de responder) -->
+            <div class="feedback correct show">
+                <div style="display: flex; align-items: flex-start;">
+                    <span class="feedback-icon">✅</span>
+                    <div>
+                        <div class="feedback-title">Perfeito! Você dominou a estrutura.</div>
+                        <div class="feedback-text">
+                            Sua resposta teve uma abertura clara, desenvolvimento bem desenvolvido, e um fechamento forte. Parabéns!<br><br>
+                            <strong>Dica:</strong> No próximo exercício, tente fazer isso mais rapidamente (máximo 1 minuto).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÕES -->
+        <div class="button-group">
+            <button class="btn-secondary" onclick="voltar()">← Voltar</button>
+            <button class="btn-primary" onclick="proximoExercicio()">Próximo →</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Contador de caracteres
+    document.getElementById('resposta').addEventListener('input', function() {
+        document.getElementById('charCount').textContent = this.value.length;
+    });
+
+    // Navegar
+    function proximoExercicio() {
+        // Aqui você envia pra Cademí + Claude
+        // Detalhe abaixo
+        alert('Enviando para análise...');
+    }
+
+    function voltar() {
+        history.back();
+    }
+</script>
+
+</body>
+</html>
