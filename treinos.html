@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treino TAE</title>
+<style>
+:root{
+  --fundo:#111213;--cartao:#1b1d1f;--alto:#232629;--borda:#2c3034;
+  --amarelo:#f7d046;--amarelo2:#d9b32c;--texto:#dee2e6;--forte:#fff;
+  --fraco:#8d9499;--verde:#4ade80;--vermelho:#f87171;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.caixa{max-width:720px;margin:0 auto;padding:4px 2px 18px}
+.cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;padding:22px}
+
+.topo{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.etiqueta{font-size:11.5px;font-weight:700;letter-spacing:.09em;color:var(--amarelo);text-transform:uppercase}
+.passo{margin-left:auto;font-size:12.5px;color:var(--fraco);white-space:nowrap}
+.trilho{height:4px;background:var(--borda);border-radius:99px;overflow:hidden;margin-bottom:22px}
+.trilho i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .35s ease}
+
+.pergunta{margin:0 0 18px;font-size:18px;font-weight:600;line-height:1.5;color:var(--forte)}
+
+.opcoes{display:flex;flex-direction:column;gap:9px}
+.opcao{
+  display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+  background:var(--alto);border:1.5px solid var(--borda);border-radius:11px;
+  padding:14px 15px;cursor:pointer;font-family:inherit;font-size:15px;
+  line-height:1.5;color:var(--texto);transition:border-color .14s ease,background .14s ease;
+}
+.opcao:hover:not(:disabled){border-color:var(--amarelo)}
+.opcao:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.opcao:disabled{cursor:default}
+.opcao .letra{
+  flex-shrink:0;width:24px;height:24px;border-radius:50%;
+  border:1.5px solid var(--borda);display:flex;align-items:center;
+  justify-content:center;font-size:12.5px;font-weight:700;color:var(--fraco);
+}
+.opcao.certa{border-color:var(--verde);background:rgba(74,222,128,.09)}
+.opcao.certa .letra{background:var(--verde);border-color:var(--verde);color:#06240f}
+.opcao.errada{border-color:var(--vermelho);background:rgba(248,113,113,.08)}
+.opcao.errada .letra{background:var(--vermelho);border-color:var(--vermelho);color:#2b0a0a}
+
+.explica{
+  display:none;margin-top:16px;padding:15px 16px;border-radius:0 10px 10px 0;
+  background:var(--alto);border-left:3px solid var(--amarelo);
+  font-size:14.5px;line-height:1.6;
+}
+.explica.visivel{display:block}
+.explica b{color:var(--forte)}
+
+.botao{
+  display:block;width:100%;margin-top:18px;border:0;cursor:pointer;text-align:center;
+  background:var(--amarelo);color:#1a1500;font-size:15.5px;font-weight:700;
+  font-family:inherit;padding:14px;border-radius:10px;text-decoration:none;
+  transition:background .14s ease;
+}
+.botao:hover{background:var(--amarelo2)}
+.botao.fantasma{background:transparent;color:var(--texto);border:1px solid var(--borda)}
+.botao.fantasma:hover{background:var(--alto)}
+.oculto{display:none}
+
+.placar{text-align:center;padding:8px 0 4px}
+.placar .nota{font-size:40px;font-weight:800;color:var(--amarelo);line-height:1.1}
+.placar .de{font-size:14px;color:var(--fraco);margin-top:4px}
+.placar h2{margin:16px 0 7px;font-size:19px;color:var(--forte);font-weight:700}
+.placar p{margin:0;font-size:14.5px;line-height:1.6;color:var(--texto)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="caixa">
+  <div class="cartao">
+
+    <div id="tela-quiz">
+      <div class="topo">
+        <span class="etiqueta" id="etiqueta">Treino</span>
+        <span class="passo" id="passo">1 de 4</span>
+      </div>
+      <div class="trilho"><i id="trilho" style="width:25%"></i></div>
+
+      <p class="pergunta" id="pergunta">—</p>
+      <div class="opcoes" id="opcoes"></div>
+      <div class="explica" id="explica"></div>
+      <button class="botao oculto" id="proxima" onclick="proxima()">Próxima</button>
+    </div>
+
+    <div id="tela-fim" class="oculto">
+      <div class="placar">
+        <div class="nota"><span id="acertos">0</span>/<span id="total">4</span></div>
+        <div class="de">respostas certas</div>
+        <h2 id="veredito">—</h2>
+        <p id="comentario">—</p>
+      </div>
+      <button class="botao" onclick="refazer()">Refazer o treino</button>
+      <a class="botao fantasma" id="voltar" href="#" target="_top">Voltar ao TAE</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const VOLTAR_PARA = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+
+const TREINOS = {
+  "1.1": {
+    pilar: "Estrutura · Treino 1",
+    perguntas: [
+      {
+        p: "Você tem trinta segundos para responder em uma reunião. Por onde começa?",
+        o: ["Pelo contexto, para a pessoa entender de onde vem",
+            "Pela conclusão, e o contexto vem depois se precisar",
+            "Pelos dados, que sustentam o argumento",
+            "Por uma pergunta, para engajar quem ouve"],
+        certa: 1,
+        porque: "Quem começa pelo contexto perde o ouvinte antes de chegar ao ponto. A conclusão primeiro dá ao outro um lugar onde encaixar o resto."
+      },
+      {
+        p: "Qual destas é uma abertura boa para a ideia “precisamos mudar como reportamos resultados”?",
+        o: ["Bom, eu venho pensando nisso há um tempo e queria trazer para vocês",
+            "Nosso relatório atual esconde o que importa",
+            "Antes de começar, queria contextualizar como chegamos no modelo de hoje",
+            "Não sei se é o momento, mas talvez valesse repensar o relatório"],
+        certa: 1,
+        porque: "A abertura entrega o assunto em uma frase. As outras três gastam tempo pedindo licença para falar."
+      },
+      {
+        p: "O que normalmente sobra no desenvolvimento de quem fala demais?",
+        o: ["Exemplos concretos",
+            "Razões repetidas de formas diferentes",
+            "Pausas entre as frases",
+            "Referências a dados"],
+        certa: 1,
+        porque: "Repetir não reforça, cansa. Uma razão bem dita vence três razões empilhadas."
+      },
+      {
+        p: "Um fechamento que funciona termina com:",
+        o: ["Um resumo do que já foi dito",
+            "Uma proposta ou uma decisão",
+            "Um agradecimento pela atenção",
+            "Uma ressalva sobre os limites do argumento"],
+        certa: 1,
+        porque: "Fechamento sem proposta de ação soa como desculpa. Quem ouviu precisa saber o que fazer com aquilo."
+      }
+    ]
+  }
+};
+
+const codigo = new URLSearchParams(window.location.search).get("t") || "1.1";
+const T = TREINOS[codigo];
+let i = 0, acertos = 0, respondida = false;
+
+function iniciar(){
+  document.getElementById("voltar").href = VOLTAR_PARA;
+  if(!T){
+    document.getElementById("pergunta").textContent = "Treino não encontrado.";
+    document.getElementById("etiqueta").textContent = "Erro";
+    return;
+  }
+  document.getElementById("etiqueta").textContent = T.pilar;
+  document.getElementById("total").textContent = T.perguntas.length;
+  mostrar();
+}
+
+function mostrar(){
+  respondida = false;
+  const q = T.perguntas[i];
+  document.getElementById("passo").textContent = (i+1) + " de " + T.perguntas.length;
+  document.getElementById("trilho").style.width = ((i+1)/T.perguntas.length*100) + "%";
+  document.getElementById("pergunta").textContent = q.p;
+  document.getElementById("explica").classList.remove("visivel");
+  document.getElementById("proxima").classList.add("oculto");
+
+  const letras = ["A","B","C","D","E"];
+  document.getElementById("opcoes").innerHTML = q.o.map(function(txt, n){
+    return '<button class="opcao" onclick="responder(' + n + ')">' +
+           '<span class="letra">' + letras[n] + '</span><span>' + txt + '</span></button>';
+  }).join("");
+}
+
+function responder(n){
+  if(respondida) return;
+  respondida = true;
+  const q = T.perguntas[i];
+  const botoes = document.querySelectorAll(".opcao");
+
+  botoes.forEach(function(b){ b.disabled = true; });
+  botoes[q.certa].classList.add("certa");
+  if(n !== q.certa) botoes[n].classList.add("errada");
+  else acertos++;
+
+  const e = document.getElementById("explica");
+  e.innerHTML = "<b>" + (n === q.certa ? "Isso." : "A melhor é a " + ["A","B","C","D"][q.certa] + ".") +
+                "</b> " + q.porque;
+  e.classList.add("visivel");
+
+  const bt = document.getElementById("proxima");
+  bt.textContent = (i + 1 < T.perguntas.length) ? "Próxima" : "Ver resultado";
+  bt.classList.remove("oculto");
+}
+
+function proxima(){
+  i++;
+  if(i < T.perguntas.length){ mostrar(); return; }
+  terminar();
+}
+
+function terminar(){
+  const total = T.perguntas.length;
+  document.getElementById("acertos").textContent = acertos;
+  const pct = acertos / total;
+  let v, c;
+  if(pct === 1){
+    v = "Estrutura dominada";
+    c = "Agora leve para a prática: na próxima reunião, comece pela conclusão e veja a diferença.";
+  }else if(pct >= 0.5){
+    v = "Quase lá";
+    c = "Você entendeu a lógica. Reveja os pontos que errou e repita o treino amanhã.";
+  }else{
+    v = "Vale rever a aula";
+    c = "Assista de novo prestando atenção na ordem das três partes. Depois volte aqui.";
+  }
+  document.getElementById("veredito").textContent = v;
+  document.getElementById("comentario").textContent = c;
+  document.getElementById("tela-quiz").classList.add("oculto");
+  document.getElementById("tela-fim").classList.remove("oculto");
+}
+
+function refazer(){
+  i = 0; acertos = 0;
+  document.getElementById("tela-fim").classList.add("oculto");
+  document.getElementById("tela-quiz").classList.remove("oculto");
+  mostrar();
+}
+
+iniciar();
+</script>
+</body>
+</html>
