@@ -6,594 +6,481 @@
 <title>TAE — Treino de Aumento da Expressividade</title>
 <style>
 :root{
-  --roxo:#667eea;
-  --roxo-fundo:#764ba2;
+  --fundo:#111213;
+  --cartao:#1b1d1f;
+  --cartao-alto:#232629;
+  --borda:#2c3034;
+  --amarelo:#f7d046;
+  --amarelo-escuro:#d9b32c;
+  --texto:#dee2e6;
+  --texto-forte:#ffffff;
+  --texto-fraco:#8d9499;
   --verde:#4ade80;
-  --tinta:#1a1a2e;
-  --tinta-suave:#5a5a72;
-  --papel:#ffffff;
-  --papel-morno:#f7f6fb;
-  --borda:#e8e6f2;
-  box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
 }
-*,*::before,*::after{box-sizing:inherit}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  background:linear-gradient(160deg,var(--roxo) 0%,var(--roxo-fundo) 100%);
-  background-attachment:fixed;
-  color:var(--tinta);
+  background:var(--fundo);
+  color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   -webkit-font-smoothing:antialiased;
-  min-height:100vh;
 }
-.app{max-width:520px;margin:0 auto;padding:20px 16px 110px}
+.app{max-width:560px;margin:0 auto;padding:4px 16px 20px}
 
-.saudacao{color:#fff;padding:12px 4px 22px}
-.saudacao h1{margin:0 0 4px;font-size:26px;font-weight:700;letter-spacing:-.02em}
-.saudacao p{margin:0;font-size:15px;opacity:.82;line-height:1.5}
+/* ---------- Cabeçalho da tela ---------- */
+.topo{padding:18px 2px 20px}
+.topo h1{margin:0 0 5px;font-size:25px;font-weight:700;color:var(--texto-forte);letter-spacing:-.02em}
+.topo p{margin:0;font-size:14.5px;color:var(--texto-fraco);line-height:1.5}
 
+/* ---------- Cartões ---------- */
 .cartao{
-  background:var(--papel);
-  border-radius:18px;
-  padding:22px;
-  margin-bottom:14px;
-  box-shadow:0 6px 24px rgba(30,20,70,.16);
+  background:var(--cartao);
+  border:1px solid var(--borda);
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:12px;
 }
-.cartao-etiqueta{
-  font-size:12px;font-weight:700;letter-spacing:.08em;
-  color:var(--roxo);margin-bottom:10px;text-transform:uppercase;
+.etiqueta{
+  font-size:11.5px;font-weight:700;letter-spacing:.09em;
+  color:var(--amarelo);margin-bottom:9px;text-transform:uppercase;
 }
 
-.treino-titulo{margin:0 0 6px;font-size:23px;font-weight:700;letter-spacing:-.01em}
-.treino-desc{margin:0 0 20px;font-size:15px;color:var(--tinta-suave);line-height:1.55}
+/* ---------- Treino sugerido ---------- */
+.sugestao-titulo{margin:0 0 6px;font-size:21px;font-weight:700;color:var(--texto-forte);letter-spacing:-.01em}
+.sugestao-desc{margin:0 0 18px;font-size:14.5px;color:var(--texto-fraco);line-height:1.55}
+
+/* ---------- Botões ---------- */
 .botao{
-  display:block;width:100%;border:0;cursor:pointer;
-  background:linear-gradient(135deg,var(--roxo),var(--roxo-fundo));
-  color:#fff;font-size:17px;font-weight:700;
-  padding:17px;border-radius:13px;
-  font-family:inherit;
-  transition:transform .12s ease,box-shadow .12s ease;
-  box-shadow:0 4px 14px rgba(102,126,234,.35);
+  display:block;width:100%;border:0;cursor:pointer;text-align:center;
+  background:var(--amarelo);color:#1a1500;
+  font-size:16px;font-weight:700;font-family:inherit;
+  padding:15px;border-radius:10px;text-decoration:none;
+  transition:background .14s ease;
 }
-.botao:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(102,126,234,.45)}
-.botao:active{transform:translateY(0)}
-.botao:focus-visible{outline:3px solid #fff;outline-offset:2px}
-.botao-secundario{
-  background:var(--papel-morno);color:var(--tinta);
-  box-shadow:none;border:1.5px solid var(--borda);
+.botao:hover{background:var(--amarelo-escuro)}
+.botao:focus-visible{outline:3px solid var(--amarelo);outline-offset:3px}
+.botao-fantasma{
+  background:transparent;color:var(--texto);
+  border:1px solid var(--borda);
 }
-.botao-secundario:hover{box-shadow:none;background:#efedf7}
+.botao-fantasma:hover{background:var(--cartao-alto)}
 
-.linha-stats{display:flex;gap:10px;margin-bottom:14px}
-.stat{
-  flex:1;background:var(--papel);border-radius:14px;
-  padding:15px 12px;text-align:center;
-  box-shadow:0 4px 16px rgba(30,20,70,.12);
+/* ---------- Números ---------- */
+.numeros{display:flex;gap:10px;margin-bottom:12px}
+.numero{
+  flex:1;background:var(--cartao);border:1px solid var(--borda);
+  border-radius:12px;padding:14px 8px;text-align:center;
 }
-.stat-num{font-size:24px;font-weight:800;color:var(--roxo);line-height:1.1}
-.stat-rot{font-size:11.5px;color:var(--tinta-suave);margin-top:4px;line-height:1.3}
-.barra{height:9px;background:var(--borda);border-radius:99px;overflow:hidden;margin:14px 0 8px}
-.barra span{display:block;height:100%;background:linear-gradient(90deg,var(--roxo),var(--verde));border-radius:99px;transition:width .5s ease}
-.barra-info{display:flex;justify-content:space-between;font-size:13px;color:var(--tinta-suave)}
+.numero b{display:block;font-size:23px;font-weight:800;color:var(--amarelo);line-height:1.15}
+.numero span{display:block;font-size:11px;color:var(--texto-fraco);margin-top:3px;line-height:1.3}
 
-.treino-item{
-  display:flex;align-items:center;gap:13px;
-  padding:14px 0;border-bottom:1px solid var(--borda);
-  cursor:pointer;
+/* ---------- Barra de progresso ---------- */
+.barra{height:7px;background:var(--borda);border-radius:99px;overflow:hidden;margin:12px 0 8px}
+.barra i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .45s ease}
+.barra-txt{display:flex;justify-content:space-between;font-size:12.5px;color:var(--texto-fraco)}
+
+/* ---------- Pilares ---------- */
+.pilar{margin-bottom:18px}
+.pilar-topo{display:flex;align-items:baseline;gap:9px;margin-bottom:9px;padding:0 2px}
+.pilar-nome{font-size:16.5px;font-weight:700;color:var(--texto-forte)}
+.pilar-contagem{font-size:12.5px;color:var(--texto-fraco);margin-left:auto;white-space:nowrap}
+.pilar-resumo{font-size:13.5px;color:var(--texto-fraco);line-height:1.5;margin:0 2px 11px;}
+
+.aulas{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;overflow:hidden}
+.aula{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-bottom:1px solid var(--borda);
+  text-decoration:none;color:inherit;cursor:pointer;
+  transition:background .12s ease;
 }
-.treino-item:last-child{border-bottom:0;padding-bottom:0}
-.treino-item.travado{cursor:default;opacity:.45}
-.marca{
-  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+.aula:last-child{border-bottom:0}
+.aula:hover{background:var(--cartao-alto)}
+.aula:focus-visible{outline:2px solid var(--amarelo);outline-offset:-2px}
+.aula-marca{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:700;
+  font-size:12px;font-weight:700;
+  border:1.5px solid var(--borda);color:var(--texto-fraco);
 }
-.marca.feito{background:var(--verde);color:#0f2419}
-.marca.agora{background:linear-gradient(135deg,var(--roxo),var(--roxo-fundo));color:#fff}
-.marca.travado{background:var(--borda);color:#9a97ad}
-.treino-nome{flex:1;font-size:15.5px;font-weight:600}
-.treino-meta{font-size:12.5px;color:var(--tinta-suave);margin-top:2px;font-weight:400}
+.aula-marca.feita{background:var(--verde);border-color:var(--verde);color:#06240f}
+.aula-nome{flex:1;font-size:14.5px;font-weight:600;color:var(--texto)}
+.aula-meta{font-size:12px;color:var(--texto-fraco);margin-top:2px;font-weight:400}
+.aula-seta{color:var(--texto-fraco);font-size:16px;flex-shrink:0}
+.aula.travada{opacity:.4}
 
-.ex-topo{
-  background:linear-gradient(135deg,var(--roxo),var(--roxo-fundo));
-  color:#fff;padding:16px 22px;margin:-22px -22px 20px;
-  border-radius:18px 18px 0 0;
-  display:flex;align-items:center;gap:14px;
+/* ---------- Conquistas ---------- */
+.conquista{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--borda)}
+.conquista:last-child{border-bottom:0;padding-bottom:0}
+.conquista:first-child{padding-top:0}
+.medalha{
+  width:40px;height:40px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  background:var(--cartao-alto);
 }
-.ex-contador{font-size:14px;font-weight:700;white-space:nowrap}
-.ex-barra{flex:1;height:5px;background:rgba(255,255,255,.3);border-radius:99px;overflow:hidden}
-.ex-barra span{display:block;height:100%;background:#fff;border-radius:99px;transition:width .4s ease}
-.ex-tempo{font-size:13px;white-space:nowrap;opacity:.95}
-.tag{
-  display:inline-block;background:#ede9fb;color:var(--roxo);
-  font-size:11.5px;font-weight:700;letter-spacing:.07em;
-  padding:5px 11px;border-radius:7px;margin-bottom:14px;
-}
-.tarefa{font-size:15.5px;line-height:1.6;margin:0 0 16px}
-.tarefa b{color:var(--roxo)}
-.citacao{
-  background:var(--papel-morno);border-left:3px solid var(--roxo);
-  padding:14px 16px;border-radius:0 10px 10px 0;margin-bottom:20px;
-  font-size:15px;line-height:1.55;
-}
-.rotulo-campo{display:block;font-size:14.5px;font-weight:600;margin-bottom:8px}
-textarea{
-  width:100%;min-height:130px;padding:14px;
-  border:1.5px solid var(--borda);border-radius:11px;
-  font-family:inherit;font-size:15px;line-height:1.55;resize:vertical;
-  color:var(--tinta);background:var(--papel);
-}
-textarea:focus{outline:0;border-color:var(--roxo);box-shadow:0 0 0 3px rgba(102,126,234,.14)}
-.contador{text-align:right;font-size:12.5px;color:var(--tinta-suave);margin-top:6px}
-.resposta{
-  background:#effaf3;border-left:3px solid var(--verde);
-  padding:16px;border-radius:0 10px 10px 0;margin:18px 0 0;
-  font-size:14.5px;line-height:1.6;display:none;
-}
-.resposta.visivel{display:block}
-.resposta h4{margin:0 0 7px;font-size:15px}
-.resposta p{margin:0 0 10px}
-.resposta p:last-child{margin:0}
-.navegacao{display:flex;gap:10px;margin-top:20px}
-.navegacao .botao{flex:1}
+.conquista.ganha .medalha{background:rgba(247,208,70,.16)}
+.conquista.pendente{opacity:.45}
+.conquista-nome{font-size:14.5px;font-weight:600;color:var(--texto)}
+.conquista-desc{font-size:12.5px;color:var(--texto-fraco);margin-top:2px}
 
+/* ---------- Abas (no fluxo, não fixas) ---------- */
 .abas{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(255,255,255,.97);
-  backdrop-filter:blur(14px);
-  border-top:1px solid var(--borda);
-  display:flex;
-  padding-bottom:env(safe-area-inset-bottom,0px);
-  z-index:50;
+  display:flex;margin-top:22px;
+  background:var(--cartao);border:1px solid var(--borda);
+  border-radius:14px;overflow:hidden;
 }
 .aba{
   flex:1;border:0;background:0;cursor:pointer;
-  padding:11px 4px 13px;font-family:inherit;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  color:#9a97ad;font-size:11.5px;font-weight:600;
-  transition:color .15s ease;
+  padding:12px 4px;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  color:var(--texto-fraco);font-size:11px;font-weight:600;
+  border-right:1px solid var(--borda);
+  transition:color .14s ease,background .14s ease;
 }
-.aba svg{width:21px;height:21px;stroke-width:2}
-.aba.ativa{color:var(--roxo)}
-.aba:focus-visible{outline:2px solid var(--roxo);outline-offset:-3px}
+.aba:last-child{border-right:0}
+.aba svg{width:19px;height:19px;stroke-width:2}
+.aba.ativa{color:var(--amarelo);background:var(--cartao-alto)}
+.aba:focus-visible{outline:2px solid var(--amarelo);outline-offset:-2px}
 
+/* ---------- Telas ---------- */
 .tela{display:none}
 .tela.ativa{display:block}
 
-.conquista{
-  display:flex;align-items:center;gap:13px;
-  padding:13px 0;border-bottom:1px solid var(--borda);
+.aviso{
+  background:rgba(247,208,70,.1);border:1px solid rgba(247,208,70,.3);
+  border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.55;
+  color:var(--texto);margin-bottom:12px;
 }
-.conquista:last-child{border-bottom:0;padding-bottom:0}
-.medalha{
-  width:42px;height:42px;border-radius:12px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:21px;
-  background:var(--papel-morno);
-}
-.conquista.ganha .medalha{background:#fef6e0}
-.conquista.pendente{opacity:.5}
-.conquista-nome{font-size:15px;font-weight:600}
-.conquista-desc{font-size:12.5px;color:var(--tinta-suave);margin-top:2px}
 
-.aula{
-  display:flex;align-items:center;gap:13px;
-  padding:15px 0;border-bottom:1px solid var(--borda);cursor:pointer;
-}
-.aula:last-child{border-bottom:0;padding-bottom:0}
-.aula-play{
-  width:38px;height:38px;border-radius:10px;flex-shrink:0;
-  background:linear-gradient(135deg,var(--roxo),var(--roxo-fundo));
-  display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;
-}
-.aula-nome{flex:1;font-size:15px;font-weight:600}
-.aula-dur{font-size:12.5px;color:var(--tinta-suave);margin-top:2px;font-weight:400}
-
-.vazio{text-align:center;padding:30px 20px;color:var(--tinta-suave);font-size:14.5px;line-height:1.6}
-
-@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-
 <div class="app">
 
+<!-- ========== HOJE ========== -->
 <section class="tela ativa" id="tela-hoje">
-  <div class="saudacao">
-    <h1 id="saudacao-texto">Bom dia 👋</h1>
+  <div class="topo">
+    <h1 id="saudacao">Bom dia</h1>
     <p>Cinco minutos por dia é o que separa quem fala bem de quem só sabe o assunto.</p>
   </div>
 
   <div class="cartao">
-    <div class="cartao-etiqueta">Treino de hoje · 5 min</div>
-    <h2 class="treino-titulo" id="treino-hoje-nome">Estrutura em 3 partes</h2>
-    <p class="treino-desc" id="treino-hoje-desc">Organize qualquer ideia em abertura, desenvolvimento e fechamento — sem dar voltas.</p>
-    <button class="botao" onclick="abrirExercicio()">Começar treino</button>
+    <div class="etiqueta">Sugestão de hoje · 5 min</div>
+    <h2 class="sugestao-titulo" id="sug-nome">—</h2>
+    <p class="sugestao-desc" id="sug-desc">—</p>
+    <a class="botao" id="sug-botao" href="#" target="_top">Começar treino</a>
   </div>
 
-  <div class="linha-stats">
-    <div class="stat">
-      <div class="stat-num" id="stat-sequencia">0</div>
-      <div class="stat-rot">dias seguidos</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num" id="stat-concluidos">0</div>
-      <div class="stat-rot">treinos feitos</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num" id="stat-xp">0</div>
-      <div class="stat-rot">pontos</div>
-    </div>
+  <div class="numeros">
+    <div class="numero"><b id="n-seq">0</b><span>dias seguidos</span></div>
+    <div class="numero"><b id="n-feitos">0</b><span>treinos feitos</span></div>
+    <div class="numero"><b id="n-pct">0%</b><span>da jornada</span></div>
   </div>
 
   <div class="cartao">
-    <div class="cartao-etiqueta">Sua jornada</div>
-    <div class="barra"><span id="barra-home" style="width:0%"></span></div>
-    <div class="barra-info">
-      <span id="barra-home-txt">0 de 5 habilidades</span>
-      <span id="barra-home-pct">0%</span>
+    <div class="etiqueta">Seu progresso</div>
+    <div class="barra"><i id="barra-hoje" style="width:0%"></i></div>
+    <div class="barra-txt">
+      <span id="barra-hoje-txt">0 de 25 treinos</span>
+      <span id="barra-hoje-pct">0%</span>
     </div>
   </div>
 </section>
 
-<section class="tela" id="tela-exercicio">
-  <div class="cartao">
-    <div class="ex-topo">
-      <span class="ex-contador" id="ex-contador">1/5</span>
-      <div class="ex-barra"><span id="ex-barra" style="width:20%"></span></div>
-      <span class="ex-tempo">⏱ 1 min</span>
-    </div>
-
-    <h2 class="treino-titulo" id="ex-titulo">Estruture uma ideia</h2>
-    <p class="treino-desc" id="ex-sub">Habilidade 1 · Estrutura em 3 partes</p>
-
-    <span class="tag" id="ex-tag">APLICAR</span>
-
-    <p class="tarefa" id="ex-tarefa"></p>
-    <div class="citacao" id="ex-citacao"></div>
-
-    <label class="rotulo-campo" for="ex-resposta">Digite sua resposta</label>
-    <textarea id="ex-resposta" maxlength="300" placeholder="Abertura: ...&#10;Desenvolvimento: ...&#10;Fechamento: ..." oninput="contarCaracteres()"></textarea>
-    <div class="contador"><span id="ex-contagem">0</span> / 300 caracteres</div>
-
-    <div class="resposta" id="ex-feedback">
-      <h4 id="fb-titulo"></h4>
-      <p id="fb-texto"></p>
-      <p id="fb-dica"></p>
-    </div>
-
-    <div class="navegacao">
-      <button class="botao botao-secundario" onclick="voltarHome()">Voltar</button>
-      <button class="botao" id="ex-botao" onclick="enviarResposta()">Enviar resposta</button>
-    </div>
-  </div>
-</section>
-
+<!-- ========== JORNADA ========== -->
 <section class="tela" id="tela-jornada">
-  <div class="saudacao">
+  <div class="topo">
     <h1>Sua jornada</h1>
-    <p>Cinco habilidades. Uma de cada vez.</p>
+    <p>Cinco pilares, vinte e cinco treinos. Comece por onde quiser.</p>
   </div>
-  <div class="cartao">
-    <div id="lista-jornada"></div>
-  </div>
+  <div id="lista-pilares"></div>
 </section>
 
+<!-- ========== EVOLUÇÃO ========== -->
 <section class="tela" id="tela-evolucao">
-  <div class="saudacao">
+  <div class="topo">
     <h1>Sua evolução</h1>
     <p>O que você construiu até aqui.</p>
   </div>
 
-  <div class="linha-stats">
-    <div class="stat">
-      <div class="stat-num" id="ev-sequencia">0</div>
-      <div class="stat-rot">dias seguidos</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num" id="ev-treinos">0</div>
-      <div class="stat-rot">treinos feitos</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num" id="ev-xp">0</div>
-      <div class="stat-rot">pontos</div>
-    </div>
+  <div class="numeros">
+    <div class="numero"><b id="e-seq">0</b><span>dias seguidos</span></div>
+    <div class="numero"><b id="e-feitos">0</b><span>treinos feitos</span></div>
+    <div class="numero"><b id="e-pilares">0</b><span>pilares completos</span></div>
   </div>
 
   <div class="cartao">
-    <div class="cartao-etiqueta">Conquistas</div>
+    <div class="etiqueta">Conquistas</div>
     <div id="lista-conquistas"></div>
   </div>
 </section>
 
+<!-- ========== APRENDER ========== -->
 <section class="tela" id="tela-aprender">
-  <div class="saudacao">
+  <div class="topo">
     <h1>Aprender</h1>
-    <p>A teoria por trás de cada treino.</p>
+    <p>A teoria por trás de cada pilar.</p>
   </div>
-  <div class="cartao">
-    <div id="lista-aulas"></div>
-  </div>
+  <div id="lista-teoria"></div>
 </section>
 
-</div>
-
+<!-- ========== ABAS ========== -->
 <nav class="abas">
-  <button class="aba ativa" data-tela="hoje" onclick="irPara(&#39;hoje&#39;)">
+  <button class="aba ativa" data-tela="hoje" onclick="irPara('hoje')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Hoje
   </button>
-  <button class="aba" data-tela="jornada" onclick="irPara(&#39;jornada&#39;)">
+  <button class="aba" data-tela="jornada" onclick="irPara('jornada')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
     Jornada
   </button>
-  <button class="aba" data-tela="evolucao" onclick="irPara(&#39;evolucao&#39;)">
+  <button class="aba" data-tela="evolucao" onclick="irPara('evolucao')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
     Evolução
   </button>
-  <button class="aba" data-tela="aprender" onclick="irPara(&#39;aprender&#39;)">
+  <button class="aba" data-tela="aprender" onclick="irPara('aprender')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
     Aprender
   </button>
 </nav>
 
-<script>
-const HABILIDADES = [
-  { id:1, nome:"Estrutura em 3 partes", resumo:"Organize qualquer ideia em abertura, desenvolvimento e fechamento — sem dar voltas.", aula:"Como organizar uma resposta", dur:"4 min" },
-  { id:2, nome:"Clareza", resumo:"Troque palavras difíceis por palavras exatas. Quem entende, confia.", aula:"O preço de ser complicado", dur:"3 min" },
-  { id:3, nome:"Objetividade", resumo:"Comece pelo ponto principal. O contexto vem depois, se vier.", aula:"Ponto primeiro, história depois", dur:"5 min" },
-  { id:4, nome:"Segurança", resumo:"Ritmo, pausa e olhar: o que o corpo diz antes da primeira palavra.", aula:"A pausa como ferramenta", dur:"4 min" },
-  { id:5, nome:"Improviso", resumo:"Responda bem sem ter preparado. Estrutura é o que salva.", aula:"Pensar em voz alta sem se perder", dur:"6 min" }
-];
+</div>
 
-const EXERCICIOS = {
-  1:[
-    { tarefa:"Estruture essa ideia em 3 partes (abertura, desenvolvimento, fechamento):", citacao:"Por que aprender a se comunicar bem é mais importante que ser inteligente", dica:"No próximo, tente fazer isso em até 1 minuto." },
-    { tarefa:"Agora com um tema do seu trabalho. Estruture em 3 partes:", citacao:"Por que nosso time precisa mudar a forma de reportar resultados", dica:"Abertura curta funciona melhor que abertura completa." },
-    { tarefa:"Reduza para 3 frases — uma por parte:", citacao:"O que eu faria diferente se começasse minha carreira hoje", dica:"Uma frase por parte força você a escolher o essencial." },
-    { tarefa:"Estruture uma resposta para uma pergunta difícil:", citacao:"Por que esse projeto atrasou?", dica:"Fechamento sem proposta de ação soa como desculpa." },
-    { tarefa:"Último: estruture em 3 partes sem usar a palavra então:", citacao:"O que mudou no meu jeito de trabalhar nos últimos 2 anos", dica:"Conectores fracos são muleta. Ponto final é mais forte." }
-  ]
-};
+<script>
+/* ===================================================================
+   CONFIGURAÇÃO DOS TREINOS
+   Preencha "aula" com o ID da aula no Cademí assim que ela existir.
+   O ID aparece no endereço da aula:
+   .../area/conteudo/aula/9676261  ->  aula:9676261
+   Enquanto estiver null, o treino aparece como "em breve".
+   =================================================================== */
+const BASE_AULA = 'https://aluno.falalima.com.br/area/conteudo/aula/';
+
+const PILARES = [
+  { id:1, nome:'Estrutura',
+    resumo:'Organize qualquer ideia em abertura, desenvolvimento e fechamento.',
+    teoria:'Como organizar uma resposta', teoriaAula:null,
+    treinos:[
+      { n:1, nome:'Estruture uma ideia',        min:5, aula:null },
+      { n:2, nome:'Estruture um tema do seu trabalho', min:5, aula:null },
+      { n:3, nome:'Reduza para três frases',    min:4, aula:null },
+      { n:4, nome:'Responda a uma pergunta difícil', min:6, aula:null },
+      { n:5, nome:'Estruture sem conectores',   min:5, aula:null }
+    ]},
+  { id:2, nome:'Clareza',
+    resumo:'Troque palavras difíceis por palavras exatas. Quem entende, confia.',
+    teoria:'O preço de ser complicado', teoriaAula:null,
+    treinos:[
+      { n:1, nome:'Explique sem jargão',        min:5, aula:null },
+      { n:2, nome:'Corte metade das palavras',  min:4, aula:null },
+      { n:3, nome:'Troque abstrato por concreto', min:5, aula:null },
+      { n:4, nome:'Explique para quem é de fora', min:6, aula:null },
+      { n:5, nome:'Uma ideia por frase',        min:4, aula:null }
+    ]},
+  { id:3, nome:'Objetividade',
+    resumo:'Comece pelo ponto principal. O contexto vem depois, se vier.',
+    teoria:'Ponto primeiro, história depois', teoriaAula:null,
+    treinos:[
+      { n:1, nome:'Comece pela conclusão',      min:5, aula:null },
+      { n:2, nome:'Responda em trinta segundos', min:4, aula:null },
+      { n:3, nome:'Corte o aquecimento',        min:5, aula:null },
+      { n:4, nome:'Diga não sem rodeio',        min:6, aula:null },
+      { n:5, nome:'Peça algo em duas frases',   min:4, aula:null }
+    ]},
+  { id:4, nome:'Segurança',
+    resumo:'Ritmo, pausa e olhar: o que o corpo diz antes da primeira palavra.',
+    teoria:'A pausa como ferramenta', teoriaAula:null,
+    treinos:[
+      { n:1, nome:'Use a pausa no lugar do vício', min:5, aula:null },
+      { n:2, nome:'Desacelere o fim da frase',  min:4, aula:null },
+      { n:3, nome:'Sustente o silêncio',        min:5, aula:null },
+      { n:4, nome:'Afirme sem pedir licença',   min:6, aula:null },
+      { n:5, nome:'Encerre sem se desculpar',   min:4, aula:null }
+    ]},
+  { id:5, nome:'Improviso',
+    resumo:'Responda bem sem ter preparado. Estrutura é o que salva.',
+    teoria:'Pensar em voz alta sem se perder', teoriaAula:null,
+    treinos:[
+      { n:1, nome:'Ganhe tempo com elegância',  min:5, aula:null },
+      { n:2, nome:'Monte a resposta enquanto fala', min:6, aula:null },
+      { n:3, nome:'Admita o que não sabe',      min:4, aula:null },
+      { n:4, nome:'Reaproveite a pergunta',     min:5, aula:null },
+      { n:5, nome:'Feche sem ensaio',           min:5, aula:null }
+    ]}
+];
 
 const CONQUISTAS = [
-  { icone:"🌱", nome:"Primeiro passo", desc:"Complete seu primeiro treino", teste:e => e.concluidos >= 1 },
-  { icone:"🔥", nome:"Três seguidos", desc:"Treine 3 dias sem parar", teste:e => e.sequencia >= 3 },
-  { icone:"⚡", nome:"Meia jornada", desc:"Conclua 2 habilidades", teste:e => e.habilidades >= 2 },
-  { icone:"🎯", nome:"Semana cheia", desc:"Treine 7 dias sem parar", teste:e => e.sequencia >= 7 },
-  { icone:"🏆", nome:"Jornada completa", desc:"Conclua as 5 habilidades", teste:e => e.habilidades >= 5 }
+  { icone:'🌱', nome:'Primeiro passo',   desc:'Conclua seu primeiro treino',  teste:p => p.feitos >= 1 },
+  { icone:'🔥', nome:'Três seguidos',    desc:'Treine 3 dias sem parar',      teste:p => p.sequencia >= 3 },
+  { icone:'⚡', nome:'Primeiro pilar',    desc:'Complete um pilar inteiro',    teste:p => p.pilares >= 1 },
+  { icone:'🎯', nome:'Semana cheia',     desc:'Treine 7 dias sem parar',      teste:p => p.sequencia >= 7 },
+  { icone:'🏆', nome:'Jornada completa', desc:'Conclua os 25 treinos',        teste:p => p.feitos >= 25 }
 ];
 
+/* ---------- Aluno (vem do Cademí) ---------- */
 const ALUNO = (function(){
   const p = new URLSearchParams(window.location.search);
-  const gratis = (p.get("cuser_gratis") || "").toLowerCase();
+  const g = (p.get('cuser_gratis') || '').toLowerCase();
   return {
-    id: p.get("cuser_id") || null,
-    email: p.get("cuser_email") || null,
-    nome: p.get("cuser_name") || null,
-    primeiroNome: p.get("cuser_fname") || null,
-    gratuito: gratis === "1" || gratis === "true" || gratis === "sim",
-    identificado: !!p.get("cuser_id")
+    id: p.get('cuser_id') || null,
+    email: p.get('cuser_email') || null,
+    nome: p.get('cuser_name') || null,
+    primeiroNome: p.get('cuser_fname') || null,
+    gratuito: g === '1' || g === 'true' || g === 'sim',
+    identificado: !!p.get('cuser_id')
   };
 })();
 
-const LIMITE_GRATUITO = 1;
+const PILARES_GRATUITOS = 1;
+function pilarBloqueado(id){ return ALUNO.gratuito && id > PILARES_GRATUITOS; }
 
-const PADRAO = { concluidos:0, xp:0, sequencia:0, habilidades:0, exercicioAtual:0, habilidadeAtual:1, ultimoDia:null };
-let estado = Object.assign({}, PADRAO);
+/* ---------- Progresso ---------- */
+const PADRAO = { concluidos:[], sequencia:0, ultimoDia:null };
+let prog = Object.assign({}, PADRAO);
 
-function chaveArmazenamento(){
-  return ALUNO.id ? ("tae_estado_" + ALUNO.id) : "tae_estado_visitante";
-}
-
+function chave(){ return ALUNO.id ? ('tae_' + ALUNO.id) : 'tae_visitante'; }
 function carregar(){
   try{
-    const bruto = localStorage.getItem(chaveArmazenamento());
-    if(bruto) estado = Object.assign({}, PADRAO, JSON.parse(bruto));
-  }catch(e){ estado = Object.assign({}, PADRAO); }
+    const b = localStorage.getItem(chave());
+    if(b) prog = Object.assign({}, PADRAO, JSON.parse(b));
+    if(!Array.isArray(prog.concluidos)) prog.concluidos = [];
+  }catch(e){ prog = Object.assign({}, PADRAO); }
 }
-function salvar(){
-  try{ localStorage.setItem(chaveArmazenamento(), JSON.stringify(estado)); }catch(e){}
+function salvar(){ try{ localStorage.setItem(chave(), JSON.stringify(prog)); }catch(e){} }
+
+function codigo(pilarId, n){ return pilarId + '.' + n; }
+function feito(pilarId, n){ return prog.concluidos.indexOf(codigo(pilarId,n)) !== -1; }
+
+function resumo(){
+  let feitos = 0, pilares = 0;
+  PILARES.forEach(function(p){
+    let c = 0;
+    p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
+    feitos += c;
+    if(c === p.treinos.length) pilares++;
+  });
+  return { feitos:feitos, pilares:pilares, total:25, sequencia:prog.sequencia };
 }
 
-function habilidadeBloqueadaPorPlano(id){
-  return ALUNO.gratuito && id > LIMITE_GRATUITO;
-}
-
+/* ---------- Navegação ---------- */
 function irPara(tela){
-  document.querySelectorAll(".tela").forEach(function(s){ s.classList.remove("ativa"); });
-  document.getElementById("tela-"+tela).classList.add("ativa");
-  document.querySelectorAll(".aba").forEach(function(b){ b.classList.toggle("ativa", b.dataset.tela === tela); });
+  document.querySelectorAll('.tela').forEach(function(s){ s.classList.remove('ativa'); });
+  document.getElementById('tela-' + tela).classList.add('ativa');
+  document.querySelectorAll('.aba').forEach(function(b){ b.classList.toggle('ativa', b.dataset.tela === tela); });
   window.scrollTo(0,0);
-  if(tela === "jornada") montarJornada();
-  if(tela === "evolucao") montarEvolucao();
-  if(tela === "aprender") montarAulas();
+  if(tela === 'jornada')  montarPilares();
+  if(tela === 'evolucao') montarEvolucao();
+  if(tela === 'aprender') montarTeoria();
 }
 
-function voltarHome(){
-  document.querySelectorAll(".tela").forEach(function(s){ s.classList.remove("ativa"); });
-  document.getElementById("tela-hoje").classList.add("ativa");
-  document.querySelectorAll(".aba").forEach(function(b){ b.classList.toggle("ativa", b.dataset.tela === "hoje"); });
-  window.scrollTo(0,0);
-}
-
-function abrirExercicio(){
-  if(habilidadeBloqueadaPorPlano(estado.habilidadeAtual)){ mostrarAvisoPlano(); return; }
-  const lista = EXERCICIOS[estado.habilidadeAtual] || EXERCICIOS[1];
-  const i = Math.min(estado.exercicioAtual, lista.length - 1);
-  const ex = lista[i];
-  const hab = HABILIDADES.find(function(h){ return h.id === estado.habilidadeAtual; }) || HABILIDADES[0];
-
-  document.getElementById("ex-contador").textContent = (i+1) + "/" + lista.length;
-  document.getElementById("ex-barra").style.width = ((i+1)/lista.length*100) + "%";
-  document.getElementById("ex-sub").textContent = "Habilidade " + hab.id + " · " + hab.nome;
-  document.getElementById("ex-tarefa").innerHTML = "<b>Tarefa:</b> " + ex.tarefa;
-  document.getElementById("ex-citacao").innerHTML = "<b>Ideia:</b> “" + ex.citacao + "”";
-  document.getElementById("ex-resposta").value = "";
-  document.getElementById("ex-contagem").textContent = "0";
-  document.getElementById("ex-feedback").classList.remove("visivel");
-  document.getElementById("ex-botao").textContent = "Enviar resposta";
-  document.getElementById("ex-botao").onclick = enviarResposta;
-
-  document.querySelectorAll(".tela").forEach(function(s){ s.classList.remove("ativa"); });
-  document.getElementById("tela-exercicio").classList.add("ativa");
-  window.scrollTo(0,0);
-}
-
-function contarCaracteres(){
-  document.getElementById("ex-contagem").textContent = document.getElementById("ex-resposta").value.length;
-}
-
-function enviarResposta(){
-  const texto = document.getElementById("ex-resposta").value.trim();
-  if(texto.length < 20){
-    alert("Escreva um pouco mais — pelo menos 20 caracteres.");
-    return;
-  }
-
-  const lista = EXERCICIOS[estado.habilidadeAtual] || EXERCICIOS[1];
-  const i = Math.min(estado.exercicioAtual, lista.length - 1);
-  const ex = lista[i];
-
-  document.getElementById("fb-titulo").textContent = "Resposta registrada";
-  document.getElementById("fb-texto").textContent = "Releia em voz alta. Se travar em alguma parte, é ali que falta estrutura.";
-  document.getElementById("fb-dica").innerHTML = "<b>Dica:</b> " + ex.dica;
-  document.getElementById("ex-feedback").classList.add("visivel");
-
-  estado.concluidos++;
-  estado.xp += 10;
-  const hoje = new Date().toDateString();
-  if(estado.ultimoDia !== hoje){
-    estado.sequencia++;
-    estado.ultimoDia = hoje;
-  }
-  if(i + 1 >= lista.length){
-    estado.habilidades = Math.min(estado.habilidades + 1, HABILIDADES.length);
-    estado.habilidadeAtual = Math.min(estado.habilidadeAtual + 1, HABILIDADES.length);
-    estado.exercicioAtual = 0;
-  }else{
-    estado.exercicioAtual = i + 1;
-  }
-  salvar();
-  atualizarHome();
-
-  const botao = document.getElementById("ex-botao");
-  botao.textContent = "Próximo treino";
-  botao.onclick = function(){ abrirExercicio(); };
-
-  enviarParaMake({ resposta:texto, habilidade:estado.habilidadeAtual, exercicio:i+1, pontos:10 });
-}
-
-const WEBHOOK = "https://hook.us1.make.com/k2z2eno0ja4mm5rgyath0v3jn8v0ip03";
-function enviarParaMake(dados){
-  if(!ALUNO.identificado) return;
-  try{
-    fetch(WEBHOOK, {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(Object.assign({
-        aluno_id: ALUNO.id,
-        aluno_email: ALUNO.email,
-        aluno_nome: ALUNO.nome
-      }, dados, {
-        xp_total: estado.xp,
-        concluidos: estado.concluidos,
-        sequencia: estado.sequencia,
-        habilidades: estado.habilidades,
-        enviado_em: new Date().toISOString()
-      }))
-    }).catch(function(){});
-  }catch(e){}
-}
-
-function mostrarAvisoPlano(){
-  alert("Esta habilidade faz parte do programa completo do TAE.\n\nFale com a equipe para liberar seu acesso.");
-}
-
-function atualizarHome(){
+/* ---------- Telas ---------- */
+function montarHoje(){
   const hora = new Date().getHours();
-  const saud = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
-  const nome = ALUNO.primeiroNome ? (", " + ALUNO.primeiroNome) : "";
-  document.getElementById("saudacao-texto").textContent = saud + nome + " 👋";
+  const s = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+  document.getElementById('saudacao').textContent = s + (ALUNO.primeiroNome ? (', ' + ALUNO.primeiroNome) : '');
 
-  const hab = HABILIDADES.find(function(h){ return h.id === estado.habilidadeAtual; }) || HABILIDADES[0];
-  const travadoPorPlano = habilidadeBloqueadaPorPlano(hab.id);
-
-  document.getElementById("treino-hoje-nome").textContent = hab.nome;
-  document.getElementById("treino-hoje-desc").textContent = travadoPorPlano
-    ? "Esta habilidade faz parte do programa completo. Libere o acesso para continuar treinando."
-    : hab.resumo;
-
-  const botaoHoje = document.querySelector("#tela-hoje .botao");
-  if(travadoPorPlano){
-    botaoHoje.textContent = "Liberar acesso completo";
-    botaoHoje.onclick = mostrarAvisoPlano;
-  }else{
-    botaoHoje.textContent = "Começar treino";
-    botaoHoje.onclick = abrirExercicio;
+  // sugere o primeiro treino não concluído de um pilar liberado
+  let sug = null, sugPilar = null;
+  for(let i=0;i<PILARES.length && !sug;i++){
+    const p = PILARES[i];
+    if(pilarBloqueado(p.id)) continue;
+    for(let j=0;j<p.treinos.length;j++){
+      if(!feito(p.id, p.treinos[j].n)){ sug = p.treinos[j]; sugPilar = p; break; }
+    }
   }
 
-  document.getElementById("stat-sequencia").textContent = estado.sequencia;
-  document.getElementById("stat-concluidos").textContent = estado.concluidos;
-  document.getElementById("stat-xp").textContent = estado.xp;
+  const botao = document.getElementById('sug-botao');
+  if(!sug){
+    document.getElementById('sug-nome').textContent = 'Jornada completa';
+    document.getElementById('sug-desc').textContent = 'Você concluiu os 25 treinos. Volte a qualquer um pela aba Jornada.';
+    botao.textContent = 'Ver jornada';
+    botao.removeAttribute('target');
+    botao.href = '#';
+    botao.onclick = function(e){ e.preventDefault(); irPara('jornada'); };
+  }else{
+    document.getElementById('sug-nome').textContent = sug.nome;
+    document.getElementById('sug-desc').textContent = sugPilar.nome + ' · ' + sug.min + ' min · ' + sugPilar.resumo;
+    if(sug.aula){
+      botao.textContent = 'Começar treino';
+      botao.href = BASE_AULA + sug.aula;
+      botao.setAttribute('target','_top');
+      botao.onclick = null;
+    }else{
+      botao.textContent = 'Em breve';
+      botao.href = '#';
+      botao.removeAttribute('target');
+      botao.onclick = function(e){ e.preventDefault(); };
+    }
+  }
 
-  const pct = Math.round(estado.habilidades / HABILIDADES.length * 100);
-  document.getElementById("barra-home").style.width = pct + "%";
-  document.getElementById("barra-home-txt").textContent = estado.habilidades + " de " + HABILIDADES.length + " habilidades";
-  document.getElementById("barra-home-pct").textContent = pct + "%";
+  const r = resumo();
+  const pct = Math.round(r.feitos / r.total * 100);
+  document.getElementById('n-seq').textContent = r.sequencia;
+  document.getElementById('n-feitos').textContent = r.feitos;
+  document.getElementById('n-pct').textContent = pct + '%';
+  document.getElementById('barra-hoje').style.width = pct + '%';
+  document.getElementById('barra-hoje-txt').textContent = r.feitos + ' de ' + r.total + ' treinos';
+  document.getElementById('barra-hoje-pct').textContent = pct + '%';
 }
 
-function montarJornada(){
-  document.getElementById("lista-jornada").innerHTML = HABILIDADES.map(function(h){
-    const porPlano = habilidadeBloqueadaPorPlano(h.id);
-    const feito = h.id <= estado.habilidades && !porPlano;
-    const atual = h.id === estado.habilidadeAtual && !feito && !porPlano;
-    const travado = !feito && !atual;
-    const classe = travado ? "treino-item travado" : "treino-item";
-    const marca = feito ? "<div class=\"marca feito\">✓</div>"
-                : atual ? "<div class=\"marca agora\">"+h.id+"</div>"
-                        : "<div class=\"marca travado\">🔒</div>";
-    const estadoTxt = porPlano ? "Disponível no programa completo"
-                    : feito ? "Concluída"
-                    : atual ? "Em andamento"
-                            : "Desbloqueia ao concluir a anterior";
-    const acao = atual ? " onclick=\"abrirExercicio()\""
-               : porPlano ? " onclick=\"mostrarAvisoPlano()\" style=\"cursor:pointer\""
-               : "";
-    return "<div class=\""+classe+"\""+acao+">"+marca+
-      "<div class=\"treino-nome\">"+h.nome+"<div class=\"treino-meta\">"+estadoTxt+"</div></div></div>";
-  }).join("");
+function montarPilares(){
+  document.getElementById('lista-pilares').innerHTML = PILARES.map(function(p){
+    const bloq = pilarBloqueado(p.id);
+    let c = 0;
+    p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
+
+    const linhas = p.treinos.map(function(t){
+      const ok = feito(p.id, t.n);
+      const marca = '<div class="aula-marca' + (ok ? ' feita' : '') + '">' + (ok ? '✓' : t.n) + '</div>';
+      const corpo = '<div class="aula-nome">' + t.nome +
+                    '<div class="aula-meta">' + t.min + ' min' + (t.aula ? '' : ' · em breve') + '</div></div>';
+      if(bloq || !t.aula){
+        return '<div class="aula travada">' + marca + corpo + '<span class="aula-seta">🔒</span></div>';
+      }
+      return '<a class="aula" href="' + BASE_AULA + t.aula + '" target="_top">' + marca + corpo +
+             '<span class="aula-seta">›</span></a>';
+    }).join('');
+
+    return '<div class="pilar">' +
+      '<div class="pilar-topo"><span class="pilar-nome">' + p.nome + '</span>' +
+      '<span class="pilar-contagem">' + (bloq ? 'bloqueado' : c + '/' + p.treinos.length) + '</span></div>' +
+      '<p class="pilar-resumo">' + p.resumo + '</p>' +
+      '<div class="aulas">' + linhas + '</div></div>';
+  }).join('');
 }
 
 function montarEvolucao(){
-  document.getElementById("ev-sequencia").textContent = estado.sequencia;
-  document.getElementById("ev-treinos").textContent = estado.concluidos;
-  document.getElementById("ev-xp").textContent = estado.xp;
+  const r = resumo();
+  document.getElementById('e-seq').textContent = r.sequencia;
+  document.getElementById('e-feitos').textContent = r.feitos;
+  document.getElementById('e-pilares').textContent = r.pilares;
 
-  document.getElementById("lista-conquistas").innerHTML = CONQUISTAS.map(function(c){
-    const ganha = c.teste(estado);
-    return "<div class=\"conquista "+(ganha?"ganha":"pendente")+"\">"+
-      "<div class=\"medalha\">"+c.icone+"</div>"+
-      "<div><div class=\"conquista-nome\">"+c.nome+"</div>"+
-      "<div class=\"conquista-desc\">"+(ganha?"Conquistada":c.desc)+"</div></div></div>";
-  }).join("");
+  document.getElementById('lista-conquistas').innerHTML = CONQUISTAS.map(function(c){
+    const g = c.teste(r);
+    return '<div class="conquista ' + (g ? 'ganha' : 'pendente') + '">' +
+      '<div class="medalha">' + c.icone + '</div>' +
+      '<div><div class="conquista-nome">' + c.nome + '</div>' +
+      '<div class="conquista-desc">' + (g ? 'Conquistada' : c.desc) + '</div></div></div>';
+  }).join('');
 }
 
-function montarAulas(){
-  document.getElementById("lista-aulas").innerHTML = HABILIDADES.map(function(h){
-    const liberada = h.id <= estado.habilidadeAtual && !habilidadeBloqueadaPorPlano(h.id);
-    const acao = liberada ? "" : " onclick=\"mostrarAvisoPlano()\"";
-    return "<div class=\"aula\""+(liberada?"":" style=\"opacity:.45\"")+acao+">"+
-      "<div class=\"aula-play\">"+(liberada?"▶":"🔒")+"</div>"+
-      "<div class=\"aula-nome\">"+h.aula+
-      "<div class=\"aula-dur\">"+h.nome+" · "+h.dur+"</div></div></div>";
-  }).join("");
+function montarTeoria(){
+  document.getElementById('lista-teoria').innerHTML =
+    '<div class="aulas">' + PILARES.map(function(p){
+      const bloq = pilarBloqueado(p.id);
+      const corpo = '<div class="aula-nome">' + p.teoria +
+                    '<div class="aula-meta">' + p.nome + (p.teoriaAula ? '' : ' · em breve') + '</div></div>';
+      const marca = '<div class="aula-marca">' + p.id + '</div>';
+      if(bloq || !p.teoriaAula){
+        return '<div class="aula travada">' + marca + corpo + '<span class="aula-seta">🔒</span></div>';
+      }
+      return '<a class="aula" href="' + BASE_AULA + p.teoriaAula + '" target="_top">' + marca + corpo +
+             '<span class="aula-seta">›</span></a>';
+    }).join('') + '</div>';
 }
 
 carregar();
-atualizarHome();
+montarHoje();
 </script>
 </body>
 </html>
