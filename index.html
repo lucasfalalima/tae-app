@@ -80,6 +80,29 @@ body{
 .barra-txt{display:flex;justify-content:space-between;font-size:12.5px;color:var(--texto-fraco)}
 
 /* ---------- Pilares ---------- */
+.linha-pilar{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 0;border-bottom:1px solid var(--borda);
+  cursor:pointer;
+}
+.linha-pilar:last-child{border-bottom:0;padding-bottom:0}
+.linha-pilar:first-child{padding-top:2px}
+.linha-pilar:hover .lp-nome{color:var(--amarelo)}
+.lp-nome{flex:0 0 96px;font-size:13.5px;font-weight:600;color:var(--texto);transition:color .12s ease}
+.lp-barra{flex:1;height:5px;background:var(--borda);border-radius:99px;overflow:hidden}
+.lp-barra i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .4s ease}
+.lp-barra i.cheia{background:var(--verde)}
+.lp-cont{flex:0 0 auto;font-size:12px;color:var(--texto-fraco);min-width:30px;text-align:right}
+
+.proxima{
+  display:none;align-items:center;gap:9px;
+  margin-top:15px;padding-top:14px;border-top:1px solid var(--borda);
+  font-size:13.5px;color:var(--texto-fraco);line-height:1.45;
+}
+.proxima.visivel{display:flex}
+.proxima b{color:var(--texto);font-weight:600}
+.proxima .ico{font-size:19px;flex-shrink:0}
+
 .pilar{margin-bottom:18px}
 .pilar-topo{display:flex;align-items:baseline;gap:9px;margin-bottom:9px;padding:0 2px}
 .pilar-nome{font-size:16.5px;font-weight:700;color:var(--texto-forte)}
@@ -160,40 +183,31 @@ body{
 <nav class="abas">
   <button class="aba ativa" data-tela="hoje" onclick="irPara('hoje')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Hoje
+    Início
   </button>
   <button class="aba" data-tela="jornada" onclick="irPara('jornada')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 5h11l3 3.5-3 3.5H6"/><path d="M6 15h8l2.5 3"/></svg>
     Jornada
   </button>
   <button class="aba" data-tela="evolucao" onclick="irPara('evolucao')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
     Evolução
   </button>
-  <button class="aba" data-tela="aprender" onclick="irPara('aprender')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-    Aprender
-  </button>
+  
 </nav>
 
 <!-- ========== HOJE ========== -->
 <section class="tela ativa" id="tela-hoje">
   <div class="topo">
     <h1 id="saudacao">Bom dia</h1>
-    <p>Cinco minutos por dia é o que separa quem fala bem de quem só sabe o assunto.</p>
+    <p id="subtitulo">Cinco minutos por dia é o que separa quem fala bem de quem só sabe o assunto.</p>
   </div>
 
   <div class="cartao">
-    <div class="etiqueta">Sugestão de hoje · 5 min</div>
+    <div class="etiqueta" id="rotulo-treino">Comece seu treino</div>
     <h2 class="sugestao-titulo" id="sug-nome">—</h2>
     <p class="sugestao-desc" id="sug-desc">—</p>
-    <a class="botao" id="sug-botao" href="#" target="_top">Começar treino</a>
-  </div>
-
-  <div class="numeros">
-    <div class="numero"><b id="n-seq">0</b><span>dias seguidos</span></div>
-    <div class="numero"><b id="n-feitos">0</b><span>treinos feitos</span></div>
-    <div class="numero"><b id="n-pct">0%</b><span>da jornada</span></div>
+    <a class="botao" id="sug-botao" href="#" target="_top">Começar</a>
   </div>
 
   <div class="cartao">
@@ -203,6 +217,12 @@ body{
       <span id="barra-hoje-txt">0 de 25 treinos</span>
       <span id="barra-hoje-pct">0%</span>
     </div>
+    <div class="proxima" id="proxima-conquista"></div>
+  </div>
+
+  <div class="cartao">
+    <div class="etiqueta">Seus pilares</div>
+    <div id="resumo-pilares"></div>
   </div>
 </section>
 
@@ -234,14 +254,7 @@ body{
   </div>
 </section>
 
-<!-- ========== APRENDER ========== -->
-<section class="tela" id="tela-aprender">
-  <div class="topo">
-    <h1>Aprender</h1>
-    <p>A teoria por trás de cada pilar.</p>
-  </div>
-  <div id="lista-teoria"></div>
-</section>
+
 
 <!-- ========== ABAS ========== -->
 </div>
@@ -309,12 +322,49 @@ const PILARES = [
     ]}
 ];
 
+const FRASES = [
+  "Quem fala bem não nasceu assim. Treinou.",
+  "A boa ideia mal dita perde para a ideia média bem dita.",
+  "Clareza não é falar pouco. É não sobrar palavra.",
+  "A pausa que te assusta é a que faz o outro prestar atenção.",
+  "Improviso é estrutura decorada.",
+  "Quem entende explica. Quem não entende complica.",
+  "Sua ideia só existe depois que alguém entende.",
+  "A primeira frase decide se vão ouvir o resto.",
+  "Ninguém decide por quem fala mais. Decidem por quem fala claro.",
+  "Falar bem é escolher o que não dizer.",
+  "O silêncio incomoda quem fala, nunca quem ouve.",
+  "Nervoso todo mundo fica. Despreparado, não precisa.",
+  "Cinco minutos por dia valem mais que uma hora no domingo.",
+  "Treinar é falar quando ninguém está avaliando.",
+  "Quem resume bem pensou melhor.",
+  "Antes de convencer, seja entendido.",
+  "O jargão protege quem fala e afasta quem ouve.",
+  "Repetir não é reforçar. É cansar.",
+  "Quem começa pelo contexto perde o ouvinte no meio.",
+  "Comunicação não é dom. É repertório com repetição.",
+  "A frase curta sobrevive à reunião. A longa, não."
+];
+
+/* Uma frase por dia, igual para todos, trocando à meia-noite. */
+function fraseDoDia(){
+  const hoje = new Date();
+  const inicio = new Date(hoje.getFullYear(), 0, 0);
+  const dia = Math.floor((hoje - inicio) / 86400000);
+  return FRASES[dia % FRASES.length];
+}
+
 const CONQUISTAS = [
-  { icone:'🌱', nome:'Primeiro passo',   desc:'Conclua seu primeiro treino',  teste:p => p.feitos >= 1 },
-  { icone:'🔥', nome:'Três seguidos',    desc:'Treine 3 dias sem parar',      teste:p => p.sequencia >= 3 },
-  { icone:'⚡', nome:'Primeiro pilar',    desc:'Complete um pilar inteiro',    teste:p => p.pilares >= 1 },
-  { icone:'🎯', nome:'Semana cheia',     desc:'Treine 7 dias sem parar',      teste:p => p.sequencia >= 7 },
-  { icone:'🏆', nome:'Jornada completa', desc:'Conclua os 25 treinos',        teste:p => p.feitos >= 25 }
+  { icone:"🌱", nome:"Primeiro passo",   desc:"Conclua seu primeiro treino",
+    teste:p => p.feitos >= 1,  faltam:p => 1 - p.feitos },
+  { icone:"⚡", nome:"Primeiro pilar",    desc:"Complete um pilar inteiro",
+    teste:p => p.pilares >= 1, faltam:p => p.faltamParaPilar },
+  { icone:"🔥", nome:"Metade do caminho",desc:"Chegue a 13 treinos",
+    teste:p => p.feitos >= 13, faltam:p => 13 - p.feitos },
+  { icone:"🎯", nome:"Quatro pilares",   desc:"Complete quatro pilares",
+    teste:p => p.pilares >= 4, faltam:null },
+  { icone:"🏆", nome:"Jornada completa", desc:"Conclua os 25 treinos",
+    teste:p => p.feitos >= 25, faltam:p => 25 - p.feitos }
 ];
 
 /* ---------- Aluno (vem do Cademí) ---------- */
@@ -352,14 +402,20 @@ function codigo(pilarId, n){ return pilarId + '.' + n; }
 function feito(pilarId, n){ return prog.concluidos.indexOf(codigo(pilarId,n)) !== -1; }
 
 function resumo(){
-  let feitos = 0, pilares = 0;
+  let feitos = 0, pilares = 0, faltamParaPilar = 99;
   PILARES.forEach(function(p){
     let c = 0;
     p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
     feitos += c;
     if(c === p.treinos.length) pilares++;
+    // pilar comecado mas nao terminado: quanto falta para fechar
+    else if(c > 0 && !pilarBloqueado(p.id)){
+      const f = p.treinos.length - c;
+      if(f < faltamParaPilar) faltamParaPilar = f;
+    }
   });
-  return { feitos:feitos, pilares:pilares, total:25, sequencia:prog.sequencia };
+  return { feitos:feitos, pilares:pilares, total:25,
+           sequencia:prog.sequencia, faltamParaPilar:faltamParaPilar };
 }
 
 /* ---------- Navegação ---------- */
@@ -370,16 +426,17 @@ function irPara(tela){
   window.scrollTo(0,0);
   if(tela === 'jornada')  montarPilares();
   if(tela === 'evolucao') montarEvolucao();
-  if(tela === 'aprender') montarTeoria();
 }
 
 /* ---------- Telas ---------- */
 function montarHoje(){
   const hora = new Date().getHours();
-  const s = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
-  document.getElementById('saudacao').textContent = s + (ALUNO.primeiroNome ? (', ' + ALUNO.primeiroNome) : '');
+  const s = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
+  document.getElementById("saudacao").textContent = s + (ALUNO.primeiroNome ? (", " + ALUNO.primeiroNome) : "");
 
-  // sugere o primeiro treino não concluído de um pilar liberado
+  const r = resumo();
+
+  // primeiro treino ainda nao concluido, em pilar liberado
   let sug = null, sugPilar = null;
   for(let i=0;i<PILARES.length && !sug;i++){
     const p = PILARES[i];
@@ -389,38 +446,81 @@ function montarHoje(){
     }
   }
 
-  const botao = document.getElementById('sug-botao');
+  const rotulo = document.getElementById("rotulo-treino");
+  const botao  = document.getElementById("sug-botao");
+  const sub    = document.getElementById("subtitulo");
+  sub.textContent = fraseDoDia();
+
   if(!sug){
-    document.getElementById('sug-nome').textContent = 'Jornada completa';
-    document.getElementById('sug-desc').textContent = 'Você concluiu os 25 treinos. Volte a qualquer um pela aba Jornada.';
-    botao.textContent = 'Ver jornada';
-    botao.removeAttribute('target');
-    botao.href = '#';
-    botao.onclick = function(e){ e.preventDefault(); irPara('jornada'); };
+    rotulo.textContent = "Jornada completa";
+    document.getElementById("sug-nome").textContent = "Os 25 treinos estão concluídos";
+    document.getElementById("sug-desc").textContent = "Repetir um treino vale tanto quanto fazer pela primeira vez.";
+    botao.textContent = "Ver jornada";
+    botao.removeAttribute("target");
+    botao.href = "#";
+    botao.onclick = function(e){ e.preventDefault(); irPara("jornada"); };
   }else{
-    document.getElementById('sug-nome').textContent = sug.nome;
-    document.getElementById('sug-desc').textContent = sugPilar.nome + ' · ' + sug.min + ' min · ' + sugPilar.resumo;
+    const comecou = r.feitos > 0;
+    rotulo.textContent = comecou ? "Continue de onde parou" : "Comece seu treino";
+    document.getElementById("sug-nome").textContent = sug.nome;
+    document.getElementById("sug-desc").textContent = sugPilar.nome + " · " + sug.min + " min";
     if(sug.aula){
-      botao.textContent = 'Começar treino';
+      botao.textContent = comecou ? "Continuar" : "Começar";
       botao.href = BASE_AULA + sug.aula;
-      botao.setAttribute('target','_top');
+      botao.setAttribute("target","_top");
       botao.onclick = null;
     }else{
-      botao.textContent = 'Em breve';
-      botao.href = '#';
-      botao.removeAttribute('target');
+      botao.textContent = "Em breve";
+      botao.href = "#";
+      botao.removeAttribute("target");
       botao.onclick = function(e){ e.preventDefault(); };
     }
   }
 
-  const r = resumo();
   const pct = Math.round(r.feitos / r.total * 100);
-  document.getElementById('n-seq').textContent = r.sequencia;
-  document.getElementById('n-feitos').textContent = r.feitos;
-  document.getElementById('n-pct').textContent = pct + '%';
-  document.getElementById('barra-hoje').style.width = pct + '%';
-  document.getElementById('barra-hoje-txt').textContent = r.feitos + ' de ' + r.total + ' treinos';
-  document.getElementById('barra-hoje-pct').textContent = pct + '%';
+  document.getElementById("barra-hoje").style.width = pct + "%";
+  document.getElementById("barra-hoje-txt").textContent = r.feitos + " de " + r.total + " treinos";
+  document.getElementById("barra-hoje-pct").textContent = pct + "%";
+
+  mostrarProximaConquista(r);
+  montarResumoPilares();
+}
+
+/* Visao compacta dos cinco pilares, no Inicio. Clicar leva a Jornada. */
+function montarResumoPilares(){
+  document.getElementById("resumo-pilares").innerHTML = PILARES.map(function(p){
+    const bloq = pilarBloqueado(p.id);
+    let c = 0;
+    p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
+    const pct = Math.round(c / p.treinos.length * 100);
+    const cheia = c === p.treinos.length ? " cheia" : "";
+    const cont = bloq ? "🔒" : c + "/" + p.treinos.length;
+    return '<div class="linha-pilar" onclick="irPara(&#39;jornada&#39;)">' +
+      '<span class="lp-nome">' + p.nome + '</span>' +
+      '<span class="lp-barra"><i class="' + cheia.trim() + '" style="width:' + (bloq ? 0 : pct) + '%"></i></span>' +
+      '<span class="lp-cont">' + cont + '</span></div>';
+  }).join("");
+}
+
+/* Mostra a conquista mais proxima, e so quando o aluno esta perto dela. */
+function mostrarProximaConquista(r){
+  const caixa = document.getElementById("proxima-conquista");
+  let alvo = null;
+
+  for(let i=0;i<CONQUISTAS.length;i++){
+    const c = CONQUISTAS[i];
+    if(c.teste(r)) continue;
+    if(typeof c.faltam !== "function") continue;
+    const f = c.faltam(r);
+    if(f > 0 && f <= 3){ alvo = { c:c, faltam:f }; break; }
+  }
+
+  if(!alvo){ caixa.classList.remove("visivel"); caixa.innerHTML = ""; return; }
+
+  const plural = alvo.faltam === 1 ? "treino" : "treinos";
+  caixa.innerHTML = '<span class="ico">' + alvo.c.icone + '</span>' +
+    '<span>Faltam <b>' + alvo.faltam + ' ' + plural + '</b> para ' + alvo.c.nome + '</span>';
+  caixa.classList.add("visivel");
 }
 
 function montarPilares(){
@@ -464,20 +564,6 @@ function montarEvolucao(){
   }).join('');
 }
 
-function montarTeoria(){
-  document.getElementById('lista-teoria').innerHTML =
-    '<div class="aulas">' + PILARES.map(function(p){
-      const bloq = pilarBloqueado(p.id);
-      const corpo = '<div class="aula-nome">' + p.teoria +
-                    '<div class="aula-meta">' + p.nome + (p.teoriaAula ? '' : ' · em breve') + '</div></div>';
-      const marca = '<div class="aula-marca">' + p.id + '</div>';
-      if(bloq || !p.teoriaAula){
-        return '<div class="aula travada">' + marca + corpo + '<span class="aula-seta">🔒</span></div>';
-      }
-      return '<a class="aula" href="' + BASE_AULA + p.teoriaAula + '" target="_top">' + marca + corpo +
-             '<span class="aula-seta">›</span></a>';
-    }).join('') + '</div>';
-}
 
 carregar();
 montarHoje();
