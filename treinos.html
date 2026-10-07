@@ -221,32 +221,122 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 /* Qual treino é este. Vem da URL: treinos.html?t=1.1 */
 const CODIGO = new URLSearchParams(window.location.search).get("t") || "1.1";
 
-/* Guarda a nota deste treino. Mantém sempre a mais alta.
-   Grava no navegador (para o painel abrir na hora) e envia para o
-   Cademí, pelo cenário "TAE - Progresso do aluno" no Make. */
+/* ================= PROGRESSO NO CADEMÍ =================
+   O progresso fica numa nota interna do aluno no Cademí.
+   O Make só lê e grava (cenário "TAE - Progresso do aluno");
+   quem monta o conteúdo é o próprio app, para gastar poucos créditos.
+   Formato da nota: TAE|1.1=5|2.3=4|d2026-10-07|
+   treino=estrelas (a maior) e dAAAA-MM-DD (dias em que treinou). */
 const PROGRESSO_URL = "https://hook.us1.make.com/a9bpauyn4nsdi1dsq9pag166skfidr28";
+const DIAS_GUARDADOS = 90;
+const CACHE_MINUTOS = 10;
 
+function hojeTexto(){ return new Date().toLocaleDateString("sv-SE"); }
+
+function lerTextoProgresso(texto, destino){
+  if(!texto || texto.indexOf("TAE|") !== 0) return;
+  texto.split("|").forEach(function(parte){
+    if(/^d\d{4}-\d{2}-\d{2}$/.test(parte)){
+      if(destino.dias.indexOf(parte.slice(1)) === -1) destino.dias.push(parte.slice(1));
+    }else if(parte.indexOf("=") > 0){
+      const k = parte.split("=")[0], v = parseInt(parte.split("=")[1], 10);
+      if(!isNaN(v) && (!destino.notas[k] || v > destino.notas[k])) destino.notas[k] = v;
+    }
+  });
+}
+
+/* Resposta do Make = lista de notas do aluno. Junta todas as notas TAE
+   (pode haver mais de uma se a chave do Cademí for trocada) e guarda
+   o id da mais recente, que é a que será atualizada. */
+function lerRespostaCademi(texto){
+  const r = { nota:"", notas:{}, dias:[] };
+  const lista = (JSON.parse(texto).data || []).filter(function(n){
+    return n.body && n.body.indexOf("TAE|") === 0;
+  });
+  lista.sort(function(a,b){ return (b.updated_at || "").localeCompare(a.updated_at || ""); });
+  if(lista.length) r.nota = lista[0].id;
+  lista.forEach(function(n){ lerTextoProgresso(n.body, r); });
+  return r;
+}
+
+function juntarProgresso(a, b){
+  const r = { notas:Object.assign({}, a.notas), dias:a.dias.slice() };
+  Object.keys(b.notas).forEach(function(k){ if(!r.notas[k] || b.notas[k] > r.notas[k]) r.notas[k] = b.notas[k]; });
+  b.dias.forEach(function(d){ if(r.dias.indexOf(d) === -1) r.dias.push(d); });
+  return r;
+}
+
+function montarCorpo(p){
+  const partes = Object.keys(p.notas).sort().map(function(k){ return k + "=" + p.notas[k]; });
+  const dias = p.dias.slice().sort().slice(-DIAS_GUARDADOS).map(function(d){ return "d" + d; });
+  return "TAE|" + partes.concat(dias).map(function(x){ return x + "|"; }).join("");
+}
+
+function buscarCademi(aluno){
+  return fetch(PROGRESSO_URL + "?acao=ler&aluno=" + encodeURIComponent(aluno))
+    .then(function(r){ return r.text(); })
+    .then(function(t){
+      const p = lerRespostaCademi(t);
+      guardarCache(aluno, p);
+      return p;
+    });
+}
+
+/* Grava o progresso inteiro. Devolve o id da nota (nova ou a mesma). */
+function salvarCademi(aluno, nota, progresso, treino, primeira){
+  const url = PROGRESSO_URL + "?acao=salvar&aluno=" + encodeURIComponent(aluno) +
+    "&corpo=" + encodeURIComponent(montarCorpo(progresso)) +
+    "&treino=" + encodeURIComponent(treino || "") + "&primeira=" + (primeira ? "sim" : "nao") +
+    (nota ? "&nota=" + encodeURIComponent(nota) : "");
+  return fetch(url).then(function(r){ return r.text(); }).then(function(t){
+    t = (t || "").trim();
+    const id = /^note_\d+$/.test(t) ? t : nota;
+    guardarCache(aluno, { nota:id, notas:progresso.notas, dias:progresso.dias });
+    return id;
+  });
+}
+
+function guardarCache(aluno, p){
+  try{
+    localStorage.setItem("tae_cademi_" + aluno, JSON.stringify({
+      nota:p.nota, notas:p.notas, dias:p.dias, quando:Date.now() }));
+  }catch(e){}
+}
+
+function lerCache(aluno){
+  try{
+    const c = JSON.parse(localStorage.getItem("tae_cademi_" + aluno) || "null");
+    if(c && Date.now() - c.quando < CACHE_MINUTOS * 60000) return c;
+  }catch(e){}
+  return null;
+}
+/* ================= FIM PROGRESSO NO CADEMÍ ================= */
+
+/* Guarda a nota deste treino (vale a mais alta) no navegador e no Cademí. */
 function guardarNota(estrelas){
-  const hoje = new Date().toLocaleDateString("sv-SE");
+  const hoje = hojeTexto();
   let quem = "visitante";
+  const local = { notas:{}, dias:[] };
   try{
     quem = localStorage.getItem("tae_aluno_atual") || "visitante";
-    const chave = "tae_notas_" + quem;
-    const notas = JSON.parse(localStorage.getItem(chave) || "{}");
-    if(!notas[CODIGO] || estrelas > notas[CODIGO]){
-      notas[CODIGO] = estrelas;
-      localStorage.setItem(chave, JSON.stringify(notas));
-    }
-    const chaveDias = "tae_dias_" + quem;
-    const dias = JSON.parse(localStorage.getItem(chaveDias) || "[]");
-    if(dias.indexOf(hoje) === -1){ dias.push(hoje); localStorage.setItem(chaveDias, JSON.stringify(dias)); }
+    local.notas = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
+    if(!local.notas[CODIGO] || estrelas > local.notas[CODIGO]) local.notas[CODIGO] = estrelas;
+    localStorage.setItem("tae_notas_" + quem, JSON.stringify(local.notas));
+    local.dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]");
+    if(local.dias.indexOf(hoje) === -1) local.dias.push(hoje);
+    localStorage.setItem("tae_dias_" + quem, JSON.stringify(local.dias));
   }catch(e){}
 
-  if(quem !== "visitante"){
-    fetch(PROGRESSO_URL + "?acao=salvar&aluno=" + encodeURIComponent(quem) +
-          "&treino=" + encodeURIComponent(CODIGO) + "&estrelas=" + estrelas +
-          "&dia=" + hoje, { mode:"no-cors", keepalive:true }).catch(function(){});
-  }
+  if(quem === "visitante") return;
+
+  /* Usa o progresso do Cademí guardado há pouco pelo painel; se estiver
+     velho, busca de novo antes de gravar, para não apagar nada. */
+  const cache = lerCache(quem);
+  const obter = cache ? Promise.resolve(cache) : buscarCademi(quem);
+  obter.then(function(servidor){
+    const juntas = juntarProgresso(servidor, local);
+    return salvarCademi(quem, servidor.nota, juntas, CODIGO, !servidor.notas[CODIGO]);
+  }).catch(function(){ /* sem internet: o painel reenvia depois */ });
 }
 
 /* Endereço do próximo treino. Troque pelo link da próxima aula no Cademí. */
