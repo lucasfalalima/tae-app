@@ -404,8 +404,39 @@ function lerTextoProgresso(texto){
 
 /* Busca o progresso no Cademí, junta com o que está no navegador e
    reenvia o que só existia aqui (ex.: treino feito sem internet). */
-function sincronizar(){
+const SYNC_MINUTOS = 10;
+
+/* Treino feito numa aula aberta direto, sem passar pelo painel naquele
+   aparelho, fica guardado como "visitante". Aqui ele passa para o aluno. */
+function adotarVisitante(){
+  if(!ALUNO.id) return false;
+  try{
+    const nv = JSON.parse(localStorage.getItem("tae_notas_visitante") || "{}");
+    const dv = JSON.parse(localStorage.getItem("tae_dias_visitante") || "[]");
+    if(!Object.keys(nv).length && !dv.length) return false;
+    const quem = ALUNO.id;
+    const notas = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
+    Object.keys(nv).forEach(function(k){ if(!notas[k] || nv[k] > notas[k]) notas[k] = nv[k]; });
+    const dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]");
+    dv.forEach(function(d){ if(dias.indexOf(d) === -1) dias.push(d); });
+    localStorage.setItem("tae_notas_" + quem, JSON.stringify(notas));
+    localStorage.setItem("tae_dias_" + quem, JSON.stringify(dias));
+    localStorage.removeItem("tae_notas_visitante");
+    localStorage.removeItem("tae_dias_visitante");
+    return true;
+  }catch(e){ return false; }
+}
+
+/* Busca no Cademí no máximo a cada SYNC_MINUTOS por aparelho,
+   para não gastar operações do Make à toa. forcar ignora o limite. */
+function sincronizar(forcar){
   if(!ALUNO.id) return;
+  const chaveSync = "tae_sync_" + ALUNO.id;
+  try{
+    const ultima = parseInt(localStorage.getItem(chaveSync) || "0", 10);
+    if(!forcar && Date.now() - ultima < SYNC_MINUTOS * 60000) return;
+    localStorage.setItem(chaveSync, String(Date.now()));
+  }catch(e){}
   fetch(PROGRESSO_URL + "?acao=ler&aluno=" + encodeURIComponent(ALUNO.id))
     .then(function(r){ return r.text(); })
     .then(function(texto){
@@ -657,8 +688,10 @@ document.addEventListener("visibilitychange", function(){
   }
 });
 
+const adotou = adotarVisitante();
+if(adotou) carregar();
 montarHoje();
-sincronizar();
+sincronizar(adotou);
 </script>
 </body>
 </html>
