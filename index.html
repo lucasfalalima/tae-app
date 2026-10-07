@@ -2,563 +2,492 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TAE — Treino de Aumento da Expressividade</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treino TAE</title>
 <style>
 :root{
-  --fundo:#111213;
-  --cartao:#1b1d1f;
-  --cartao-alto:#232629;
-  --borda:#2c3034;
-  --amarelo:#f7d046;
-  --amarelo-escuro:#d9b32c;
-  --texto:#dee2e6;
-  --texto-forte:#ffffff;
-  --texto-fraco:#8d9499;
-  --verde:#4ade80;
+  --fundo:#111213;--cartao:#1b1d1f;--alto:#232629;--borda:#2c3034;
+  --amarelo:#f7d046;--amarelo2:#d9b32c;--texto:#dee2e6;--forte:#fff;
+  --fraco:#8d9499;--verde:#4ade80;--vermelho:#f87171;
 }
 *,*::before,*::after{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--fundo);
-  color:var(--texto);
-  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  -webkit-font-smoothing:antialiased;
-}
-.app{max-width:560px;margin:0 auto;padding:4px 16px 20px}
+body{margin:0;background:var(--fundo);color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.caixa{max-width:720px;margin:0 auto;padding:4px 2px 18px}
+.cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;padding:22px}
 
-.topo{padding:14px 2px 18px}
-.topo h1{margin:0 0 5px;font-size:25px;font-weight:700;color:var(--texto-forte);letter-spacing:-.02em}
-.topo p{margin:0;font-size:14.5px;color:var(--texto-fraco);line-height:1.5}
+.topo{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.etiqueta{font-size:11.5px;font-weight:700;letter-spacing:.09em;color:var(--amarelo);text-transform:uppercase}
+.passo{margin-left:auto;font-size:12.5px;color:var(--fraco);white-space:nowrap}
+.trilho{height:4px;background:var(--borda);border-radius:99px;overflow:hidden;margin-bottom:20px}
+.trilho i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .35s ease}
 
-.cartao{
-  background:var(--cartao);
-  border:1px solid var(--borda);
-  border-radius:14px;
-  padding:20px;
-  margin-bottom:12px;
-}
-.etiqueta{
-  font-size:11.5px;font-weight:700;letter-spacing:.09em;
-  color:var(--amarelo);margin-bottom:9px;text-transform:uppercase;
-}
+h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
+.ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
 
-.sugestao-titulo{margin:0 0 6px;font-size:21px;font-weight:700;color:var(--texto-forte);letter-spacing:-.01em}
-.sugestao-desc{margin:0 0 18px;font-size:14.5px;color:var(--texto-fraco);line-height:1.55}
+.fala{
+  background:var(--alto);border-left:3px solid var(--fraco);
+  padding:14px 15px;border-radius:0 10px 10px 0;margin-bottom:16px;
+  font-size:14px;line-height:1.65;font-style:italic;
+}
+.fala.limpa{border-left-color:var(--verde);font-style:normal}
+
+.lista{display:flex;flex-direction:column;gap:8px}
+.op{
+  display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;
+  background:var(--alto);border:1.5px solid var(--borda);border-radius:11px;
+  padding:12px 14px;cursor:pointer;font-family:inherit;font-size:14.5px;
+  line-height:1.5;color:var(--texto);transition:border-color .13s,background .13s,opacity .2s;
+}
+.op:hover:not(:disabled){border-color:var(--amarelo)}
+.op:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.op:disabled{cursor:default}
+.op .mk{
+  flex-shrink:0;width:22px;height:22px;border-radius:6px;margin-top:1px;
+  border:1.5px solid var(--borda);display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;color:transparent;
+  transition:all .13s ease;
+}
+.op.marcada{border-color:var(--amarelo);background:rgba(247,208,70,.08)}
+.op.marcada .mk{background:var(--amarelo);border-color:var(--amarelo);color:#1a1500}
+.op.certa{border-color:var(--verde);background:rgba(74,222,128,.09)}
+.op.certa .mk{background:var(--verde);border-color:var(--verde);color:#06240f}
+.op.errada{border-color:var(--vermelho);background:rgba(248,113,113,.07)}
+.op.errada .mk{background:var(--vermelho);border-color:var(--vermelho);color:#2b0a0a}
+.op.saiu{opacity:.25;text-decoration:line-through}
+
+.dupla{display:flex;gap:8px}
+.dupla .op{flex:1;justify-content:center;text-align:center}
+.dupla .op .mk{display:none}
+
+.item{margin-bottom:16px}
+.item:last-child{margin-bottom:0}
+.item .frase{font-size:15px;line-height:1.5;margin-bottom:9px;color:var(--forte)}
+.nota{font-size:13px;color:var(--fraco);margin-top:8px;line-height:1.55;
+  padding:9px 12px;border-radius:0 8px 8px 0;}
+.nota b{font-weight:700}
+.nota-ok{background:rgba(74,222,128,.08);border-left:3px solid var(--verde)}
+.nota-ok b{color:var(--verde)}
+.nota-erro{background:rgba(248,113,113,.07);border-left:3px solid var(--vermelho)}
+.nota-erro b{color:var(--vermelho)}
+
+.retorno{
+  display:none;margin-top:14px;padding:13px 15px;border-radius:0 10px 10px 0;
+  background:rgba(74,222,128,.09);border-left:3px solid var(--verde);
+  font-size:14px;line-height:1.6;
+}
+.retorno.visivel{display:block}
+.retorno b{color:var(--forte)}
+.retorno.erro{background:rgba(248,113,113,.07);border-left-color:var(--vermelho)}
+
+.contador{font-size:12.5px;color:var(--fraco);margin-top:10px;text-align:right}
 
 .botao{
-  display:block;width:100%;border:0;cursor:pointer;text-align:center;
-  background:var(--amarelo);color:#1a1500;
-  font-size:16px;font-weight:700;font-family:inherit;
-  padding:15px;border-radius:10px;text-decoration:none;
+  display:block;width:100%;margin-top:10px;border:0;cursor:pointer;text-align:center;
+  background:var(--amarelo);color:#1a1500;font-size:15.5px;font-weight:700;
+  font-family:inherit;padding:14px;border-radius:10px;text-decoration:none;
   transition:background .14s ease;
 }
-.botao:hover{background:var(--amarelo-escuro)}
-.botao:focus-visible{outline:3px solid var(--amarelo);outline-offset:3px}
-.botao-fantasma{
-  background:transparent;color:var(--texto);
-  border:1px solid var(--borda);
+.botao:first-of-type{margin-top:16px}
+.botao:hover{background:var(--amarelo2)}
+.botao:disabled{opacity:.3;cursor:default}
+.botao.fantasma{background:transparent;color:var(--texto);border:1px solid var(--borda)}
+.botao.fantasma:hover{background:var(--alto)}
+.oculto{display:none}
+
+.abertura{text-align:center;padding:14px 0 4px}
+.abertura .selo-abertura{font-size:40px;line-height:1;margin-bottom:14px}
+.abertura h2{font-size:20px;margin-bottom:9px}
+.abertura .ajuda{margin:0 auto;max-width:400px}
+
+.placar{text-align:center;padding:4px 0 2px}
+.estrelas{font-size:26px;letter-spacing:5px;margin-bottom:12px}
+.estrelas.cheias{color:var(--amarelo)}
+.placar h2{font-size:21px;margin-bottom:8px}
+.placar p{margin:0;font-size:14.5px;line-height:1.6}
+.nota-repetir{
+  margin-top:12px !important;font-size:13px !important;
+  color:var(--fraco) !important;line-height:1.55;
 }
-.botao-fantasma:hover{background:var(--cartao-alto)}
-
-.numeros{display:flex;gap:10px;margin-bottom:12px}
-.numero{
-  flex:1;background:var(--cartao);border:1px solid var(--borda);
-  border-radius:12px;padding:14px 8px;text-align:center;
+.rotulo{
+  font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--amarelo);
+  text-transform:uppercase;margin:22px 0 9px;
 }
-.numero b{display:block;font-size:23px;font-weight:800;color:var(--amarelo);line-height:1.15}
-.numero span{display:block;font-size:11px;color:var(--texto-fraco);margin-top:3px;line-height:1.3}
-
-.barra{height:7px;background:var(--borda);border-radius:99px;overflow:hidden;margin:12px 0 8px}
-.barra i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .45s ease}
-.barra-txt{display:flex;justify-content:space-between;font-size:12.5px;color:var(--texto-fraco)}
-
-.linha-pilar{
-  display:flex;align-items:center;gap:12px;
-  padding:11px 0;border-bottom:1px solid var(--borda);
-  cursor:pointer;
-}
-.linha-pilar:last-child{border-bottom:0;padding-bottom:0}
-.linha-pilar:first-child{padding-top:2px}
-.linha-pilar:hover .lp-nome{color:var(--amarelo)}
-.lp-nome{flex:0 0 96px;font-size:13.5px;font-weight:600;color:var(--texto);transition:color .12s ease}
-.lp-barra{flex:1;height:5px;background:var(--borda);border-radius:99px;overflow:hidden}
-.lp-barra i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .4s ease}
-.lp-barra i.cheia{background:var(--verde)}
-.lp-cont{flex:0 0 auto;font-size:12px;color:var(--texto-fraco);min-width:30px;text-align:right}
-
-.proxima{
-  display:none;align-items:center;gap:9px;
-  margin-top:15px;padding-top:14px;border-top:1px solid var(--borda);
-  font-size:13.5px;color:var(--texto-fraco);line-height:1.45;
-}
-.proxima.visivel{display:flex}
-.proxima b{color:var(--texto);font-weight:600}
-.proxima .ico{font-size:19px;flex-shrink:0}
-
-.pilar{margin-bottom:18px}
-.pilar-topo{display:flex;align-items:baseline;gap:9px;margin-bottom:9px;padding:0 2px}
-.pilar-nome{font-size:16.5px;font-weight:700;color:var(--texto-forte)}
-.pilar-contagem{font-size:12.5px;color:var(--texto-fraco);margin-left:auto;white-space:nowrap}
-.pilar-resumo{font-size:13.5px;color:var(--texto-fraco);line-height:1.5;margin:0 2px 11px;}
-
-.aulas{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;overflow:hidden}
-.aula{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 16px;border-bottom:1px solid var(--borda);
-  text-decoration:none;color:inherit;cursor:pointer;
-  transition:background .12s ease;
-}
-.aula:last-child{border-bottom:0}
-.aula:hover{background:var(--cartao-alto)}
-.aula:focus-visible{outline:2px solid var(--amarelo);outline-offset:-2px}
-.aula-marca{
-  width:26px;height:26px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;
-  border:1.5px solid var(--borda);color:var(--texto-fraco);
-}
-.aula-marca.feita{background:var(--verde);border-color:var(--verde);color:#06240f}
-.aula-nome{flex:1;font-size:14.5px;font-weight:600;color:var(--texto)}
-.aula-meta{font-size:12px;color:var(--texto-fraco);margin-top:3px;font-weight:400}
-.estrelas-aula{color:var(--amarelo);font-size:13px;letter-spacing:1.5px}
-.aula-seta{color:var(--texto-fraco);font-size:16px;flex-shrink:0}
-.aula.travada{opacity:.4}
-
-.conquista{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--borda)}
-.conquista:last-child{border-bottom:0;padding-bottom:0}
-.conquista:first-child{padding-top:0}
-.medalha{
-  width:40px;height:40px;border-radius:11px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:20px;
-  background:var(--cartao-alto);
-}
-.conquista.ganha .medalha{background:rgba(247,208,70,.16)}
-.conquista.pendente{opacity:.45}
-.conquista-nome{font-size:14.5px;font-weight:600;color:var(--texto)}
-.conquista-desc{font-size:12.5px;color:var(--texto-fraco);margin-top:2px}
-
-.abas{
-  display:flex;margin:12px 0 4px;
-  background:var(--cartao);border:1px solid var(--borda);
-  border-radius:12px;overflow:hidden;
-}
-.aba{
-  flex:1;border:0;background:0;cursor:pointer;
-  padding:12px 4px;font-family:inherit;
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  color:var(--texto-fraco);font-size:11px;font-weight:600;
-  border-right:1px solid var(--borda);
-  transition:color .14s ease,background .14s ease;
-}
-.aba:last-child{border-right:0}
-.aba svg{width:19px;height:19px;stroke-width:2}
-.aba.ativa{color:var(--amarelo);background:var(--cartao-alto)}
-.aba:focus-visible{outline:2px solid var(--amarelo);outline-offset:-2px}
-
-.tela{display:none}
-.tela.ativa{display:block}
-
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<div class="app">
-
-<nav class="abas">
-  <button class="aba ativa" data-tela="hoje" onclick="irPara(&#39;hoje&#39;)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Início
-  </button>
-  <button class="aba" data-tela="jornada" onclick="irPara(&#39;jornada&#39;)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 5h11l3 3.5-3 3.5H6"/><path d="M6 15h8l2.5 3"/></svg>
-    Jornada
-  </button>
-  <button class="aba" data-tela="evolucao" onclick="irPara(&#39;evolucao&#39;)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
-    Evolução
-  </button>
-</nav>
-
-<section class="tela ativa" id="tela-hoje">
-  <div class="topo">
-    <h1 id="saudacao">Bom dia</h1>
-    <p id="subtitulo">Cinco minutos por dia é o que separa quem fala bem de quem só sabe o assunto.</p>
-  </div>
-
+<div class="caixa">
   <div class="cartao">
-    <div class="etiqueta" id="rotulo-treino">Comece seu treino</div>
-    <h2 class="sugestao-titulo" id="sug-nome">—</h2>
-    <p class="sugestao-desc" id="sug-desc">—</p>
-    <a class="botao" id="sug-botao" href="#" target="_top">Começar</a>
-  </div>
 
-  <div class="cartao">
-    <div class="etiqueta">Seu progresso</div>
-    <div class="barra"><i id="barra-hoje" style="width:0%"></i></div>
-    <div class="barra-txt">
-      <span id="barra-hoje-txt">0 de 25 treinos</span>
-      <span id="barra-hoje-pct">0%</span>
+    <div class="topo" id="cabecalho">
+      <span class="etiqueta">Treino 1 · Organização de ideias</span>
+      <span class="passo" id="passo">1 de 5</span>
     </div>
-    <div class="proxima" id="proxima-conquista"></div>
-  </div>
+    <div class="trilho" id="barra"><i id="trilho" style="width:20%"></i></div>
 
-  <div class="cartao">
-    <div class="etiqueta">Seus pilares</div>
-    <div id="resumo-pilares"></div>
-  </div>
-</section>
+    <!-- ===== ABERTURA ===== -->
+    <section class="etapa" id="p0">
+      <div class="abertura">
+        <div class="selo-abertura">🎯</div>
+        <h2>Treino 1 · Organização de ideias</h2>
+        <p class="ajuda">Assista à aula acima antes de começar. O treino tem 5 partes
+        e leva cerca de 3 minutos.</p>
+      </div>
+      <button class="botao" onclick="comecar()">Começar treino</button>
+    </section>
 
-<section class="tela" id="tela-jornada">
-  <div class="topo">
-    <h1>Sua jornada</h1>
-    <p>Cinco pilares, vinte e cinco treinos. Comece por onde quiser.</p>
-  </div>
-  <div id="lista-pilares"></div>
-</section>
+    <!-- ===== 1 ===== -->
+    <section class="etapa oculto" id="p1">
+      <h2>Isso é um Objetivo Único?</h2>
+      <p class="ajuda">Objetivo Único é uma coisa só que você quer que o outro faça depois que você falar.</p>
+      <div id="l1"></div>
+      <div class="retorno" id="r1"></div>
+      <button class="botao oculto" id="b1" onclick="ir(2)">Continuar</button>
+    </section>
 
-<section class="tela" id="tela-evolucao">
-  <div class="topo">
-    <h1>Sua evolução</h1>
-    <p>O que você construiu até aqui.</p>
-  </div>
+    <!-- ===== 2 ===== -->
+    <section class="etapa oculto" id="p2">
+      <h2>O que essa pessoa queria?</h2>
+      <p class="ajuda">Ela falou bastante. Mas o que ela queria mesmo?</p>
+      <div id="l2"></div>
+      <div class="retorno" id="r2"></div>
+      <button class="botao oculto" id="b2" onclick="ir(3)">Continuar</button>
+    </section>
 
-  <div class="numeros">
-    <div class="numero"><b id="e-seq">0</b><span>dias seguidos</span></div>
-    <div class="numero"><b id="e-feitos">0</b><span>treinos feitos</span></div>
-    <div class="numero"><b id="e-pilares">0</b><span>pilares completos</span></div>
-  </div>
+    <!-- ===== 3 ===== -->
+    <section class="etapa oculto" id="p3">
+      <h2>Qual serve de âncora?</h2>
+      <p class="ajuda">Âncora é uma palavra só. Toque nas que são uma palavra.</p>
+      <div class="lista" id="l3"></div>
+      <div class="contador"><span id="n3">0</span> marcadas</div>
+      <div class="retorno" id="r3"></div>
+      <button class="botao" id="b3" onclick="conferir3()">Conferir</button>
+    </section>
 
-  <div class="cartao">
-    <div class="etiqueta">Conquistas</div>
-    <div id="lista-conquistas"></div>
-  </div>
-</section>
+    <!-- ===== 4 ===== -->
+    <section class="etapa oculto" id="p4">
+      <h2>O Rafael quer mais uma semana de prazo</h2>
+      <p class="ajuda">Marque as 3 informações que ajudam ele a conseguir isso.</p>
+      <div class="fala">
+        "Gente, deixa eu falar rapidinho. A gente começou esse projeto em março,
+        lembra que o Paulo ainda estava no time? Aí teve a mudança de fornecedor,
+        que foi um perrengue, o financeiro demorou pra aprovar... Enfim, a
+        entrega tá marcada pra sexta mas não vai dar. Preciso de mais uma semana."
+      </div>
+      <div class="lista" id="l4"></div>
+      <div class="contador"><span id="n4">0</span> de 3 marcadas</div>
+      <div class="retorno" id="r4"></div>
+      <button class="botao" id="b4" onclick="conferir4()" disabled>Conferir</button>
+    </section>
 
+    <!-- ===== 5 ===== -->
+    <section class="etapa oculto" id="p5">
+      <h2>Tire o que não precisa</h2>
+      <p class="ajuda">A Ana vai pedir mais verba. Toque no que ela pode tirar da fala, até sobrarem 3.</p>
+      <div class="lista" id="l5"></div>
+      <div class="contador">faltam tirar <span id="n5">3</span></div>
+      <div class="retorno" id="r5"></div>
+      <button class="botao oculto" id="b5" onclick="terminar()">Ver resultado</button>
+    </section>
+
+    <!-- ===== FIM ===== -->
+    <section class="etapa oculto" id="fim">
+      <div class="placar">
+        <div class="estrelas" id="f-estrelas">★★★★★</div>
+        <h2 id="f-titulo">—</h2>
+        <p id="f-texto">—</p>
+        <p class="nota-repetir">Você pode repetir o treino quantas vezes quiser.
+        Sua nota mais alta é a que vale.</p>
+      </div>
+
+      <a class="botao" id="b-proximo" href="#" target="_top">Próximo treino</a>
+      <button class="botao fantasma" onclick="repetir()">Repetir treino</button>
+    </section>
+
+  </div>
 </div>
 
 <script>
-const BASE_AULA = "https://aluno.falalima.com.br/area/conteudo/aula/";
+/* Qual treino é este. Vem da URL: treinos.html?t=1.1 */
+const CODIGO = new URLSearchParams(window.location.search).get("t") || "1.1";
 
-const PILARES = [
-  { id:1, nome:"Estrutura",
-    resumo:"Organize qualquer ideia em abertura, desenvolvimento e fechamento.",
-    treinos:[
-      { n:1, nome:"Estruture uma ideia", min:5, aula:9684559 },
-      { n:2, nome:"Estruture um tema do seu trabalho", min:5, aula:null },
-      { n:3, nome:"Reduza para três frases", min:4, aula:null },
-      { n:4, nome:"Responda a uma pergunta difícil", min:6, aula:null },
-      { n:5, nome:"Estruture sem conectores", min:5, aula:null }
-    ]},
-  { id:2, nome:"Clareza",
-    resumo:"Troque palavras difíceis por palavras exatas. Quem entende, confia.",
-    treinos:[
-      { n:1, nome:"Explique sem jargão", min:5, aula:null },
-      { n:2, nome:"Corte metade das palavras", min:4, aula:null },
-      { n:3, nome:"Troque abstrato por concreto", min:5, aula:null },
-      { n:4, nome:"Explique para quem é de fora", min:6, aula:null },
-      { n:5, nome:"Uma ideia por frase", min:4, aula:null }
-    ]},
-  { id:3, nome:"Objetividade",
-    resumo:"Comece pelo ponto principal. O contexto vem depois, se vier.",
-    treinos:[
-      { n:1, nome:"Comece pela conclusão", min:5, aula:null },
-      { n:2, nome:"Responda em trinta segundos", min:4, aula:null },
-      { n:3, nome:"Corte o aquecimento", min:5, aula:null },
-      { n:4, nome:"Diga não sem rodeio", min:6, aula:null },
-      { n:5, nome:"Peça algo em duas frases", min:4, aula:null }
-    ]},
-  { id:4, nome:"Segurança",
-    resumo:"Ritmo, pausa e olhar: o que o corpo diz antes da primeira palavra.",
-    treinos:[
-      { n:1, nome:"Use a pausa no lugar do vício", min:5, aula:null },
-      { n:2, nome:"Desacelere o fim da frase", min:4, aula:null },
-      { n:3, nome:"Sustente o silêncio", min:5, aula:null },
-      { n:4, nome:"Afirme sem pedir licença", min:6, aula:null },
-      { n:5, nome:"Encerre sem se desculpar", min:4, aula:null }
-    ]},
-  { id:5, nome:"Improviso",
-    resumo:"Responda bem sem ter preparado. Estrutura é o que salva.",
-    treinos:[
-      { n:1, nome:"Ganhe tempo com elegância", min:5, aula:null },
-      { n:2, nome:"Monte a resposta enquanto fala", min:6, aula:null },
-      { n:3, nome:"Admita o que não sabe", min:4, aula:null },
-      { n:4, nome:"Reaproveite a pergunta", min:5, aula:null },
-      { n:5, nome:"Feche sem ensaio", min:5, aula:null }
-    ]}
-];
-
-const FRASES = [
-  "Quem fala bem não nasceu assim. Treinou.",
-  "A boa ideia mal dita perde para a ideia média bem dita.",
-  "Clareza não é falar pouco. É não sobrar palavra.",
-  "A pausa que te assusta é a que faz o outro prestar atenção.",
-  "Improviso é estrutura decorada.",
-  "Quem entende explica. Quem não entende complica.",
-  "Sua ideia só existe depois que alguém entende.",
-  "A primeira frase decide se vão ouvir o resto.",
-  "Ninguém decide por quem fala mais. Decidem por quem fala claro.",
-  "Falar bem é escolher o que não dizer.",
-  "O silêncio incomoda quem fala, nunca quem ouve.",
-  "Nervoso todo mundo fica. Despreparado, não precisa.",
-  "Cinco minutos por dia valem mais que uma hora no domingo.",
-  "Treinar é falar quando ninguém está avaliando.",
-  "Quem resume bem pensou melhor.",
-  "Antes de convencer, seja entendido.",
-  "O jargão protege quem fala e afasta quem ouve.",
-  "Repetir não é reforçar. É cansar.",
-  "Quem começa pelo contexto perde o ouvinte no meio.",
-  "Comunicação não é dom. É repertório com repetição.",
-  "A frase curta sobrevive à reunião. A longa, não."
-];
-
-/* Uma frase por dia, igual para todos, trocando à meia-noite. */
-function fraseDoDia(){
-  const hoje = new Date();
-  const inicio = new Date(hoje.getFullYear(), 0, 0);
-  const dia = Math.floor((hoje - inicio) / 86400000);
-  return FRASES[dia % FRASES.length];
-}
-
-const CONQUISTAS = [
-  { icone:"🌱", nome:"Primeiro passo", desc:"Conclua seu primeiro treino",
-    teste:p => p.feitos >= 1, faltam:p => 1 - p.feitos },
-  { icone:"⚡", nome:"Primeiro pilar", desc:"Complete um pilar inteiro",
-    teste:p => p.pilares >= 1, faltam:p => p.faltamParaPilar },
-  { icone:"🔥", nome:"Metade do caminho", desc:"Chegue a 13 treinos",
-    teste:p => p.feitos >= 13, faltam:p => 13 - p.feitos },
-  { icone:"🎯", nome:"Quatro pilares", desc:"Complete quatro pilares",
-    teste:p => p.pilares >= 4, faltam:null },
-  { icone:"🏆", nome:"Jornada completa", desc:"Conclua os 25 treinos",
-    teste:p => p.feitos >= 25, faltam:p => 25 - p.feitos }
-];
-
-/* ---------- Aluno (vem do Cademí) ---------- */
-const ALUNO = (function(){
-  const p = new URLSearchParams(window.location.search);
-  const g = (p.get("cuser_gratis") || "").toLowerCase();
-  return {
-    id: p.get("cuser_id") || null,
-    email: p.get("cuser_email") || null,
-    nome: p.get("cuser_name") || null,
-    primeiroNome: p.get("cuser_fname") || null,
-    gratuito: g === "1" || g === "true" || g === "sim",
-    identificado: !!p.get("cuser_id")
-  };
-})();
-
-const PILARES_GRATUITOS = 1;
-function pilarBloqueado(id){ return ALUNO.gratuito && id > PILARES_GRATUITOS; }
-
-/* ---------- Progresso ---------- */
-const PADRAO = { concluidos:[], sequencia:0, ultimoDia:null };
-let prog = Object.assign({}, PADRAO);
-
-function chave(){ return ALUNO.id ? ("tae_" + ALUNO.id) : "tae_visitante"; }
-function carregar(){
+/* Guarda a nota deste treino. Mantém sempre a mais alta.
+   O painel do TAE lê daqui para mostrar as estrelas na Jornada. */
+function guardarNota(estrelas){
   try{
-    const b = localStorage.getItem(chave());
-    if(b) prog = Object.assign({}, PADRAO, JSON.parse(b));
-    if(!Array.isArray(prog.concluidos)) prog.concluidos = [];
-  }catch(e){ prog = Object.assign({}, PADRAO); }
-}
-function salvar(){ try{ localStorage.setItem(chave(), JSON.stringify(prog)); }catch(e){} }
-
-function codigo(pilarId, n){ return pilarId + "." + n; }
-
-/* Notas em estrelas, gravadas pela página de treino. */
-function notas(){
-  try{
-    const quem = ALUNO.id || "visitante";
-    return JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
-  }catch(e){ return {}; }
-}
-
-function estrelas(pilarId, n){
-  const nota = notas()[codigo(pilarId, n)];
-  if(nota === undefined) return null;
-  return "★".repeat(nota) + "☆".repeat(5 - nota);
-}
-
-function feito(pilarId, n){ return prog.concluidos.indexOf(codigo(pilarId,n)) !== -1; }
-
-function resumo(){
-  let feitos = 0, pilares = 0, faltamParaPilar = 99;
-  PILARES.forEach(function(p){
-    let c = 0;
-    p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
-    feitos += c;
-    if(c === p.treinos.length) pilares++;
-    else if(c > 0 && !pilarBloqueado(p.id)){
-      const f = p.treinos.length - c;
-      if(f < faltamParaPilar) faltamParaPilar = f;
+    const quem = localStorage.getItem("tae_aluno_atual") || "visitante";
+    const chave = "tae_notas_" + quem;
+    const notas = JSON.parse(localStorage.getItem(chave) || "{}");
+    if(!notas[CODIGO] || estrelas > notas[CODIGO]){
+      notas[CODIGO] = estrelas;
+      localStorage.setItem(chave, JSON.stringify(notas));
     }
+  }catch(e){}
+}
+
+/* Endereço do próximo treino. Troque pelo link da próxima aula no Cademí. */
+const PROXIMO = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+
+/* ================= CONTEÚDO ================= */
+
+const OBJETIVOS = [
+  { t:"Quero que ele aprove o orçamento", ok:true,  p:"Diz o que você quer que aconteça." },
+  { t:"Quero falar sobre o projeto",      ok:false, p:"Isso é assunto. Falar sobre algo não é querer algo." },
+  { t:"Quero avisar do atraso e pedir ajuda", ok:false, p:"Tem um \"e\". São duas coisas." },
+  { t:"Quero que a equipe entregue até quinta", ok:true, p:"Dá pra saber se deu certo ou não." }
+];
+
+const FALAS = [
+  { fala:"\"Oi! Então, eu vi que a planilha do mês passado tinha uns números diferentes. Não sei se foi erro de digitação ou se mudou alguma coisa. Enfim, você consegue dar uma olhada?\"",
+    ops:["Reclamar da planilha","Que a pessoa olhe a planilha","Avisar que teve erro"],
+    certa:1,
+    p:"O resto foi enrolação. Ela queria que a pessoa fosse olhar." },
+  { fala:"\"Pessoal, esse mês foi puxado. Teve muita demanda, a equipe ficou sobrecarregada, o Carlos até ficou doente. Eu acho que a gente precisa mudar como divide as tarefas.\"",
+    ops:["Elogiar a equipe","Falar que o Carlos adoeceu","Mudar a divisão de tarefas"],
+    certa:2,
+    p:"O pedido veio no fim, quase escondido." }
+];
+
+const ANCORAS = [
+  { t:"prazo", ok:true },
+  { t:"a demora que teve na aprovação", ok:false },
+  { t:"verba", ok:true },
+  { t:"precisamos de mais gente no time", ok:false },
+  { t:"fornecedor", ok:true },
+  { t:"explicar tudo que houve em março", ok:false }
+];
+
+const INFOS = [
+  { t:"O projeto começou em março", ok:false },
+  { t:"A entrega de sexta não vai sair", ok:true },
+  { t:"O Paulo estava no time", ok:false },
+  { t:"Teve troca de fornecedor", ok:true },
+  { t:"O financeiro demorou a aprovar", ok:true },
+  { t:"A troca de fornecedor foi um perrengue", ok:false }
+];
+
+const ANA = [
+  { t:"A verba não cobre o fim do ano", fica:true },
+  { t:"Venho pensando nisso faz tempo", fica:false },
+  { t:"Precisamos de 30% a mais", fica:true },
+  { t:"Sei que não é hora de pedir", fica:false },
+  { t:"Sem isso, 2 projetos param", fica:true },
+  { t:"O time todo concorda comigo", fica:false }
+];
+
+/* ================= ESTADO ================= */
+let pontos = 0, ok1 = 0, ok2 = 0;
+let m3 = [], m4 = [], cortes = [];
+
+/* ================= 1 ================= */
+function montar1(){
+  document.getElementById("l1").innerHTML = OBJETIVOS.map(function(o,i){
+    return '<div class="item"><div class="frase">' + o.t + '</div><div class="dupla">' +
+      '<button class="op" onclick="r1(' + i + ',1)">É Objetivo Único</button>' +
+      '<button class="op" onclick="r1(' + i + ',0)">Não é</button></div></div>';
+  }).join("");
+}
+function r1(i, escolha){
+  const g = document.querySelectorAll("#l1 .item")[i].querySelectorAll(".op");
+  if(g[0].disabled) return;
+  g.forEach(function(b){ b.disabled = true; });
+  const certo = OBJETIVOS[i].ok ? 0 : 1;
+  g[certo].classList.add("certa");
+  const escolheu = escolha ? 0 : 1;
+  const acertou1 = escolheu === certo;
+  if(!acertou1) g[escolheu].classList.add("errada"); else ok1++;
+  nota("#l1", i, OBJETIVOS[i].p, acertou1);
+  if(todasFeitas("#l1", OBJETIVOS.length * 2)){
+    if(ok1 >= 3) pontos++;
+    fecha("r1", "b1", ok1 + " de " + OBJETIVOS.length + " certas.");
+  }
+}
+
+/* ================= 2 ================= */
+function montar2(){
+  document.getElementById("l2").innerHTML = FALAS.map(function(f,i){
+    return '<div class="item" style="margin-bottom:22px"><div class="fala">' + f.fala + '</div><div class="lista">' +
+      f.ops.map(function(o,j){
+        return '<button class="op" onclick="r2(' + i + ',' + j + ')"><span class="mk">✓</span><span>' + o + '</span></button>';
+      }).join("") + '</div></div>';
+  }).join("");
+}
+function r2(i, j){
+  const g = document.querySelectorAll("#l2 .item")[i].querySelectorAll(".op");
+  if(g[0].disabled) return;
+  g.forEach(function(b){ b.disabled = true; });
+  g[FALAS[i].certa].classList.add("certa");
+  const acertou2 = j === FALAS[i].certa;
+  if(!acertou2) g[j].classList.add("errada"); else ok2++;
+  nota("#l2", i, FALAS[i].p, acertou2);
+  if(todasFeitas("#l2", FALAS.length * 3)){
+    if(ok2 === FALAS.length) pontos++;
+    fecha("r2", "b2", ok2 + " de " + FALAS.length + " certas. Nas duas, o pedido veio no fim.");
+  }
+}
+
+/* ================= 3 ================= */
+function montar3(){
+  document.getElementById("l3").innerHTML = ANCORAS.map(function(a,i){
+    return '<button class="op" onclick="m(3,' + i + ')"><span class="mk">✓</span><span>' + a.t + '</span></button>';
+  }).join("");
+}
+function conferir3(){
+  const bs = document.querySelectorAll("#l3 .op");
+  bs.forEach(function(b){ b.disabled = true; b.classList.remove("marcada"); });
+  let certo = true;
+  ANCORAS.forEach(function(a,i){
+    const marcou = m3.indexOf(i) >= 0;
+    if(a.ok){ bs[i].classList.add("certa"); if(!marcou) certo = false; }
+    else if(marcou){ bs[i].classList.add("errada"); certo = false; }
   });
-  return { feitos:feitos, pilares:pilares, total:25,
-           sequencia:prog.sequencia, faltamParaPilar:faltamParaPilar };
+  if(certo) pontos++;
+  const r = document.getElementById("r3");
+  r.className = "retorno visivel " + (certo ? "ok" : "erro");
+  r.innerHTML = certo
+    ? "<b>✅ Correto.</b> Âncora é uma palavra. Frase você esquece no meio."
+    : "<b>🛑 Errado.</b> As de uma palavra são âncoras. As outras já são a fala pronta.";
+  r.classList.add("visivel");
+  const b = document.getElementById("b3");
+  b.textContent = "Continuar";
+  b.onclick = function(){ ir(4); };
 }
 
-function irPara(tela){
-  document.querySelectorAll(".tela").forEach(function(s){ s.classList.remove("ativa"); });
-  document.getElementById("tela-" + tela).classList.add("ativa");
-  document.querySelectorAll(".aba").forEach(function(b){ b.classList.toggle("ativa", b.dataset.tela === tela); });
+/* ================= 4 ================= */
+function montar4(){
+  document.getElementById("l4").innerHTML = INFOS.map(function(o,i){
+    return '<button class="op" onclick="m(4,' + i + ')"><span class="mk">✓</span><span>' + o.t + '</span></button>';
+  }).join("");
+}
+function conferir4(){
+  const bs = document.querySelectorAll("#l4 .op");
+  bs.forEach(function(b){ b.disabled = true; b.classList.remove("marcada"); });
+  let certas = 0;
+  INFOS.forEach(function(o,i){
+    if(o.ok){ bs[i].classList.add("certa"); if(m4.indexOf(i) >= 0) certas++; }
+    else if(m4.indexOf(i) >= 0){ bs[i].classList.add("errada"); }
+  });
+  if(certas === 3) pontos++;
+  const r = document.getElementById("r4");
+  r.className = "retorno visivel " + (certas === 3 ? "ok" : "erro");
+  r.innerHTML = certas === 3
+    ? "<b>✅ Correto.</b> O resto não ajuda ele a conseguir o prazo."
+    : "<b>🛑 Errado.</b> Acertou " + certas + " de 3. A pergunta é: isso ajuda ele a conseguir o prazo?";
+  r.classList.add("visivel");
+  const b = document.getElementById("b4");
+  b.textContent = "Continuar"; b.disabled = false;
+  b.onclick = function(){ ir(5); };
+}
+
+/* ================= 5 ================= */
+function montar5(){
+  document.getElementById("l5").innerHTML = ANA.map(function(o,i){
+    return '<button class="op" onclick="cortar(' + i + ')"><span class="mk">✕</span><span>' + o.t + '</span></button>';
+  }).join("");
+}
+function cortar(i){
+  const b = document.querySelectorAll("#l5 .op")[i];
+  if(b.disabled || cortes.indexOf(i) >= 0) return;
+  cortes.push(i);
+  b.classList.add("saiu");
+  document.getElementById("n5").textContent = 3 - cortes.length;
+  if(cortes.length === 3){
+    document.querySelectorAll("#l5 .op").forEach(function(x){ x.disabled = true; });
+    let certo = ANA.every(function(o,j){ return !(o.fica && cortes.indexOf(j) >= 0); });
+    if(certo) pontos++;
+    const r = document.getElementById("r5");
+    r.className = "retorno visivel " + (certo ? "ok" : "erro");
+    r.innerHTML = certo
+      ? "<b>✅ Correto.</b> Sobrou o problema, o número e o que acontece se não resolver."
+      : "<b>🛑 Errado.</b> Fica o problema, o número e o que acontece se não resolver.";
+    r.classList.add("visivel");
+    document.getElementById("b5").classList.remove("oculto");
+  }
+}
+
+/* ================= AUXILIARES ================= */
+function m(etapa, i){
+  const lista = etapa === 3 ? m3 : m4;
+  const b = document.querySelectorAll("#l" + etapa + " .op")[i];
+  if(b.disabled) return;
+  const pos = lista.indexOf(i);
+  if(pos >= 0){ lista.splice(pos,1); b.classList.remove("marcada"); }
+  else {
+    if(etapa === 4 && lista.length >= 3) return;
+    lista.push(i); b.classList.add("marcada");
+  }
+  document.getElementById("n" + etapa).textContent = lista.length;
+  if(etapa === 4) document.getElementById("b4").disabled = lista.length !== 3;
+}
+function nota(sel, i, txt, acertou){
+  const d = document.createElement("div");
+  d.className = "nota" + (acertou ? " nota-ok" : " nota-erro");
+  d.innerHTML = '<b>' + (acertou ? "✅ Correto" : "🛑 Errado") + '</b> ' + txt;
+  document.querySelectorAll(sel + " .item")[i].appendChild(d);
+}
+function todasFeitas(sel, total){
+  return document.querySelectorAll(sel + " .op:disabled").length === total;
+}
+function fecha(idR, idB, txt){
+  const r = document.getElementById(idR);
+  r.innerHTML = "<b>" + txt + "</b>";
+  r.classList.add("visivel");
+  document.getElementById(idB).classList.remove("oculto");
+}
+
+/* ================= NAVEGAÇÃO ================= */
+function ir(n){
+  document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
+  document.getElementById("p" + n).classList.remove("oculto");
+  document.getElementById("passo").textContent = n + " de 5";
+  document.getElementById("trilho").style.width = (n/5*100) + "%";
   window.scrollTo(0,0);
-  if(tela === "jornada") montarPilares();
-  if(tela === "evolucao") montarEvolucao();
 }
 
-function montarHoje(){
-  const hora = new Date().getHours();
-  const s = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
-  document.getElementById("saudacao").textContent = s + (ALUNO.primeiroNome ? (", " + ALUNO.primeiroNome) : "");
+function terminar(){
+  document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
+  document.getElementById("fim").classList.remove("oculto");
+  document.getElementById("passo").textContent = "concluído";
+  document.getElementById("trilho").style.width = "100%";
+  const caixaEstrelas = document.getElementById("f-estrelas");
+  caixaEstrelas.textContent = "★".repeat(pontos) + "☆".repeat(5 - pontos);
+  caixaEstrelas.classList.toggle("cheias", pontos === 5);
+  guardarNota(pontos);
 
-  const r = resumo();
-
-  let sug = null, sugPilar = null;
-  for(let i=0;i<PILARES.length && !sug;i++){
-    const p = PILARES[i];
-    if(pilarBloqueado(p.id)) continue;
-    for(let j=0;j<p.treinos.length;j++){
-      if(!feito(p.id, p.treinos[j].n)){ sug = p.treinos[j]; sugPilar = p; break; }
-    }
-  }
-
-  const rotulo = document.getElementById("rotulo-treino");
-  const botao = document.getElementById("sug-botao");
-  const sub = document.getElementById("subtitulo");
-  sub.textContent = fraseDoDia();
-
-  if(!sug){
-    rotulo.textContent = "Jornada completa";
-    document.getElementById("sug-nome").textContent = "Os 25 treinos estão concluídos";
-    document.getElementById("sug-desc").textContent = "Repetir um treino vale tanto quanto fazer pela primeira vez.";
-    botao.textContent = "Ver jornada";
-    botao.removeAttribute("target");
-    botao.href = "#";
-    botao.onclick = function(e){ e.preventDefault(); irPara("jornada"); };
-  }else{
-    const comecou = r.feitos > 0;
-    rotulo.textContent = comecou ? "Continue de onde parou" : "Comece seu treino";
-    document.getElementById("sug-nome").textContent = sug.nome;
-    document.getElementById("sug-desc").textContent = sugPilar.nome + " · " + sug.min + " min";
-    if(sug.aula){
-      botao.textContent = comecou ? "Continuar" : "Começar";
-      botao.href = BASE_AULA + sug.aula;
-      botao.setAttribute("target","_top");
-      botao.onclick = null;
-    }else{
-      botao.textContent = "Em breve";
-      botao.href = "#";
-      botao.removeAttribute("target");
-      botao.onclick = function(e){ e.preventDefault(); };
-    }
-  }
-
-  const pct = Math.round(r.feitos / r.total * 100);
-  document.getElementById("barra-hoje").style.width = pct + "%";
-  document.getElementById("barra-hoje-txt").textContent = r.feitos + " de " + r.total + " treinos";
-  document.getElementById("barra-hoje-pct").textContent = pct + "%";
-
-  mostrarProximaConquista(r);
-  montarResumoPilares();
+  const MENSAGENS = [
+    { t:"😞 Não foi dessa vez",
+      x:"Mas você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
+    { t:"😕 Você acertou uma",
+      x:"Uma já mostra que tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
+    { t:"😐 Metade do caminho",
+      x:"Você está pegando a lógica. Falta repetir até virar automático." },
+    { t:"🙂 Bom resultado",
+      x:"Você já sabe escolher um objetivo e separar o que importa. Dá pra usar isso hoje." },
+    { t:"😃 Quase perfeito",
+      x:"Faltou um detalhe, e você já domina o essencial: um objetivo, poucas informações, palavras curtas." },
+    { t:"🤩 Acertou tudo",
+      x:"Agora a parte que vale de verdade: use na sua próxima conversa." }
+  ];
+  const msg = MENSAGENS[pontos];
+  document.getElementById("f-titulo").textContent = msg.t;
+  document.getElementById("f-texto").textContent = msg.x;
+  window.scrollTo(0,0);
 }
 
-function montarResumoPilares(){
-  document.getElementById("resumo-pilares").innerHTML = PILARES.map(function(p){
-    const bloq = pilarBloqueado(p.id);
-    let c = 0;
-    p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
-    const pct = Math.round(c / p.treinos.length * 100);
-    const cheia = c === p.treinos.length ? " cheia" : "";
-    const cont = bloq ? "🔒" : c + "/" + p.treinos.length;
-    return '<div class="linha-pilar" onclick="irPara(&#39;jornada&#39;)">' +
-      '<span class="lp-nome">' + p.nome + '</span>' +
-      '<span class="lp-barra"><i class="' + cheia.trim() + '" style="width:' + (bloq ? 0 : pct) + '%"></i></span>' +
-      '<span class="lp-cont">' + cont + '</span></div>';
-  }).join("");
+function comecar(){
+  document.getElementById("cabecalho").style.display = "";
+  document.getElementById("barra").style.display = "";
+  ir(1);
 }
 
-function mostrarProximaConquista(r){
-  const caixa = document.getElementById("proxima-conquista");
-  let alvo = null;
+function repetir(){ window.location.reload(); }
 
-  for(let i=0;i<CONQUISTAS.length;i++){
-    const c = CONQUISTAS[i];
-    if(c.teste(r)) continue;
-    if(typeof c.faltam !== "function") continue;
-    const f = c.faltam(r);
-    if(f > 0 && f <= 3){ alvo = { c:c, faltam:f }; break; }
-  }
-
-  if(!alvo){ caixa.classList.remove("visivel"); caixa.innerHTML = ""; return; }
-
-  const plural = alvo.faltam === 1 ? "treino" : "treinos";
-  caixa.innerHTML = '<span class="ico">' + alvo.c.icone + '</span>' +
-    '<span>Faltam <b>' + alvo.faltam + ' ' + plural + '</b> para ' + alvo.c.nome + '</span>';
-  caixa.classList.add("visivel");
-}
-
-function montarPilares(){
-  document.getElementById("lista-pilares").innerHTML = PILARES.map(function(p){
-    const bloq = pilarBloqueado(p.id);
-    let c = 0;
-    p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
-
-    const linhas = p.treinos.map(function(t){
-      const ok = feito(p.id, t.n);
-      const marca = '<div class="aula-marca' + (ok ? " feita" : "") + '">' + (ok ? "✓" : t.n) + '</div>';
-      const est = estrelas(p.id, t.n);
-      const meta = est ? ('<span class="estrelas-aula">' + est + '</span>')
-                       : (t.aula ? "ainda não feito" : "em breve");
-      const corpo = '<div class="aula-nome">' + t.nome +
-                    '<div class="aula-meta">' + meta + '</div></div>';
-      if(bloq || !t.aula){
-        return '<div class="aula travada">' + marca + corpo + '<span class="aula-seta">🔒</span></div>';
-      }
-      return '<a class="aula" href="' + BASE_AULA + t.aula + '" target="_top">' + marca + corpo +
-             '<span class="aula-seta">›</span></a>';
-    }).join("");
-
-    return '<div class="pilar">' +
-      '<div class="pilar-topo"><span class="pilar-nome">' + p.nome + '</span>' +
-      '<span class="pilar-contagem">' + (bloq ? "bloqueado" : c + "/" + p.treinos.length) + '</span></div>' +
-      '<p class="pilar-resumo">' + p.resumo + '</p>' +
-      '<div class="aulas">' + linhas + '</div></div>';
-  }).join("");
-}
-
-function montarEvolucao(){
-  const r = resumo();
-  document.getElementById("e-seq").textContent = r.sequencia;
-  document.getElementById("e-feitos").textContent = r.feitos;
-  document.getElementById("e-pilares").textContent = r.pilares;
-
-  document.getElementById("lista-conquistas").innerHTML = CONQUISTAS.map(function(c){
-    const g = c.teste(r);
-    return '<div class="conquista ' + (g ? "ganha" : "pendente") + '">' +
-      '<div class="medalha">' + c.icone + '</div>' +
-      '<div><div class="conquista-nome">' + c.nome + '</div>' +
-      '<div class="conquista-desc">' + (g ? "Conquistada" : c.desc) + '</div></div></div>';
-  }).join("");
-}
-
-carregar();
-
-/* Guarda quem é o aluno da vez. A página de treino lê isto para
-   saber em qual progresso gravar, já que ela não recebe os dados do Cademí. */
-try{ localStorage.setItem("tae_aluno_atual", ALUNO.id || "visitante"); }catch(e){}
-
-/* Recarrega o progresso ao voltar para a aba. */
-document.addEventListener("visibilitychange", function(){
-  if(document.visibilityState === "visible"){
-    carregar();
-    montarHoje();
-    if(document.getElementById("tela-jornada").classList.contains("ativa")) montarPilares();
-    if(document.getElementById("tela-evolucao").classList.contains("ativa")) montarEvolucao();
-  }
-});
-
-montarHoje();
+document.getElementById("b-proximo").href = PROXIMO;
+document.getElementById("cabecalho").style.display = "none";
+document.getElementById("barra").style.display = "none";
+montar1(); montar2(); montar3(); montar4(); montar5();
 </script>
 </body>
 </html>
