@@ -27,12 +27,11 @@ body{
 }
 .app{max-width:560px;margin:0 auto;padding:4px 16px 20px}
 
-/* ---------- Cabeçalho da tela ---------- */
 .topo{padding:14px 2px 18px}
 .topo h1{margin:0 0 5px;font-size:25px;font-weight:700;color:var(--texto-forte);letter-spacing:-.02em}
 .topo p{margin:0;font-size:14.5px;color:var(--texto-fraco);line-height:1.5}
+#subtitulo{font-style:italic}
 
-/* ---------- Cartões ---------- */
 .cartao{
   background:var(--cartao);
   border:1px solid var(--borda);
@@ -45,11 +44,9 @@ body{
   color:var(--amarelo);margin-bottom:9px;text-transform:uppercase;
 }
 
-/* ---------- Treino sugerido ---------- */
-.sugestao-titulo{margin:0 0 6px;font-size:21px;font-weight:700;color:var(--texto-forte);letter-spacing:-.01em}
-.sugestao-desc{margin:0 0 18px;font-size:14.5px;color:var(--texto-fraco);line-height:1.55}
+.sugestao-titulo{margin:0 0 5px;font-size:21px;font-weight:700;color:var(--texto-forte);letter-spacing:-.01em}
+.sugestao-desc{margin:0 0 18px;font-size:14px;color:var(--texto-fraco);line-height:1.5}
 
-/* ---------- Botões ---------- */
 .botao{
   display:block;width:100%;border:0;cursor:pointer;text-align:center;
   background:var(--amarelo);color:#1a1500;
@@ -59,13 +56,7 @@ body{
 }
 .botao:hover{background:var(--amarelo-escuro)}
 .botao:focus-visible{outline:3px solid var(--amarelo);outline-offset:3px}
-.botao-fantasma{
-  background:transparent;color:var(--texto);
-  border:1px solid var(--borda);
-}
-.botao-fantasma:hover{background:var(--cartao-alto)}
 
-/* ---------- Números ---------- */
 .numeros{display:flex;gap:10px;margin-bottom:12px}
 .numero{
   flex:1;background:var(--cartao);border:1px solid var(--borda);
@@ -74,12 +65,10 @@ body{
 .numero b{display:block;font-size:23px;font-weight:800;color:var(--amarelo);line-height:1.15}
 .numero span{display:block;font-size:11px;color:var(--texto-fraco);margin-top:3px;line-height:1.3}
 
-/* ---------- Barra de progresso ---------- */
 .barra{height:7px;background:var(--borda);border-radius:99px;overflow:hidden;margin:12px 0 8px}
 .barra i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .45s ease}
 .barra-txt{display:flex;justify-content:space-between;font-size:12.5px;color:var(--texto-fraco)}
 
-/* ---------- Pilares ---------- */
 .linha-pilar{
   display:flex;align-items:center;gap:12px;
   padding:11px 0;border-bottom:1px solid var(--borda);
@@ -88,7 +77,7 @@ body{
 .linha-pilar:last-child{border-bottom:0;padding-bottom:0}
 .linha-pilar:first-child{padding-top:2px}
 .linha-pilar:hover .lp-nome{color:var(--amarelo)}
-.lp-nome{flex:0 0 96px;font-size:13.5px;font-weight:600;color:var(--texto);transition:color .12s ease}
+.lp-nome{flex:0 0 108px;font-size:13.5px;font-weight:600;color:var(--texto);transition:color .12s ease}
 .lp-barra{flex:1;height:5px;background:var(--borda);border-radius:99px;overflow:hidden}
 .lp-barra i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .4s ease}
 .lp-barra i.cheia{background:var(--verde)}
@@ -133,7 +122,6 @@ body{
 .aula-seta{color:var(--texto-fraco);font-size:16px;flex-shrink:0}
 .aula.travada{opacity:.4}
 
-/* ---------- Conquistas ---------- */
 .conquista{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--borda)}
 .conquista:last-child{border-bottom:0;padding-bottom:0}
 .conquista:first-child{padding-top:0}
@@ -147,7 +135,6 @@ body{
 .conquista-nome{font-size:14.5px;font-weight:600;color:var(--texto)}
 .conquista-desc{font-size:12.5px;color:var(--texto-fraco);margin-top:2px}
 
-/* ---------- Abas (no fluxo, não fixas) ---------- */
 .abas{
   display:flex;margin:12px 0 4px;
   background:var(--cartao);border:1px solid var(--borda);
@@ -166,15 +153,8 @@ body{
 .aba.ativa{color:var(--amarelo);background:var(--cartao-alto)}
 .aba:focus-visible{outline:2px solid var(--amarelo);outline-offset:-2px}
 
-/* ---------- Telas ---------- */
 .tela{display:none}
 .tela.ativa{display:block}
-
-.aviso{
-  background:rgba(247,208,70,.1);border:1px solid rgba(247,208,70,.3);
-  border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.55;
-  color:var(--texto);margin-bottom:12px;
-}
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -195,14 +175,13 @@ body{
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
     Evolução
   </button>
-  
 </nav>
 
-<!-- ========== HOJE ========== -->
+<!-- ========== INÍCIO ========== -->
 <section class="tela ativa" id="tela-hoje">
   <div class="topo">
     <h1 id="saudacao">Bom dia</h1>
-    <p id="subtitulo">Cinco minutos por dia é o que separa quem fala bem de quem só sabe o assunto.</p>
+    <p id="subtitulo">—</p>
   </div>
 
   <div class="cartao">
@@ -216,7 +195,7 @@ body{
     <div class="etiqueta">Seu progresso</div>
     <div class="barra"><i id="barra-hoje" style="width:0%"></i></div>
     <div class="barra-txt">
-      <span id="barra-hoje-txt">0 de 25 treinos</span>
+      <span id="barra-hoje-txt">0 de 20 treinos</span>
       <span id="barra-hoje-pct">0%</span>
     </div>
     <div class="proxima" id="proxima-conquista"></div>
@@ -232,7 +211,7 @@ body{
 <section class="tela" id="tela-jornada">
   <div class="topo">
     <h1>Sua jornada</h1>
-    <p>Cinco pilares, vinte e cinco treinos. Comece por onde quiser.</p>
+    <p>Quatro pilares, vinte treinos. Comece por onde quiser.</p>
   </div>
   <div id="lista-pilares"></div>
 </section>
@@ -256,71 +235,53 @@ body{
   </div>
 </section>
 
-
-
-<!-- ========== ABAS ========== -->
 </div>
 
 <script>
 /* ===================================================================
-   CONFIGURAÇÃO DOS TREINOS
-   Preencha "aula" com o ID da aula no Cademí assim que ela existir.
-   O ID aparece no endereço da aula:
-   .../area/conteudo/aula/9676261  ->  aula:9676261
+   Preencha "aula" com o número da aula no Cademí quando ela existir.
+   O número aparece no fim do endereço da aula.
    Enquanto estiver null, o treino aparece como "em breve".
    =================================================================== */
-const BASE_AULA = 'https://aluno.falalima.com.br/area/conteudo/aula/';
+const BASE_AULA = "https://aluno.falalima.com.br/area/conteudo/aula/";
+const TOTAL = 20;
 
 const PILARES = [
-  { id:1, nome:'Estrutura',
-    resumo:'Organize qualquer ideia em abertura, desenvolvimento e fechamento.',
-    teoria:'Como organizar uma resposta', teoriaAula:null,
+  { id:1, nome:"Clareza",
+    resumo:"Organizar as ideias e o raciocínio.",
     treinos:[
-      { n:1, nome:'Estruture uma ideia',        min:5, aula:9684559 },
-      { n:2, nome:'Estruture um tema do seu trabalho', min:5, aula:null },
-      { n:3, nome:'Reduza para três frases',    min:4, aula:null },
-      { n:4, nome:'Responda a uma pergunta difícil', min:6, aula:null },
-      { n:5, nome:'Estruture sem conectores',   min:5, aula:null }
+      { n:1, nome:"Organização de ideias", aula:9684559 },
+      { n:2, nome:"Sequência lógica", aula:null },
+      { n:3, nome:"Especificidade na fala", aula:null },
+      { n:4, nome:"Visualização do outro", aula:null },
+      { n:5, nome:"Respostas rápidas", aula:null }
     ]},
-  { id:2, nome:'Clareza',
-    resumo:'Troque palavras difíceis por palavras exatas. Quem entende, confia.',
-    teoria:'O preço de ser complicado', teoriaAula:null,
+  { id:2, nome:"Segurança",
+    resumo:"Transmitir confiança no verbal e no não verbal.",
     treinos:[
-      { n:1, nome:'Explique sem jargão',        min:5, aula:null },
-      { n:2, nome:'Corte metade das palavras',  min:4, aula:null },
-      { n:3, nome:'Troque abstrato por concreto', min:5, aula:null },
-      { n:4, nome:'Explique para quem é de fora', min:6, aula:null },
-      { n:5, nome:'Uma ideia por frase',        min:4, aula:null }
+      { n:1, nome:"A pausa no lugar do vício", aula:null },
+      { n:2, nome:"Desacelere o fim da frase", aula:null },
+      { n:3, nome:"Afirme sem pedir licença", aula:null },
+      { n:4, nome:"O corpo fala antes", aula:null },
+      { n:5, nome:"Sustente o silêncio", aula:null }
     ]},
-  { id:3, nome:'Objetividade',
-    resumo:'Comece pelo ponto principal. O contexto vem depois, se vier.',
-    teoria:'Ponto primeiro, história depois', teoriaAula:null,
+  { id:3, nome:"Assertividade",
+    resumo:"Posicionar-se, argumentar e defender ideias.",
     treinos:[
-      { n:1, nome:'Comece pela conclusão',      min:5, aula:null },
-      { n:2, nome:'Responda em trinta segundos', min:4, aula:null },
-      { n:3, nome:'Corte o aquecimento',        min:5, aula:null },
-      { n:4, nome:'Diga não sem rodeio',        min:6, aula:null },
-      { n:5, nome:'Peça algo em duas frases',   min:4, aula:null }
+      { n:1, nome:"Diga não sem rodeio", aula:null },
+      { n:2, nome:"Peça o que você quer", aula:null },
+      { n:3, nome:"Discorde sem atacar", aula:null },
+      { n:4, nome:"Defenda sob contestação", aula:null },
+      { n:5, nome:"Receba crítica sem desabar", aula:null }
     ]},
-  { id:4, nome:'Segurança',
-    resumo:'Ritmo, pausa e olhar: o que o corpo diz antes da primeira palavra.',
-    teoria:'A pausa como ferramenta', teoriaAula:null,
+  { id:4, nome:"Oratória",
+    resumo:"Apresentar para muita gente.",
     treinos:[
-      { n:1, nome:'Use a pausa no lugar do vício', min:5, aula:null },
-      { n:2, nome:'Desacelere o fim da frase',  min:4, aula:null },
-      { n:3, nome:'Sustente o silêncio',        min:5, aula:null },
-      { n:4, nome:'Afirme sem pedir licença',   min:6, aula:null },
-      { n:5, nome:'Encerre sem se desculpar',   min:4, aula:null }
-    ]},
-  { id:5, nome:'Improviso',
-    resumo:'Responda bem sem ter preparado. Estrutura é o que salva.',
-    teoria:'Pensar em voz alta sem se perder', teoriaAula:null,
-    treinos:[
-      { n:1, nome:'Ganhe tempo com elegância',  min:5, aula:null },
-      { n:2, nome:'Monte a resposta enquanto fala', min:6, aula:null },
-      { n:3, nome:'Admita o que não sabe',      min:4, aula:null },
-      { n:4, nome:'Reaproveite a pergunta',     min:5, aula:null },
-      { n:5, nome:'Feche sem ensaio',           min:5, aula:null }
+      { n:1, nome:"A abertura que prende", aula:null },
+      { n:2, nome:"Conduza sem ler", aula:null },
+      { n:3, nome:"Ritmo e ênfase", aula:null },
+      { n:4, nome:"O fechamento que fica", aula:null },
+      { n:5, nome:"Perguntas do público", aula:null }
     ]}
 ];
 
@@ -348,7 +309,6 @@ const FRASES = [
   "A frase curta sobrevive à reunião. A longa, não."
 ];
 
-/* Uma frase por dia, igual para todos, trocando à meia-noite. */
 function fraseDoDia(){
   const hoje = new Date();
   const inicio = new Date(hoje.getFullYear(), 0, 0);
@@ -357,29 +317,29 @@ function fraseDoDia(){
 }
 
 const CONQUISTAS = [
-  { icone:"🌱", nome:"Primeiro passo",   desc:"Conclua seu primeiro treino",
-    teste:p => p.feitos >= 1,  faltam:p => 1 - p.feitos },
-  { icone:"⚡", nome:"Primeiro pilar",    desc:"Complete um pilar inteiro",
+  { icone:"🌱", nome:"Primeiro passo", desc:"Conclua seu primeiro treino",
+    teste:p => p.feitos >= 1, faltam:p => 1 - p.feitos },
+  { icone:"⚡", nome:"Primeiro pilar", desc:"Complete um pilar inteiro",
     teste:p => p.pilares >= 1, faltam:p => p.faltamParaPilar },
-  { icone:"🔥", nome:"Metade do caminho",desc:"Chegue a 13 treinos",
-    teste:p => p.feitos >= 13, faltam:p => 13 - p.feitos },
-  { icone:"🎯", nome:"Quatro pilares",   desc:"Complete quatro pilares",
-    teste:p => p.pilares >= 4, faltam:null },
-  { icone:"🏆", nome:"Jornada completa", desc:"Conclua os 25 treinos",
-    teste:p => p.feitos >= 25, faltam:p => 25 - p.feitos }
+  { icone:"🔥", nome:"Metade do caminho", desc:"Chegue a 10 treinos",
+    teste:p => p.feitos >= 10, faltam:p => 10 - p.feitos },
+  { icone:"🎯", nome:"Três pilares", desc:"Complete três pilares",
+    teste:p => p.pilares >= 3, faltam:null },
+  { icone:"🏆", nome:"Jornada completa", desc:"Conclua os 20 treinos",
+    teste:p => p.feitos >= TOTAL, faltam:p => TOTAL - p.feitos }
 ];
 
 /* ---------- Aluno (vem do Cademí) ---------- */
 const ALUNO = (function(){
   const p = new URLSearchParams(window.location.search);
-  const g = (p.get('cuser_gratis') || '').toLowerCase();
+  const g = (p.get("cuser_gratis") || "").toLowerCase();
   return {
-    id: p.get('cuser_id') || null,
-    email: p.get('cuser_email') || null,
-    nome: p.get('cuser_name') || null,
-    primeiroNome: p.get('cuser_fname') || null,
-    gratuito: g === '1' || g === 'true' || g === 'sim',
-    identificado: !!p.get('cuser_id')
+    id: p.get("cuser_id") || null,
+    email: p.get("cuser_email") || null,
+    nome: p.get("cuser_name") || null,
+    primeiroNome: p.get("cuser_fname") || null,
+    gratuito: g === "1" || g === "true" || g === "sim",
+    identificado: !!p.get("cuser_id")
   };
 })();
 
@@ -387,36 +347,31 @@ const PILARES_GRATUITOS = 1;
 function pilarBloqueado(id){ return ALUNO.gratuito && id > PILARES_GRATUITOS; }
 
 /* ---------- Progresso ---------- */
-const PADRAO = { concluidos:[], sequencia:0, ultimoDia:null };
-let prog = Object.assign({}, PADRAO);
+/* A fonte da verdade é a nota em estrelas que a página de treino grava.
+   Treino com nota é treino feito. */
+let NOTAS = {};
+let SEQUENCIA = 0;
 
-function chave(){ return ALUNO.id ? ('tae_' + ALUNO.id) : 'tae_visitante'; }
 function carregar(){
+  const quem = ALUNO.id || "visitante";
+  try{ NOTAS = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}"); }
+  catch(e){ NOTAS = {}; }
   try{
-    const b = localStorage.getItem(chave());
-    if(b) prog = Object.assign({}, PADRAO, JSON.parse(b));
-    if(!Array.isArray(prog.concluidos)) prog.concluidos = [];
-  }catch(e){ prog = Object.assign({}, PADRAO); }
+    const p = JSON.parse(localStorage.getItem("tae_" + quem) || "{}");
+    SEQUENCIA = p.sequencia || 0;
+  }catch(e){ SEQUENCIA = 0; }
 }
-function salvar(){ try{ localStorage.setItem(chave(), JSON.stringify(prog)); }catch(e){} }
 
-function codigo(pilarId, n){ return pilarId + '.' + n; }
-
-/* Notas em estrelas, gravadas pela página de treino. */
-function notas(){
-  try{
-    const quem = ALUNO.id || "visitante";
-    return JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
-  }catch(e){ return {}; }
-}
+function codigo(pilarId, n){ return pilarId + "." + n; }
+function nota(pilarId, n){ return NOTAS[codigo(pilarId, n)]; }
+function feito(pilarId, n){ return nota(pilarId, n) !== undefined; }
 
 function estrelas(pilarId, n){
-  const nota = notas()[codigo(pilarId, n)];
-  if(nota === undefined) return null;
-  const classe = nota === 5 ? "estrelas-aula cheias" : "estrelas-aula";
-  return '<span class="' + classe + '">' + "★".repeat(nota) + "☆".repeat(5 - nota) + '</span>';
+  const v = nota(pilarId, n);
+  if(v === undefined) return null;
+  const classe = v === 5 ? "estrelas-aula cheias" : "estrelas-aula";
+  return '<span class="' + classe + '">' + "★".repeat(v) + "☆".repeat(5 - v) + '</span>';
 }
-function feito(pilarId, n){ return prog.concluidos.indexOf(codigo(pilarId,n)) !== -1; }
 
 function resumo(){
   let feitos = 0, pilares = 0, faltamParaPilar = 99;
@@ -425,35 +380,34 @@ function resumo(){
     p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
     feitos += c;
     if(c === p.treinos.length) pilares++;
-    // pilar comecado mas nao terminado: quanto falta para fechar
     else if(c > 0 && !pilarBloqueado(p.id)){
       const f = p.treinos.length - c;
       if(f < faltamParaPilar) faltamParaPilar = f;
     }
   });
-  return { feitos:feitos, pilares:pilares, total:25,
-           sequencia:prog.sequencia, faltamParaPilar:faltamParaPilar };
+  return { feitos:feitos, pilares:pilares, total:TOTAL,
+           sequencia:SEQUENCIA, faltamParaPilar:faltamParaPilar };
 }
 
 /* ---------- Navegação ---------- */
 function irPara(tela){
-  document.querySelectorAll('.tela').forEach(function(s){ s.classList.remove('ativa'); });
-  document.getElementById('tela-' + tela).classList.add('ativa');
-  document.querySelectorAll('.aba').forEach(function(b){ b.classList.toggle('ativa', b.dataset.tela === tela); });
+  document.querySelectorAll(".tela").forEach(function(s){ s.classList.remove("ativa"); });
+  document.getElementById("tela-" + tela).classList.add("ativa");
+  document.querySelectorAll(".aba").forEach(function(b){ b.classList.toggle("ativa", b.dataset.tela === tela); });
   window.scrollTo(0,0);
-  if(tela === 'jornada')  montarPilares();
-  if(tela === 'evolucao') montarEvolucao();
+  if(tela === "jornada") montarPilares();
+  if(tela === "evolucao") montarEvolucao();
 }
 
-/* ---------- Telas ---------- */
+/* ---------- Início ---------- */
 function montarHoje(){
   const hora = new Date().getHours();
   const s = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
   document.getElementById("saudacao").textContent = s + (ALUNO.primeiroNome ? (", " + ALUNO.primeiroNome) : "");
+  document.getElementById("subtitulo").textContent = fraseDoDia();
 
   const r = resumo();
 
-  // primeiro treino ainda nao concluido, em pilar liberado
   let sug = null, sugPilar = null;
   for(let i=0;i<PILARES.length && !sug;i++){
     const p = PILARES[i];
@@ -464,23 +418,21 @@ function montarHoje(){
   }
 
   const rotulo = document.getElementById("rotulo-treino");
-  const botao  = document.getElementById("sug-botao");
-  const sub    = document.getElementById("subtitulo");
-  sub.textContent = fraseDoDia();
+  const botao = document.getElementById("sug-botao");
+  const comecou = r.feitos > 0;
 
   if(!sug){
     rotulo.textContent = "Jornada completa";
-    document.getElementById("sug-nome").textContent = "Os 25 treinos estão concluídos";
+    document.getElementById("sug-nome").textContent = "Os 20 treinos estão concluídos";
     document.getElementById("sug-desc").textContent = "Repetir um treino vale tanto quanto fazer pela primeira vez.";
     botao.textContent = "Ver jornada";
     botao.removeAttribute("target");
     botao.href = "#";
     botao.onclick = function(e){ e.preventDefault(); irPara("jornada"); };
   }else{
-    const comecou = r.feitos > 0;
     rotulo.textContent = comecou ? "Continue de onde parou" : "Comece seu treino";
     document.getElementById("sug-nome").textContent = sug.nome;
-    document.getElementById("sug-desc").textContent = sugPilar.nome + " · " + sug.min + " min";
+    document.getElementById("sug-desc").textContent = sugPilar.nome;
     if(sug.aula){
       botao.textContent = comecou ? "Continuar" : "Começar";
       botao.href = BASE_AULA + sug.aula;
@@ -503,7 +455,6 @@ function montarHoje(){
   montarResumoPilares();
 }
 
-/* Visao compacta dos cinco pilares, no Inicio. Clicar leva a Jornada. */
 function montarResumoPilares(){
   document.getElementById("resumo-pilares").innerHTML = PILARES.map(function(p){
     const bloq = pilarBloqueado(p.id);
@@ -519,11 +470,9 @@ function montarResumoPilares(){
   }).join("");
 }
 
-/* Mostra a conquista mais proxima, e so quando o aluno esta perto dela. */
 function mostrarProximaConquista(r){
   const caixa = document.getElementById("proxima-conquista");
   let alvo = null;
-
   for(let i=0;i<CONQUISTAS.length;i++){
     const c = CONQUISTAS[i];
     if(c.teste(r)) continue;
@@ -531,26 +480,25 @@ function mostrarProximaConquista(r){
     const f = c.faltam(r);
     if(f > 0 && f <= 3){ alvo = { c:c, faltam:f }; break; }
   }
-
   if(!alvo){ caixa.classList.remove("visivel"); caixa.innerHTML = ""; return; }
-
   const plural = alvo.faltam === 1 ? "treino" : "treinos";
   caixa.innerHTML = '<span class="ico">' + alvo.c.icone + '</span>' +
     '<span>Faltam <b>' + alvo.faltam + ' ' + plural + '</b> para ' + alvo.c.nome + '</span>';
   caixa.classList.add("visivel");
 }
 
+/* ---------- Jornada ---------- */
 function montarPilares(){
-  document.getElementById('lista-pilares').innerHTML = PILARES.map(function(p){
+  document.getElementById("lista-pilares").innerHTML = PILARES.map(function(p){
     const bloq = pilarBloqueado(p.id);
     let c = 0;
     p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
 
     const linhas = p.treinos.map(function(t){
       const ok = feito(p.id, t.n);
-      const marca = '<div class="aula-marca' + (ok ? ' feita' : '') + '">' + (ok ? '✓' : t.n) + '</div>';
+      const marca = '<div class="aula-marca' + (ok ? " feita" : "") + '">' + (ok ? "✓" : t.n) + '</div>';
       const est = estrelas(p.id, t.n);
-      const meta = est ? est : (t.aula ? 'ainda não feito' : 'em breve');
+      const meta = est ? est : (t.aula ? "ainda não feito" : "em breve");
       const corpo = '<div class="aula-nome">' + t.nome +
                     '<div class="aula-meta">' + meta + '</div></div>';
       if(bloq || !t.aula){
@@ -558,40 +506,39 @@ function montarPilares(){
       }
       return '<a class="aula" href="' + BASE_AULA + t.aula + '" target="_top">' + marca + corpo +
              '<span class="aula-seta">›</span></a>';
-    }).join('');
+    }).join("");
 
     return '<div class="pilar">' +
       '<div class="pilar-topo"><span class="pilar-nome">' + p.nome + '</span>' +
-      '<span class="pilar-contagem">' + (bloq ? 'bloqueado' : c + '/' + p.treinos.length) + '</span></div>' +
+      '<span class="pilar-contagem">' + (bloq ? "bloqueado" : c + "/" + p.treinos.length) + '</span></div>' +
       '<p class="pilar-resumo">' + p.resumo + '</p>' +
       '<div class="aulas">' + linhas + '</div></div>';
-  }).join('');
+  }).join("");
 }
 
+/* ---------- Evolução ---------- */
 function montarEvolucao(){
   const r = resumo();
-  document.getElementById('e-seq').textContent = r.sequencia;
-  document.getElementById('e-feitos').textContent = r.feitos;
-  document.getElementById('e-pilares').textContent = r.pilares;
+  document.getElementById("e-seq").textContent = r.sequencia;
+  document.getElementById("e-feitos").textContent = r.feitos;
+  document.getElementById("e-pilares").textContent = r.pilares;
 
-  document.getElementById('lista-conquistas').innerHTML = CONQUISTAS.map(function(c){
+  document.getElementById("lista-conquistas").innerHTML = CONQUISTAS.map(function(c){
     const g = c.teste(r);
-    return '<div class="conquista ' + (g ? 'ganha' : 'pendente') + '">' +
+    return '<div class="conquista ' + (g ? "ganha" : "pendente") + '">' +
       '<div class="medalha">' + c.icone + '</div>' +
       '<div><div class="conquista-nome">' + c.nome + '</div>' +
-      '<div class="conquista-desc">' + (g ? 'Conquistada' : c.desc) + '</div></div></div>';
-  }).join('');
+      '<div class="conquista-desc">' + (g ? "Conquistada" : c.desc) + '</div></div></div>';
+  }).join("");
 }
-
 
 carregar();
 
-/* Guarda quem é o aluno da vez. A página de treino lê isto para
-   saber em qual progresso gravar, já que ela não recebe os dados do Cademí. */
+/* Guarda quem é o aluno da vez. A página de treino lê isto para saber
+   em qual progresso gravar, já que ela não recebe os dados do Cademí. */
 try{ localStorage.setItem("tae_aluno_atual", ALUNO.id || "visitante"); }catch(e){}
 
-/* Recarrega o progresso ao voltar para a aba, para refletir treinos
-   concluídos em outra aba sem precisar atualizar a página. */
+/* Recarrega ao voltar para a aba, para refletir treino feito em outra. */
 document.addEventListener("visibilitychange", function(){
   if(document.visibilityState === "visible"){
     carregar();
