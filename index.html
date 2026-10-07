@@ -370,14 +370,96 @@ function carregar(){
   SEQUENCIA = calcularSequencia(dias);
 }
 
-/* ---------- Progresso salvo no Cademí ----------
-   O progresso fica numa nota interna do aluno no Cademí, lida e gravada
-   pelo cenário "TAE - Progresso do aluno" no Make.
-   Formato: TAE|1.1=4|1.1=5|d2026-10-07|
-   treino=estrelas (vale a maior) e dAAAA-MM-DD (dia em que treinou). */
+/* ================= PROGRESSO NO CADEMÍ =================
+   O progresso fica numa nota interna do aluno no Cademí.
+   O Make só lê e grava (cenário "TAE - Progresso do aluno");
+   quem monta o conteúdo é o próprio app, para gastar poucos créditos.
+   Formato da nota: TAE|1.1=5|2.3=4|d2026-10-07|
+   treino=estrelas (a maior) e dAAAA-MM-DD (dias em que treinou). */
 const PROGRESSO_URL = "https://hook.us1.make.com/a9bpauyn4nsdi1dsq9pag166skfidr28";
+const DIAS_GUARDADOS = 90;
+const CACHE_MINUTOS = 10;
 
 function hojeTexto(){ return new Date().toLocaleDateString("sv-SE"); }
+
+function lerTextoProgresso(texto, destino){
+  if(!texto || texto.indexOf("TAE|") !== 0) return;
+  texto.split("|").forEach(function(parte){
+    if(/^d\d{4}-\d{2}-\d{2}$/.test(parte)){
+      if(destino.dias.indexOf(parte.slice(1)) === -1) destino.dias.push(parte.slice(1));
+    }else if(parte.indexOf("=") > 0){
+      const k = parte.split("=")[0], v = parseInt(parte.split("=")[1], 10);
+      if(!isNaN(v) && (!destino.notas[k] || v > destino.notas[k])) destino.notas[k] = v;
+    }
+  });
+}
+
+/* Resposta do Make = lista de notas do aluno. Junta todas as notas TAE
+   (pode haver mais de uma se a chave do Cademí for trocada) e guarda
+   o id da mais recente, que é a que será atualizada. */
+function lerRespostaCademi(texto){
+  const r = { nota:"", notas:{}, dias:[] };
+  const lista = (JSON.parse(texto).data || []).filter(function(n){
+    return n.body && n.body.indexOf("TAE|") === 0;
+  });
+  lista.sort(function(a,b){ return (b.updated_at || "").localeCompare(a.updated_at || ""); });
+  if(lista.length) r.nota = lista[0].id;
+  lista.forEach(function(n){ lerTextoProgresso(n.body, r); });
+  return r;
+}
+
+function juntarProgresso(a, b){
+  const r = { notas:Object.assign({}, a.notas), dias:a.dias.slice() };
+  Object.keys(b.notas).forEach(function(k){ if(!r.notas[k] || b.notas[k] > r.notas[k]) r.notas[k] = b.notas[k]; });
+  b.dias.forEach(function(d){ if(r.dias.indexOf(d) === -1) r.dias.push(d); });
+  return r;
+}
+
+function montarCorpo(p){
+  const partes = Object.keys(p.notas).sort().map(function(k){ return k + "=" + p.notas[k]; });
+  const dias = p.dias.slice().sort().slice(-DIAS_GUARDADOS).map(function(d){ return "d" + d; });
+  return "TAE|" + partes.concat(dias).map(function(x){ return x + "|"; }).join("");
+}
+
+function buscarCademi(aluno){
+  return fetch(PROGRESSO_URL + "?acao=ler&aluno=" + encodeURIComponent(aluno))
+    .then(function(r){ return r.text(); })
+    .then(function(t){
+      const p = lerRespostaCademi(t);
+      guardarCache(aluno, p);
+      return p;
+    });
+}
+
+/* Grava o progresso inteiro. Devolve o id da nota (nova ou a mesma). */
+function salvarCademi(aluno, nota, progresso, treino, primeira){
+  const url = PROGRESSO_URL + "?acao=salvar&aluno=" + encodeURIComponent(aluno) +
+    "&corpo=" + encodeURIComponent(montarCorpo(progresso)) +
+    "&treino=" + encodeURIComponent(treino || "") + "&primeira=" + (primeira ? "sim" : "nao") +
+    (nota ? "&nota=" + encodeURIComponent(nota) : "");
+  return fetch(url).then(function(r){ return r.text(); }).then(function(t){
+    t = (t || "").trim();
+    const id = /^note_\d+$/.test(t) ? t : nota;
+    guardarCache(aluno, { nota:id, notas:progresso.notas, dias:progresso.dias });
+    return id;
+  });
+}
+
+function guardarCache(aluno, p){
+  try{
+    localStorage.setItem("tae_cademi_" + aluno, JSON.stringify({
+      nota:p.nota, notas:p.notas, dias:p.dias, quando:Date.now() }));
+  }catch(e){}
+}
+
+function lerCache(aluno){
+  try{
+    const c = JSON.parse(localStorage.getItem("tae_cademi_" + aluno) || "null");
+    if(c && Date.now() - c.quando < CACHE_MINUTOS * 60000) return c;
+  }catch(e){}
+  return null;
+}
+/* ================= FIM PROGRESSO NO CADEMÍ ================= */
 
 function calcularSequencia(dias){
   const tem = {};
@@ -389,21 +471,6 @@ function calcularSequencia(dias){
   return n;
 }
 
-function lerTextoProgresso(texto){
-  const notas = {}, dias = [];
-  if(!texto || texto.indexOf("TAE|") !== 0) return null;
-  texto.split("|").forEach(function(parte){
-    if(/^d\d{4}-\d{2}-\d{2}$/.test(parte)) dias.push(parte.slice(1));
-    else if(parte.indexOf("=") > 0){
-      const k = parte.split("=")[0], v = parseInt(parte.split("=")[1], 10);
-      if(!isNaN(v) && (!notas[k] || v > notas[k])) notas[k] = v;
-    }
-  });
-  return { notas:notas, dias:dias };
-}
-
-/* Busca o progresso no Cademí, junta com o que está no navegador e
-   reenvia o que só existia aqui (ex.: treino feito sem internet). */
 const SYNC_MINUTOS = 10;
 
 /* Treino feito numa aula aberta direto, sem passar pelo painel naquele
@@ -415,105 +482,67 @@ function adotarVisitante(){
     const dv = JSON.parse(localStorage.getItem("tae_dias_visitante") || "[]");
     if(!Object.keys(nv).length && !dv.length) return false;
     const quem = ALUNO.id;
-    const notas = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
-    Object.keys(nv).forEach(function(k){ if(!notas[k] || nv[k] > notas[k]) notas[k] = nv[k]; });
-    const dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]");
-    dv.forEach(function(d){ if(dias.indexOf(d) === -1) dias.push(d); });
-    localStorage.setItem("tae_notas_" + quem, JSON.stringify(notas));
-    localStorage.setItem("tae_dias_" + quem, JSON.stringify(dias));
+    const j = juntarProgresso(
+      { notas:JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}"),
+        dias:JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]") },
+      { notas:nv, dias:dv });
+    localStorage.setItem("tae_notas_" + quem, JSON.stringify(j.notas));
+    localStorage.setItem("tae_dias_" + quem, JSON.stringify(j.dias));
     localStorage.removeItem("tae_notas_visitante");
     localStorage.removeItem("tae_dias_visitante");
     return true;
   }catch(e){ return false; }
 }
 
-/* Busca no Cademí no máximo a cada SYNC_MINUTOS por aparelho,
-   para não gastar operações do Make à toa. forcar ignora o limite. */
+function redesenhar(){
+  carregar();
+  montarHoje();
+  if(document.getElementById("tela-jornada").classList.contains("ativa")) montarPilares();
+  if(document.getElementById("tela-evolucao").classList.contains("ativa")) montarEvolucao();
+}
+
+/* Busca o progresso no Cademí (no máximo a cada SYNC_MINUTOS por aparelho),
+   junta com o do navegador e reenvia o que só existia aqui. */
 function sincronizar(forcar){
   if(!ALUNO.id) return;
-  const chaveSync = "tae_sync_" + ALUNO.id;
+  const quem = ALUNO.id;
   try{
-    const ultima = parseInt(localStorage.getItem(chaveSync) || "0", 10);
+    const ultima = parseInt(localStorage.getItem("tae_sync_" + quem) || "0", 10);
     if(!forcar && Date.now() - ultima < SYNC_MINUTOS * 60000) return;
-    localStorage.setItem(chaveSync, String(Date.now()));
+    localStorage.setItem("tae_sync_" + quem, String(Date.now()));
   }catch(e){}
-  fetch(PROGRESSO_URL + "?acao=ler&aluno=" + encodeURIComponent(ALUNO.id))
-    .then(function(r){ return r.text(); })
-    .then(function(texto){
-      const servidor = lerTextoProgresso(texto);
-      if(!servidor) return;
-      const quem = ALUNO.id;
-      let local = {}, diasLocal = [];
-      try{ local = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}"); }catch(e){}
-      try{ diasLocal = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]"); }catch(e){}
 
-      const juntas = Object.assign({}, servidor.notas);
-      Object.keys(local).forEach(function(k){
-        if(!juntas[k] || local[k] > juntas[k]){
-          juntas[k] = local[k];
-          fetch(PROGRESSO_URL + "?acao=salvar&aluno=" + encodeURIComponent(quem) +
-                "&treino=" + encodeURIComponent(k) + "&estrelas=" + local[k] +
-                "&dia=" + hojeTexto(), { mode:"no-cors", keepalive:true }).catch(function(){});
-        }
+  buscarCademi(quem).then(function(servidor){
+    let local = { notas:{}, dias:[] };
+    try{
+      local.notas = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
+      local.dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]");
+    }catch(e){}
+    const juntas = juntarProgresso(servidor, local);
+    try{
+      localStorage.setItem("tae_notas_" + quem, JSON.stringify(juntas.notas));
+      localStorage.setItem("tae_dias_" + quem, JSON.stringify(juntas.dias));
+    }catch(e){}
+    redesenhar();
+
+    /* O que o navegador tem a mais que o Cademí. */
+    const novos = Object.keys(local.notas).filter(function(k){
+      return !servidor.notas[k] || local.notas[k] > servidor.notas[k];
+    });
+    const diasNovos = local.dias.some(function(d){ return servidor.dias.indexOf(d) === -1; });
+    if(!novos.length && !diasNovos) return;
+
+    /* Um envio por treino novo, para os pontos entrarem certo.
+       Normalmente é um só. */
+    let fila = Promise.resolve(servidor.nota);
+    const envios = novos.length ? novos : [""];
+    envios.forEach(function(k){
+      fila = fila.then(function(nota){
+        return salvarCademi(quem, nota, juntas, k, k && !servidor.notas[k]);
       });
-      const dias = servidor.dias.concat(diasLocal).filter(function(d, i, a){ return a.indexOf(d) === i; });
-
-      try{
-        localStorage.setItem("tae_notas_" + quem, JSON.stringify(juntas));
-        localStorage.setItem("tae_dias_" + quem, JSON.stringify(dias));
-      }catch(e){}
-      carregar();
-      montarHoje();
-      if(document.getElementById("tela-jornada").classList.contains("ativa")) montarPilares();
-      if(document.getElementById("tela-evolucao").classList.contains("ativa")) montarEvolucao();
-    })
-    .catch(function(){ /* sem internet: segue com o que está no navegador */ });
-}
-
-/* Número corrido do treino na jornada inteira (1 a 20).
-   Só para exibir: o progresso continua guardado como "pilar.treino" (ex.: 2.3). */
-function numeroGlobal(pilarId, n){
-  let total = 0;
-  for(let i=0;i<PILARES.length;i++){
-    if(PILARES[i].id === pilarId) return total + n;
-    total += PILARES[i].treinos.length;
-  }
-  return n;
-}
-
-function codigo(pilarId, n){ return pilarId + "." + n; }
-function nota(pilarId, n){ return NOTAS[codigo(pilarId, n)]; }
-function feito(pilarId, n){ return nota(pilarId, n) !== undefined; }
-
-function estrelas(pilarId, n){
-  const v = nota(pilarId, n);
-  if(v === undefined) return null;
-  const classe = v === 5 ? "estrelas-aula cheias" : "estrelas-aula";
-  return '<span class="' + classe + '">' + "★".repeat(v) + "☆".repeat(5 - v) + '</span>';
-}
-
-/* Média das estrelas dos treinos já feitos. Null quando não há nenhum. */
-function notaMedia(){
-  const valores = Object.keys(NOTAS).map(function(k){ return NOTAS[k]; });
-  if(!valores.length) return null;
-  const soma = valores.reduce(function(a,b){ return a + b; }, 0);
-  return soma / valores.length;
-}
-
-function resumo(){
-  let feitos = 0, pilares = 0, faltamParaPilar = 99;
-  PILARES.forEach(function(p){
-    let c = 0;
-    p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
-    feitos += c;
-    if(c === p.treinos.length) pilares++;
-    else if(c > 0 && !pilarBloqueado(p.id)){
-      const f = p.treinos.length - c;
-      if(f < faltamParaPilar) faltamParaPilar = f;
-    }
-  });
-  return { feitos:feitos, pilares:pilares, total:TOTAL,
-           sequencia:SEQUENCIA, faltamParaPilar:faltamParaPilar };
+    });
+    fila.catch(function(){});
+  }).catch(function(){ /* sem internet: segue com o que está no navegador */ });
 }
 
 /* ---------- Navegação ---------- */
