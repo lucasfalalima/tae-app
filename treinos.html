@@ -17,58 +17,104 @@ body{margin:0;background:var(--fundo);color:var(--texto);
 .caixa{max-width:720px;margin:0 auto;padding:4px 2px 18px}
 .cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;padding:22px}
 
-.topo{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.topo{display:flex;align-items:center;gap:12px;margin-bottom:13px}
 .etiqueta{font-size:11.5px;font-weight:700;letter-spacing:.09em;color:var(--amarelo);text-transform:uppercase}
 .passo{margin-left:auto;font-size:12.5px;color:var(--fraco);white-space:nowrap}
-.trilho{height:4px;background:var(--borda);border-radius:99px;overflow:hidden;margin-bottom:22px}
+.trilho{height:4px;background:var(--borda);border-radius:99px;overflow:hidden;margin-bottom:20px}
 .trilho i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .35s ease}
 
-.pergunta{margin:0 0 18px;font-size:18px;font-weight:600;line-height:1.5;color:var(--forte)}
+h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
+.ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
 
-.opcoes{display:flex;flex-direction:column;gap:9px}
-.opcao{
-  display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+.fala{
+  background:var(--alto);border-left:3px solid var(--fraco);
+  padding:14px 15px;border-radius:0 10px 10px 0;margin-bottom:16px;
+  font-size:14px;line-height:1.65;font-style:italic;
+}
+.fala.limpa{border-left-color:var(--verde);font-style:normal}
+
+.lista{display:flex;flex-direction:column;gap:8px}
+.op{
+  display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;
   background:var(--alto);border:1.5px solid var(--borda);border-radius:11px;
-  padding:14px 15px;cursor:pointer;font-family:inherit;font-size:15px;
-  line-height:1.5;color:var(--texto);transition:border-color .14s ease,background .14s ease;
+  padding:12px 14px;cursor:pointer;font-family:inherit;font-size:14.5px;
+  line-height:1.5;color:var(--texto);transition:border-color .13s,background .13s,opacity .2s;
 }
-.opcao:hover:not(:disabled){border-color:var(--amarelo)}
-.opcao:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
-.opcao:disabled{cursor:default}
-.opcao .letra{
-  flex-shrink:0;width:24px;height:24px;border-radius:50%;
+.op:hover:not(:disabled){border-color:var(--amarelo)}
+.op:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.op:disabled{cursor:default}
+.op .mk{
+  flex-shrink:0;width:22px;height:22px;border-radius:6px;margin-top:1px;
   border:1.5px solid var(--borda);display:flex;align-items:center;
-  justify-content:center;font-size:12.5px;font-weight:700;color:var(--fraco);
+  justify-content:center;font-size:12px;font-weight:700;color:transparent;
+  transition:all .13s ease;
 }
-.opcao.certa{border-color:var(--verde);background:rgba(74,222,128,.09)}
-.opcao.certa .letra{background:var(--verde);border-color:var(--verde);color:#06240f}
-.opcao.errada{border-color:var(--vermelho);background:rgba(248,113,113,.08)}
-.opcao.errada .letra{background:var(--vermelho);border-color:var(--vermelho);color:#2b0a0a}
+.op.marcada{border-color:var(--amarelo);background:rgba(247,208,70,.08)}
+.op.marcada .mk{background:var(--amarelo);border-color:var(--amarelo);color:#1a1500}
+.op.certa{border-color:var(--verde);background:rgba(74,222,128,.09)}
+.op.certa .mk{background:var(--verde);border-color:var(--verde);color:#06240f}
+.op.errada{border-color:var(--vermelho);background:rgba(248,113,113,.07)}
+.op.errada .mk{background:var(--vermelho);border-color:var(--vermelho);color:#2b0a0a}
+.op.saiu{opacity:.25;text-decoration:line-through}
 
-.explica{
-  display:none;margin-top:16px;padding:15px 16px;border-radius:0 10px 10px 0;
-  background:var(--alto);border-left:3px solid var(--amarelo);
-  font-size:14.5px;line-height:1.6;
+.dupla{display:flex;gap:8px}
+.dupla .op{flex:1;justify-content:center;text-align:center}
+.dupla .op .mk{display:none}
+
+.item{margin-bottom:16px}
+.item:last-child{margin-bottom:0}
+.item .frase{font-size:15px;line-height:1.5;margin-bottom:9px;color:var(--forte)}
+.nota{font-size:13px;color:var(--fraco);margin-top:8px;line-height:1.55;
+  padding:9px 12px;border-radius:0 8px 8px 0;}
+.nota b{font-weight:700}
+.nota-ok{background:rgba(74,222,128,.08);border-left:3px solid var(--verde)}
+.nota-ok b{color:var(--verde)}
+.nota-erro{background:rgba(248,113,113,.07);border-left:3px solid var(--vermelho)}
+.nota-erro b{color:var(--vermelho)}
+
+.retorno{
+  display:none;margin-top:14px;padding:13px 15px;border-radius:0 10px 10px 0;
+  background:rgba(74,222,128,.09);border-left:3px solid var(--verde);
+  font-size:14px;line-height:1.6;
 }
-.explica.visivel{display:block}
-.explica b{color:var(--forte)}
+.retorno.visivel{display:block}
+.retorno b{color:var(--forte)}
+.retorno.erro{background:rgba(248,113,113,.07);border-left-color:var(--vermelho)}
+
+.contador{font-size:12.5px;color:var(--fraco);margin-top:10px;text-align:right}
 
 .botao{
-  display:block;width:100%;margin-top:18px;border:0;cursor:pointer;text-align:center;
+  display:block;width:100%;margin-top:10px;border:0;cursor:pointer;text-align:center;
   background:var(--amarelo);color:#1a1500;font-size:15.5px;font-weight:700;
   font-family:inherit;padding:14px;border-radius:10px;text-decoration:none;
   transition:background .14s ease;
 }
+.botao:first-of-type{margin-top:16px}
 .botao:hover{background:var(--amarelo2)}
+.botao:disabled{opacity:.3;cursor:default}
 .botao.fantasma{background:transparent;color:var(--texto);border:1px solid var(--borda)}
 .botao.fantasma:hover{background:var(--alto)}
 .oculto{display:none}
 
-.placar{text-align:center;padding:8px 0 4px}
-.placar .nota{font-size:40px;font-weight:800;color:var(--amarelo);line-height:1.1}
-.placar .de{font-size:14px;color:var(--fraco);margin-top:4px}
-.placar h2{margin:16px 0 7px;font-size:19px;color:var(--forte);font-weight:700}
-.placar p{margin:0;font-size:14.5px;line-height:1.6;color:var(--texto)}
+.abertura{text-align:center;padding:14px 0 4px}
+.abertura .selo-abertura{font-size:40px;line-height:1;margin-bottom:14px}
+.abertura h2{font-size:20px;margin-bottom:9px}
+.abertura .ajuda{margin:0 auto;max-width:400px}
+
+.placar{text-align:center;padding:4px 0 2px}
+.placar p{margin:0;font-size:14.5px;line-height:1.6}
+.nota-repetir{
+  margin-top:12px !important;font-size:13px !important;
+  color:var(--fraco) !important;line-height:1.55;
+}
+.estrelas{font-size:26px;letter-spacing:5px;margin-bottom:12px}
+.placar h2{font-size:21px;margin-bottom:8px}
+.tarefa{
+  margin-top:18px;padding:14px 15px;border-radius:0 9px 9px 0;
+  background:var(--alto);border-left:3px solid var(--amarelo);
+  font-size:14px;line-height:1.6;
+}
+.tarefa b{color:var(--forte)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -76,168 +122,356 @@ body{margin:0;background:var(--fundo);color:var(--texto);
 <div class="caixa">
   <div class="cartao">
 
-    <div id="tela-quiz">
-      <div class="topo">
-        <span class="etiqueta" id="etiqueta">Treino</span>
-        <span class="passo" id="passo">1 de 4</span>
-      </div>
-      <div class="trilho"><i id="trilho" style="width:25%"></i></div>
-
-      <p class="pergunta" id="pergunta">—</p>
-      <div class="opcoes" id="opcoes"></div>
-      <div class="explica" id="explica"></div>
-      <button class="botao oculto" id="proxima" onclick="proxima()">Próxima</button>
+    <div class="topo" id="cabecalho">
+      <span class="etiqueta">Treino 1 · Organização de ideias</span>
+      <span class="passo" id="passo">1 de 5</span>
     </div>
+    <div class="trilho" id="barra"><i id="trilho" style="width:20%"></i></div>
 
-    <div id="tela-fim" class="oculto">
+    <section class="etapa" id="p0">
+      <div class="abertura">
+        <div class="selo-abertura">🎯</div>
+        <h2>Treino 1 · Organização de ideias</h2>
+        <p class="ajuda">Assista à aula acima antes de começar. O treino tem 5 partes
+        e leva cerca de 3 minutos.</p>
+      </div>
+      <button class="botao" onclick="comecar()">Começar treino</button>
+    </section>
+
+    <section class="etapa oculto" id="p1">
+      <h2>Isso é um Objetivo Único?</h2>
+      <p class="ajuda">Objetivo Único é uma coisa só que você quer que o outro faça depois que você falar.</p>
+      <div id="l1"></div>
+      <div class="retorno" id="r1"></div>
+      <button class="botao oculto" id="b1" onclick="ir(2)">Continuar</button>
+    </section>
+
+    <section class="etapa oculto" id="p2">
+      <h2>O que essa pessoa queria?</h2>
+      <p class="ajuda">Ela falou bastante. Mas o que ela queria mesmo?</p>
+      <div id="l2"></div>
+      <div class="retorno" id="r2"></div>
+      <button class="botao oculto" id="b2" onclick="ir(3)">Continuar</button>
+    </section>
+
+    <section class="etapa oculto" id="p3">
+      <h2>Qual serve de âncora?</h2>
+      <p class="ajuda">Âncora é uma palavra só. Toque nas que são uma palavra.</p>
+      <div class="lista" id="l3"></div>
+      <div class="contador"><span id="n3">0</span> marcadas</div>
+      <div class="retorno" id="r3"></div>
+      <button class="botao" id="b3" onclick="conferir3()">Conferir</button>
+    </section>
+
+    <section class="etapa oculto" id="p4">
+      <h2>O Rafael quer mais uma semana de prazo</h2>
+      <p class="ajuda">Marque as 3 informações que ajudam ele a conseguir isso.</p>
+      <div class="fala">
+        "Gente, deixa eu falar rapidinho. A gente começou esse projeto em março,
+        lembra que o Paulo ainda estava no time? Aí teve a mudança de fornecedor,
+        que foi um perrengue, o financeiro demorou pra aprovar... Enfim, a
+        entrega tá marcada pra sexta mas não vai dar. Preciso de mais uma semana."
+      </div>
+      <div class="lista" id="l4"></div>
+      <div class="contador"><span id="n4">0</span> de 3 marcadas</div>
+      <div class="retorno" id="r4"></div>
+      <button class="botao" id="b4" onclick="conferir4()" disabled>Conferir</button>
+    </section>
+
+    <section class="etapa oculto" id="p5">
+      <h2>Tire o que não precisa</h2>
+      <p class="ajuda" id="a5">A Ana vai pedir mais verba. Toque no que ela pode tirar da fala, até sobrarem 3.</p>
+      <div class="lista" id="l5"></div>
+      <div class="contador">faltam tirar <span id="n5">3</span></div>
+      <div class="retorno" id="r5"></div>
+      <button class="botao oculto" id="b5" onclick="terminar()">Ver resultado</button>
+    </section>
+
+    <section class="etapa oculto" id="fim">
       <div class="placar">
-        <div class="nota"><span id="acertos">0</span>/<span id="total">4</span></div>
-        <div class="de">respostas certas</div>
-        <h2 id="veredito">—</h2>
-        <p id="comentario">—</p>
+        <div class="estrelas" id="f-estrelas">★★★★★</div>
+        <h2 id="f-titulo">—</h2>
+        <p id="f-texto">—</p>
+        <p class="nota-repetir">Você pode repetir o treino quantas vezes quiser.
+        Sua nota mais alta é a que vale.</p>
       </div>
-      <button class="botao" onclick="refazer()">Refazer o treino</button>
-      <a class="botao fantasma" id="voltar" href="#" target="_top">Voltar ao TAE</a>
-    </div>
+
+      <div class="tarefa">
+        <b>Hoje.</b> Antes da sua próxima conversa importante, escreva 3 palavras
+        num papel. Leve o papel.
+      </div>
+
+      <a class="botao" id="b-proximo" href="#" target="_top">Próximo treino</a>
+      <button class="botao fantasma" onclick="repetir()">Repetir treino</button>
+    </section>
 
   </div>
 </div>
 
 <script>
-const VOLTAR_PARA = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+const PROXIMO = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+const CODIGO = new URLSearchParams(window.location.search).get("t") || "1.1";
 
-const TREINOS = {
-  "1.1": {
-    pilar: "Estrutura · Treino 1",
-    perguntas: [
-      {
-        p: "Você tem trinta segundos para responder em uma reunião. Por onde começa?",
-        o: ["Pelo contexto, para a pessoa entender de onde vem",
-            "Pela conclusão, e o contexto vem depois se precisar",
-            "Pelos dados, que sustentam o argumento",
-            "Por uma pergunta, para engajar quem ouve"],
-        certa: 1,
-        porque: "Quem começa pelo contexto perde o ouvinte antes de chegar ao ponto. A conclusão primeiro dá ao outro um lugar onde encaixar o resto."
-      },
-      {
-        p: "Qual destas é uma abertura boa para a ideia “precisamos mudar como reportamos resultados”?",
-        o: ["Bom, eu venho pensando nisso há um tempo e queria trazer para vocês",
-            "Nosso relatório atual esconde o que importa",
-            "Antes de começar, queria contextualizar como chegamos no modelo de hoje",
-            "Não sei se é o momento, mas talvez valesse repensar o relatório"],
-        certa: 1,
-        porque: "A abertura entrega o assunto em uma frase. As outras três gastam tempo pedindo licença para falar."
-      },
-      {
-        p: "O que normalmente sobra no desenvolvimento de quem fala demais?",
-        o: ["Exemplos concretos",
-            "Razões repetidas de formas diferentes",
-            "Pausas entre as frases",
-            "Referências a dados"],
-        certa: 1,
-        porque: "Repetir não reforça, cansa. Uma razão bem dita vence três razões empilhadas."
-      },
-      {
-        p: "Um fechamento que funciona termina com:",
-        o: ["Um resumo do que já foi dito",
-            "Uma proposta ou uma decisão",
-            "Um agradecimento pela atenção",
-            "Uma ressalva sobre os limites do argumento"],
-        certa: 1,
-        porque: "Fechamento sem proposta de ação soa como desculpa. Quem ouviu precisa saber o que fazer com aquilo."
-      }
-    ]
-  }
-};
-
-const codigo = new URLSearchParams(window.location.search).get("t") || "1.1";
-const T = TREINOS[codigo];
-let i = 0, acertos = 0, respondida = false;
-
-function iniciar(){
-  document.getElementById("voltar").href = VOLTAR_PARA;
-  if(!T){
-    document.getElementById("pergunta").textContent = "Treino não encontrado.";
-    document.getElementById("etiqueta").textContent = "Erro";
-    return;
-  }
-  document.getElementById("etiqueta").textContent = T.pilar;
-  document.getElementById("total").textContent = T.perguntas.length;
-  mostrar();
+/* Guarda a nota deste treino. Mantém sempre a mais alta.
+   O painel do TAE lê daqui para mostrar as estrelas na Jornada. */
+function guardarNota(estrelas){
+  try{
+    const quem = localStorage.getItem("tae_aluno_atual") || "visitante";
+    const chave = "tae_notas_" + quem;
+    const notas = JSON.parse(localStorage.getItem(chave) || "{}");
+    if(!notas[CODIGO] || estrelas > notas[CODIGO]){
+      notas[CODIGO] = estrelas;
+      localStorage.setItem(chave, JSON.stringify(notas));
+    }
+  }catch(e){}
 }
 
-function mostrar(){
-  respondida = false;
-  const q = T.perguntas[i];
-  document.getElementById("passo").textContent = (i+1) + " de " + T.perguntas.length;
-  document.getElementById("trilho").style.width = ((i+1)/T.perguntas.length*100) + "%";
-  document.getElementById("pergunta").textContent = q.p;
-  document.getElementById("explica").classList.remove("visivel");
-  document.getElementById("proxima").classList.add("oculto");
+const OBJETIVOS = [
+  { t:"Quero que ele aprove o orçamento", ok:true, p:"Diz o que você quer que aconteça." },
+  { t:"Quero falar sobre o projeto", ok:false, p:"Isso é assunto. Falar sobre algo não é querer algo." },
+  { t:"Quero avisar do atraso e pedir ajuda", ok:false, p:"Tem um \"e\". São duas coisas." },
+  { t:"Quero que a equipe entregue até quinta", ok:true, p:"Dá pra saber se deu certo ou não." }
+];
 
-  const letras = ["A","B","C","D","E"];
-  document.getElementById("opcoes").innerHTML = q.o.map(function(txt, n){
-    return '<button class="opcao" onclick="responder(' + n + ')">' +
-           '<span class="letra">' + letras[n] + '</span><span>' + txt + '</span></button>';
+const FALAS = [
+  { fala:"\"Oi! Então, eu vi que a planilha do mês passado tinha uns números diferentes. Não sei se foi erro de digitação ou se mudou alguma coisa. Enfim, você consegue dar uma olhada?\"",
+    ops:["Reclamar da planilha","Que a pessoa olhe a planilha","Avisar que teve erro"],
+    certa:1,
+    p:"O resto foi enrolação. Ela queria que a pessoa fosse olhar." },
+  { fala:"\"Pessoal, esse mês foi puxado. Teve muita demanda, a equipe ficou sobrecarregada, o Carlos até ficou doente. Eu acho que a gente precisa mudar como divide as tarefas.\"",
+    ops:["Elogiar a equipe","Falar que o Carlos adoeceu","Mudar a divisão de tarefas"],
+    certa:2,
+    p:"O pedido veio no fim, quase escondido." }
+];
+
+const ANCORAS = [
+  { t:"prazo", ok:true },
+  { t:"a demora que teve na aprovação", ok:false },
+  { t:"verba", ok:true },
+  { t:"precisamos de mais gente no time", ok:false },
+  { t:"fornecedor", ok:true },
+  { t:"explicar tudo que houve em março", ok:false }
+];
+
+const INFOS = [
+  { t:"O projeto começou em março", ok:false },
+  { t:"A entrega de sexta não vai sair", ok:true },
+  { t:"O Paulo estava no time", ok:false },
+  { t:"Teve troca de fornecedor", ok:true },
+  { t:"O financeiro demorou a aprovar", ok:true },
+  { t:"A troca de fornecedor foi um perrengue", ok:false }
+];
+
+const ANA = [
+  { t:"A verba não cobre o fim do ano", fica:true },
+  { t:"Venho pensando nisso faz tempo", fica:false },
+  { t:"Precisamos de 30% a mais", fica:true },
+  { t:"Sei que não é hora de pedir", fica:false },
+  { t:"Sem isso, 2 projetos param", fica:true },
+  { t:"O time todo concorda comigo", fica:false }
+];
+
+let pontos = 0, ok1 = 0, ok2 = 0;
+let m3 = [], m4 = [], cortes = [];
+
+function montar1(){
+  document.getElementById("l1").innerHTML = OBJETIVOS.map(function(o,i){
+    return '<div class="item"><div class="frase">' + o.t + '</div><div class="dupla">' +
+      '<button class="op" onclick="r1(' + i + ',1)">É Objetivo Único</button>' +
+      '<button class="op" onclick="r1(' + i + ',0)">Não é</button></div></div>';
   }).join("");
 }
-
-function responder(n){
-  if(respondida) return;
-  respondida = true;
-  const q = T.perguntas[i];
-  const botoes = document.querySelectorAll(".opcao");
-
-  botoes.forEach(function(b){ b.disabled = true; });
-  botoes[q.certa].classList.add("certa");
-  if(n !== q.certa) botoes[n].classList.add("errada");
-  else acertos++;
-
-  const e = document.getElementById("explica");
-  e.innerHTML = "<b>" + (n === q.certa ? "Isso." : "A melhor é a " + ["A","B","C","D"][q.certa] + ".") +
-                "</b> " + q.porque;
-  e.classList.add("visivel");
-
-  const bt = document.getElementById("proxima");
-  bt.textContent = (i + 1 < T.perguntas.length) ? "Próxima" : "Ver resultado";
-  bt.classList.remove("oculto");
+function r1(i, escolha){
+  const g = document.querySelectorAll("#l1 .item")[i].querySelectorAll(".op");
+  if(g[0].disabled) return;
+  g.forEach(function(b){ b.disabled = true; });
+  const certo = OBJETIVOS[i].ok ? 0 : 1;
+  g[certo].classList.add("certa");
+  const escolheu = escolha ? 0 : 1;
+  const acertou1 = escolheu === certo;
+  if(!acertou1) g[escolheu].classList.add("errada"); else ok1++;
+  nota("#l1", i, OBJETIVOS[i].p, acertou1);
+  if(todasFeitas("#l1", OBJETIVOS.length * 2)){
+    if(ok1 >= 3) pontos++;
+    fecha("r1", "b1", ok1 + " de " + OBJETIVOS.length + " certas.");
+  }
 }
 
-function proxima(){
-  i++;
-  if(i < T.perguntas.length){ mostrar(); return; }
-  terminar();
+function montar2(){
+  document.getElementById("l2").innerHTML = FALAS.map(function(f,i){
+    return '<div class="item" style="margin-bottom:22px"><div class="fala">' + f.fala + '</div><div class="lista">' +
+      f.ops.map(function(o,j){
+        return '<button class="op" onclick="r2(' + i + ',' + j + ')"><span class="mk">✓</span><span>' + o + '</span></button>';
+      }).join("") + '</div></div>';
+  }).join("");
+}
+function r2(i, j){
+  const g = document.querySelectorAll("#l2 .item")[i].querySelectorAll(".op");
+  if(g[0].disabled) return;
+  g.forEach(function(b){ b.disabled = true; });
+  g[FALAS[i].certa].classList.add("certa");
+  const acertou2 = j === FALAS[i].certa;
+  if(!acertou2) g[j].classList.add("errada"); else ok2++;
+  nota("#l2", i, FALAS[i].p, acertou2);
+  if(todasFeitas("#l2", FALAS.length * 3)){
+    if(ok2 === FALAS.length) pontos++;
+    fecha("r2", "b2", ok2 + " de " + FALAS.length + " certas. Nas duas, o pedido veio no fim.");
+  }
+}
+
+function montar3(){
+  document.getElementById("l3").innerHTML = ANCORAS.map(function(a,i){
+    return '<button class="op" onclick="m(3,' + i + ')"><span class="mk">✓</span><span>' + a.t + '</span></button>';
+  }).join("");
+}
+function conferir3(){
+  const bs = document.querySelectorAll("#l3 .op");
+  bs.forEach(function(b){ b.disabled = true; b.classList.remove("marcada"); });
+  let certo = true;
+  ANCORAS.forEach(function(a,i){
+    const marcou = m3.indexOf(i) >= 0;
+    if(a.ok){ bs[i].classList.add("certa"); if(!marcou) certo = false; }
+    else if(marcou){ bs[i].classList.add("errada"); certo = false; }
+  });
+  if(certo) pontos++;
+  const r = document.getElementById("r3");
+  r.className = "retorno visivel " + (certo ? "ok" : "erro");
+  r.innerHTML = certo
+    ? "<b>✅ Correto.</b> Âncora é uma palavra. Frase você esquece no meio."
+    : "<b>🛑 Errado.</b> As de uma palavra são âncoras. As outras já são a fala pronta.";
+  const b = document.getElementById("b3");
+  b.textContent = "Continuar";
+  b.onclick = function(){ ir(4); };
+}
+
+function montar4(){
+  document.getElementById("l4").innerHTML = INFOS.map(function(o,i){
+    return '<button class="op" onclick="m(4,' + i + ')"><span class="mk">✓</span><span>' + o.t + '</span></button>';
+  }).join("");
+}
+function conferir4(){
+  const bs = document.querySelectorAll("#l4 .op");
+  bs.forEach(function(b){ b.disabled = true; b.classList.remove("marcada"); });
+  let certas = 0;
+  INFOS.forEach(function(o,i){
+    if(o.ok){ bs[i].classList.add("certa"); if(m4.indexOf(i) >= 0) certas++; }
+    else if(m4.indexOf(i) >= 0){ bs[i].classList.add("errada"); }
+  });
+  if(certas === 3) pontos++;
+  const r = document.getElementById("r4");
+  r.className = "retorno visivel " + (certas === 3 ? "ok" : "erro");
+  r.innerHTML = certas === 3
+    ? "<b>✅ Correto.</b> O resto não ajuda ele a conseguir o prazo."
+    : "<b>🛑 Errado.</b> Acertou " + certas + " de 3. A pergunta é: isso ajuda ele a conseguir o prazo?";
+  const b = document.getElementById("b4");
+  b.textContent = "Continuar"; b.disabled = false;
+  b.onclick = function(){ ir(5); };
+}
+
+function montar5(){
+  document.getElementById("l5").innerHTML = ANA.map(function(o,i){
+    return '<button class="op" onclick="cortar(' + i + ')"><span class="mk">✕</span><span>' + o.t + '</span></button>';
+  }).join("");
+}
+function cortar(i){
+  const b = document.querySelectorAll("#l5 .op")[i];
+  if(b.disabled || cortes.indexOf(i) >= 0) return;
+  cortes.push(i);
+  b.classList.add("saiu");
+  document.getElementById("n5").textContent = 3 - cortes.length;
+  if(cortes.length === 3){
+    document.querySelectorAll("#l5 .op").forEach(function(x){ x.disabled = true; });
+    let certo = ANA.every(function(o,j){ return !(o.fica && cortes.indexOf(j) >= 0); });
+    if(certo) pontos++;
+    const r = document.getElementById("r5");
+    r.className = "retorno visivel " + (certo ? "ok" : "erro");
+    r.innerHTML = certo
+      ? "<b>✅ Correto.</b> Sobrou o problema, o número e o que acontece se não resolver."
+      : "<b>🛑 Errado.</b> Fica o problema, o número e o que acontece se não resolver.";
+    document.getElementById("b5").classList.remove("oculto");
+  }
+}
+
+function m(etapa, i){
+  const lista = etapa === 3 ? m3 : m4;
+  const b = document.querySelectorAll("#l" + etapa + " .op")[i];
+  if(b.disabled) return;
+  const pos = lista.indexOf(i);
+  if(pos >= 0){ lista.splice(pos,1); b.classList.remove("marcada"); }
+  else {
+    if(etapa === 4 && lista.length >= 3) return;
+    lista.push(i); b.classList.add("marcada");
+  }
+  document.getElementById("n" + etapa).textContent = lista.length;
+  if(etapa === 4) document.getElementById("b4").disabled = lista.length !== 3;
+}
+
+function nota(sel, i, txt, acertou){
+  const d = document.createElement("div");
+  d.className = "nota" + (acertou ? " nota-ok" : " nota-erro");
+  d.innerHTML = '<b>' + (acertou ? "✅ Correto" : "🛑 Errado") + '</b> ' + txt;
+  document.querySelectorAll(sel + " .item")[i].appendChild(d);
+}
+
+function todasFeitas(sel, total){
+  return document.querySelectorAll(sel + " .op:disabled").length === total;
+}
+
+function fecha(idR, idB, txt){
+  const r = document.getElementById(idR);
+  r.innerHTML = "<b>" + txt + "</b>";
+  r.classList.add("visivel");
+  document.getElementById(idB).classList.remove("oculto");
+}
+
+function ir(n){
+  document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
+  document.getElementById("p" + n).classList.remove("oculto");
+  document.getElementById("passo").textContent = n + " de 5";
+  document.getElementById("trilho").style.width = (n/5*100) + "%";
+  window.scrollTo(0,0);
 }
 
 function terminar(){
-  const total = T.perguntas.length;
-  document.getElementById("acertos").textContent = acertos;
-  const pct = acertos / total;
-  let v, c;
-  if(pct === 1){
-    v = "Estrutura dominada";
-    c = "Agora leve para a prática: na próxima reunião, comece pela conclusão e veja a diferença.";
-  }else if(pct >= 0.5){
-    v = "Quase lá";
-    c = "Você entendeu a lógica. Reveja os pontos que errou e repita o treino amanhã.";
-  }else{
-    v = "Vale rever a aula";
-    c = "Assista de novo prestando atenção na ordem das três partes. Depois volte aqui.";
-  }
-  document.getElementById("veredito").textContent = v;
-  document.getElementById("comentario").textContent = c;
-  document.getElementById("tela-quiz").classList.add("oculto");
-  document.getElementById("tela-fim").classList.remove("oculto");
+  document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
+  document.getElementById("fim").classList.remove("oculto");
+  document.getElementById("passo").textContent = "concluído";
+  document.getElementById("trilho").style.width = "100%";
+  document.getElementById("f-estrelas").textContent = "★".repeat(pontos) + "☆".repeat(5 - pontos);
+  guardarNota(pontos);
+
+  const MENSAGENS = [
+    { t:"Treino feito",
+      x:"Começar já é a parte mais difícil, e você começou. Assista à aula de novo com calma e volte aqui." },
+    { t:"Primeiro acerto",
+      x:"Você acertou uma, e isso quer dizer que já entendeu uma parte. Repita o treino e veja como a segunda vem mais fácil." },
+    { t:"Está pegando o jeito",
+      x:"Metade do caminho. O que você acertou aqui já dá pra usar na sua próxima conversa." },
+    { t:"Muito bom",
+      x:"Você entendeu a ideia: um objetivo, poucas informações, palavras curtas pra lembrar." },
+    { t:"Quase lá",
+      x:"Faltou pouco. Você já sabe separar o que importa do que é enfeite — é disso que se trata." },
+    { t:"5 de 5",
+      x:"Acertou tudo. Agora a parte que vale de verdade: use isso na vida real hoje." }
+  ];
+  const msg = MENSAGENS[pontos];
+  document.getElementById("f-titulo").textContent = msg.t;
+  document.getElementById("f-texto").textContent = msg.x;
+  window.scrollTo(0,0);
 }
 
-function refazer(){
-  i = 0; acertos = 0;
-  document.getElementById("tela-fim").classList.add("oculto");
-  document.getElementById("tela-quiz").classList.remove("oculto");
-  mostrar();
+function comecar(){
+  document.getElementById("cabecalho").style.display = "";
+  document.getElementById("barra").style.display = "";
+  ir(1);
 }
 
-iniciar();
+function repetir(){ window.location.reload(); }
+
+document.getElementById("b-proximo").href = PROXIMO;
+document.getElementById("cabecalho").style.display = "none";
+document.getElementById("barra").style.display = "none";
+montar1(); montar2(); montar3(); montar4(); montar5();
 </script>
 </body>
 </html>
