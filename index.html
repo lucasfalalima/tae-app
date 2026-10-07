@@ -364,10 +364,79 @@ function carregar(){
   const quem = ALUNO.id || "visitante";
   try{ NOTAS = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}"); }
   catch(e){ NOTAS = {}; }
-  try{
-    const p = JSON.parse(localStorage.getItem("tae_" + quem) || "{}");
-    SEQUENCIA = p.sequencia || 0;
-  }catch(e){ SEQUENCIA = 0; }
+  let dias = [];
+  try{ dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]"); }
+  catch(e){ dias = []; }
+  SEQUENCIA = calcularSequencia(dias);
+}
+
+/* ---------- Progresso salvo no Cademí ----------
+   O progresso fica numa nota interna do aluno no Cademí, lida e gravada
+   pelo cenário "TAE - Progresso do aluno" no Make.
+   Formato: TAE|1.1=4|1.1=5|d2026-10-07|
+   treino=estrelas (vale a maior) e dAAAA-MM-DD (dia em que treinou). */
+const PROGRESSO_URL = "https://hook.us1.make.com/a9bpauyn4nsdi1dsq9pag166skfidr28";
+
+function hojeTexto(){ return new Date().toLocaleDateString("sv-SE"); }
+
+function calcularSequencia(dias){
+  const tem = {};
+  dias.forEach(function(d){ tem[d] = true; });
+  const d = new Date();
+  if(!tem[d.toLocaleDateString("sv-SE")]) d.setDate(d.getDate() - 1);
+  let n = 0;
+  while(tem[d.toLocaleDateString("sv-SE")]){ n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+
+function lerTextoProgresso(texto){
+  const notas = {}, dias = [];
+  if(!texto || texto.indexOf("TAE|") !== 0) return null;
+  texto.split("|").forEach(function(parte){
+    if(/^d\d{4}-\d{2}-\d{2}$/.test(parte)) dias.push(parte.slice(1));
+    else if(parte.indexOf("=") > 0){
+      const k = parte.split("=")[0], v = parseInt(parte.split("=")[1], 10);
+      if(!isNaN(v) && (!notas[k] || v > notas[k])) notas[k] = v;
+    }
+  });
+  return { notas:notas, dias:dias };
+}
+
+/* Busca o progresso no Cademí, junta com o que está no navegador e
+   reenvia o que só existia aqui (ex.: treino feito sem internet). */
+function sincronizar(){
+  if(!ALUNO.id) return;
+  fetch(PROGRESSO_URL + "?acao=ler&aluno=" + encodeURIComponent(ALUNO.id))
+    .then(function(r){ return r.text(); })
+    .then(function(texto){
+      const servidor = lerTextoProgresso(texto);
+      if(!servidor) return;
+      const quem = ALUNO.id;
+      let local = {}, diasLocal = [];
+      try{ local = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}"); }catch(e){}
+      try{ diasLocal = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]"); }catch(e){}
+
+      const juntas = Object.assign({}, servidor.notas);
+      Object.keys(local).forEach(function(k){
+        if(!juntas[k] || local[k] > juntas[k]){
+          juntas[k] = local[k];
+          fetch(PROGRESSO_URL + "?acao=salvar&aluno=" + encodeURIComponent(quem) +
+                "&treino=" + encodeURIComponent(k) + "&estrelas=" + local[k] +
+                "&dia=" + hojeTexto(), { mode:"no-cors", keepalive:true }).catch(function(){});
+        }
+      });
+      const dias = servidor.dias.concat(diasLocal).filter(function(d, i, a){ return a.indexOf(d) === i; });
+
+      try{
+        localStorage.setItem("tae_notas_" + quem, JSON.stringify(juntas));
+        localStorage.setItem("tae_dias_" + quem, JSON.stringify(dias));
+      }catch(e){}
+      carregar();
+      montarHoje();
+      if(document.getElementById("tela-jornada").classList.contains("ativa")) montarPilares();
+      if(document.getElementById("tela-evolucao").classList.contains("ativa")) montarEvolucao();
+    })
+    .catch(function(){ /* sem internet: segue com o que está no navegador */ });
 }
 
 function codigo(pilarId, n){ return pilarId + "." + n; }
@@ -569,10 +638,12 @@ document.addEventListener("visibilitychange", function(){
     montarHoje();
     if(document.getElementById("tela-jornada").classList.contains("ativa")) montarPilares();
     if(document.getElementById("tela-evolucao").classList.contains("ativa")) montarEvolucao();
+    sincronizar();
   }
 });
 
 montarHoje();
+sincronizar();
 </script>
 </body>
 </html>
