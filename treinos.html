@@ -222,17 +222,31 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 const CODIGO = new URLSearchParams(window.location.search).get("t") || "1.1";
 
 /* Guarda a nota deste treino. Mantém sempre a mais alta.
-   O painel do TAE lê daqui para mostrar as estrelas na Jornada. */
+   Grava no navegador (para o painel abrir na hora) e envia para o
+   Cademí, pelo cenário "TAE - Progresso do aluno" no Make. */
+const PROGRESSO_URL = "https://hook.us1.make.com/a9bpauyn4nsdi1dsq9pag166skfidr28";
+
 function guardarNota(estrelas){
+  const hoje = new Date().toLocaleDateString("sv-SE");
+  let quem = "visitante";
   try{
-    const quem = localStorage.getItem("tae_aluno_atual") || "visitante";
+    quem = localStorage.getItem("tae_aluno_atual") || "visitante";
     const chave = "tae_notas_" + quem;
     const notas = JSON.parse(localStorage.getItem(chave) || "{}");
     if(!notas[CODIGO] || estrelas > notas[CODIGO]){
       notas[CODIGO] = estrelas;
       localStorage.setItem(chave, JSON.stringify(notas));
     }
+    const chaveDias = "tae_dias_" + quem;
+    const dias = JSON.parse(localStorage.getItem(chaveDias) || "[]");
+    if(dias.indexOf(hoje) === -1){ dias.push(hoje); localStorage.setItem(chaveDias, JSON.stringify(dias)); }
   }catch(e){}
+
+  if(quem !== "visitante"){
+    fetch(PROGRESSO_URL + "?acao=salvar&aluno=" + encodeURIComponent(quem) +
+          "&treino=" + encodeURIComponent(CODIGO) + "&estrelas=" + estrelas +
+          "&dia=" + hoje, { mode:"no-cors", keepalive:true }).catch(function(){});
+  }
 }
 
 /* Endereço do próximo treino. Troque pelo link da próxima aula no Cademí. */
