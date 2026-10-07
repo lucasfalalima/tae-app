@@ -96,11 +96,12 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 .botao.fantasma:hover{background:var(--alto)}
 .oculto{display:none}
 .voltar-painel{
-  display:block;text-align:center;margin-top:14px;
-  color:var(--fraco);font-size:13.5px;font-weight:600;text-decoration:none;
-  padding:8px;transition:color .14s ease;
+  display:block;text-align:center;margin-top:12px;
+  background:var(--alto);border:1px solid var(--borda);border-radius:10px;
+  color:var(--fraco);font-size:14px;font-weight:600;text-decoration:none;
+  padding:13px;transition:background .14s ease,color .14s ease;
 }
-.voltar-painel:hover{color:var(--texto)}
+.voltar-painel:hover{background:var(--cartao);color:var(--texto)}
 
 .abertura{text-align:center;padding:14px 0 4px}
 .abertura .selo-abertura{font-size:40px;line-height:1;margin-bottom:14px}
@@ -142,7 +143,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
         e leva cerca de 3 minutos.</p>
       </div>
       <button class="botao" onclick="comecar()">Começar treino</button>
-      <a class="voltar-painel" id="b-voltar-abertura" href="#" target="_top">Voltar ao Painel</a>
+      <a class="voltar-painel" id="b-voltar-abertura" href="#" target="_top">← Voltar ao Painel</a>
     </section>
 
     <!-- ===== 1 ===== -->
