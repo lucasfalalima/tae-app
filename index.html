@@ -27,12 +27,10 @@ body{
 }
 .app{max-width:560px;margin:0 auto;padding:4px 16px 20px}
 
-/* ---------- Cabeçalho da tela ---------- */
 .topo{padding:14px 2px 18px}
 .topo h1{margin:0 0 5px;font-size:25px;font-weight:700;color:var(--texto-forte);letter-spacing:-.02em}
 .topo p{margin:0;font-size:14.5px;color:var(--texto-fraco);line-height:1.5}
 
-/* ---------- Cartões ---------- */
 .cartao{
   background:var(--cartao);
   border:1px solid var(--borda);
@@ -45,11 +43,9 @@ body{
   color:var(--amarelo);margin-bottom:9px;text-transform:uppercase;
 }
 
-/* ---------- Treino sugerido ---------- */
 .sugestao-titulo{margin:0 0 6px;font-size:21px;font-weight:700;color:var(--texto-forte);letter-spacing:-.01em}
 .sugestao-desc{margin:0 0 18px;font-size:14.5px;color:var(--texto-fraco);line-height:1.55}
 
-/* ---------- Botões ---------- */
 .botao{
   display:block;width:100%;border:0;cursor:pointer;text-align:center;
   background:var(--amarelo);color:#1a1500;
@@ -65,7 +61,6 @@ body{
 }
 .botao-fantasma:hover{background:var(--cartao-alto)}
 
-/* ---------- Números ---------- */
 .numeros{display:flex;gap:10px;margin-bottom:12px}
 .numero{
   flex:1;background:var(--cartao);border:1px solid var(--borda);
@@ -74,12 +69,10 @@ body{
 .numero b{display:block;font-size:23px;font-weight:800;color:var(--amarelo);line-height:1.15}
 .numero span{display:block;font-size:11px;color:var(--texto-fraco);margin-top:3px;line-height:1.3}
 
-/* ---------- Barra de progresso ---------- */
 .barra{height:7px;background:var(--borda);border-radius:99px;overflow:hidden;margin:12px 0 8px}
 .barra i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .45s ease}
 .barra-txt{display:flex;justify-content:space-between;font-size:12.5px;color:var(--texto-fraco)}
 
-/* ---------- Pilares ---------- */
 .linha-pilar{
   display:flex;align-items:center;gap:12px;
   padding:11px 0;border-bottom:1px solid var(--borda);
@@ -127,11 +120,11 @@ body{
 }
 .aula-marca.feita{background:var(--verde);border-color:var(--verde);color:#06240f}
 .aula-nome{flex:1;font-size:14.5px;font-weight:600;color:var(--texto)}
-.aula-meta{font-size:12px;color:var(--texto-fraco);margin-top:2px;font-weight:400}
+.aula-meta{font-size:12px;color:var(--texto-fraco);margin-top:3px;font-weight:400}
+.estrelas-aula{color:var(--amarelo);font-size:13px;letter-spacing:1.5px}
 .aula-seta{color:var(--texto-fraco);font-size:16px;flex-shrink:0}
 .aula.travada{opacity:.4}
 
-/* ---------- Conquistas ---------- */
 .conquista{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--borda)}
 .conquista:last-child{border-bottom:0;padding-bottom:0}
 .conquista:first-child{padding-top:0}
@@ -145,7 +138,6 @@ body{
 .conquista-nome{font-size:14.5px;font-weight:600;color:var(--texto)}
 .conquista-desc{font-size:12.5px;color:var(--texto-fraco);margin-top:2px}
 
-/* ---------- Abas (no fluxo, não fixas) ---------- */
 .abas{
   display:flex;margin:12px 0 4px;
   background:var(--cartao);border:1px solid var(--borda);
@@ -164,15 +156,8 @@ body{
 .aba.ativa{color:var(--amarelo);background:var(--cartao-alto)}
 .aba:focus-visible{outline:2px solid var(--amarelo);outline-offset:-2px}
 
-/* ---------- Telas ---------- */
 .tela{display:none}
 .tela.ativa{display:block}
-
-.aviso{
-  background:rgba(247,208,70,.1);border:1px solid rgba(247,208,70,.3);
-  border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.55;
-  color:var(--texto);margin-bottom:12px;
-}
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -181,22 +166,20 @@ body{
 <div class="app">
 
 <nav class="abas">
-  <button class="aba ativa" data-tela="hoje" onclick="irPara('hoje')">
+  <button class="aba ativa" data-tela="hoje" onclick="irPara(&#39;hoje&#39;)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Início
   </button>
-  <button class="aba" data-tela="jornada" onclick="irPara('jornada')">
+  <button class="aba" data-tela="jornada" onclick="irPara(&#39;jornada&#39;)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 5h11l3 3.5-3 3.5H6"/><path d="M6 15h8l2.5 3"/></svg>
     Jornada
   </button>
-  <button class="aba" data-tela="evolucao" onclick="irPara('evolucao')">
+  <button class="aba" data-tela="evolucao" onclick="irPara(&#39;evolucao&#39;)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
     Evolução
   </button>
-  
 </nav>
 
-<!-- ========== HOJE ========== -->
 <section class="tela ativa" id="tela-hoje">
   <div class="topo">
     <h1 id="saudacao">Bom dia</h1>
@@ -226,7 +209,6 @@ body{
   </div>
 </section>
 
-<!-- ========== JORNADA ========== -->
 <section class="tela" id="tela-jornada">
   <div class="topo">
     <h1>Sua jornada</h1>
@@ -235,7 +217,6 @@ body{
   <div id="lista-pilares"></div>
 </section>
 
-<!-- ========== EVOLUÇÃO ========== -->
 <section class="tela" id="tela-evolucao">
   <div class="topo">
     <h1>Sua evolução</h1>
@@ -254,71 +235,56 @@ body{
   </div>
 </section>
 
-
-
-<!-- ========== ABAS ========== -->
 </div>
 
 <script>
-/* ===================================================================
-   CONFIGURAÇÃO DOS TREINOS
-   Preencha "aula" com o ID da aula no Cademí assim que ela existir.
-   O ID aparece no endereço da aula:
-   .../area/conteudo/aula/9676261  ->  aula:9676261
-   Enquanto estiver null, o treino aparece como "em breve".
-   =================================================================== */
-const BASE_AULA = 'https://aluno.falalima.com.br/area/conteudo/aula/';
+const BASE_AULA = "https://aluno.falalima.com.br/area/conteudo/aula/";
 
 const PILARES = [
-  { id:1, nome:'Estrutura',
-    resumo:'Organize qualquer ideia em abertura, desenvolvimento e fechamento.',
-    teoria:'Como organizar uma resposta', teoriaAula:null,
+  { id:1, nome:"Estrutura",
+    resumo:"Organize qualquer ideia em abertura, desenvolvimento e fechamento.",
     treinos:[
-      { n:1, nome:'Estruture uma ideia',        min:5, aula:9684559 },
-      { n:2, nome:'Estruture um tema do seu trabalho', min:5, aula:null },
-      { n:3, nome:'Reduza para três frases',    min:4, aula:null },
-      { n:4, nome:'Responda a uma pergunta difícil', min:6, aula:null },
-      { n:5, nome:'Estruture sem conectores',   min:5, aula:null }
+      { n:1, nome:"Estruture uma ideia", min:5, aula:9684559 },
+      { n:2, nome:"Estruture um tema do seu trabalho", min:5, aula:null },
+      { n:3, nome:"Reduza para três frases", min:4, aula:null },
+      { n:4, nome:"Responda a uma pergunta difícil", min:6, aula:null },
+      { n:5, nome:"Estruture sem conectores", min:5, aula:null }
     ]},
-  { id:2, nome:'Clareza',
-    resumo:'Troque palavras difíceis por palavras exatas. Quem entende, confia.',
-    teoria:'O preço de ser complicado', teoriaAula:null,
+  { id:2, nome:"Clareza",
+    resumo:"Troque palavras difíceis por palavras exatas. Quem entende, confia.",
     treinos:[
-      { n:1, nome:'Explique sem jargão',        min:5, aula:null },
-      { n:2, nome:'Corte metade das palavras',  min:4, aula:null },
-      { n:3, nome:'Troque abstrato por concreto', min:5, aula:null },
-      { n:4, nome:'Explique para quem é de fora', min:6, aula:null },
-      { n:5, nome:'Uma ideia por frase',        min:4, aula:null }
+      { n:1, nome:"Explique sem jargão", min:5, aula:null },
+      { n:2, nome:"Corte metade das palavras", min:4, aula:null },
+      { n:3, nome:"Troque abstrato por concreto", min:5, aula:null },
+      { n:4, nome:"Explique para quem é de fora", min:6, aula:null },
+      { n:5, nome:"Uma ideia por frase", min:4, aula:null }
     ]},
-  { id:3, nome:'Objetividade',
-    resumo:'Comece pelo ponto principal. O contexto vem depois, se vier.',
-    teoria:'Ponto primeiro, história depois', teoriaAula:null,
+  { id:3, nome:"Objetividade",
+    resumo:"Comece pelo ponto principal. O contexto vem depois, se vier.",
     treinos:[
-      { n:1, nome:'Comece pela conclusão',      min:5, aula:null },
-      { n:2, nome:'Responda em trinta segundos', min:4, aula:null },
-      { n:3, nome:'Corte o aquecimento',        min:5, aula:null },
-      { n:4, nome:'Diga não sem rodeio',        min:6, aula:null },
-      { n:5, nome:'Peça algo em duas frases',   min:4, aula:null }
+      { n:1, nome:"Comece pela conclusão", min:5, aula:null },
+      { n:2, nome:"Responda em trinta segundos", min:4, aula:null },
+      { n:3, nome:"Corte o aquecimento", min:5, aula:null },
+      { n:4, nome:"Diga não sem rodeio", min:6, aula:null },
+      { n:5, nome:"Peça algo em duas frases", min:4, aula:null }
     ]},
-  { id:4, nome:'Segurança',
-    resumo:'Ritmo, pausa e olhar: o que o corpo diz antes da primeira palavra.',
-    teoria:'A pausa como ferramenta', teoriaAula:null,
+  { id:4, nome:"Segurança",
+    resumo:"Ritmo, pausa e olhar: o que o corpo diz antes da primeira palavra.",
     treinos:[
-      { n:1, nome:'Use a pausa no lugar do vício', min:5, aula:null },
-      { n:2, nome:'Desacelere o fim da frase',  min:4, aula:null },
-      { n:3, nome:'Sustente o silêncio',        min:5, aula:null },
-      { n:4, nome:'Afirme sem pedir licença',   min:6, aula:null },
-      { n:5, nome:'Encerre sem se desculpar',   min:4, aula:null }
+      { n:1, nome:"Use a pausa no lugar do vício", min:5, aula:null },
+      { n:2, nome:"Desacelere o fim da frase", min:4, aula:null },
+      { n:3, nome:"Sustente o silêncio", min:5, aula:null },
+      { n:4, nome:"Afirme sem pedir licença", min:6, aula:null },
+      { n:5, nome:"Encerre sem se desculpar", min:4, aula:null }
     ]},
-  { id:5, nome:'Improviso',
-    resumo:'Responda bem sem ter preparado. Estrutura é o que salva.',
-    teoria:'Pensar em voz alta sem se perder', teoriaAula:null,
+  { id:5, nome:"Improviso",
+    resumo:"Responda bem sem ter preparado. Estrutura é o que salva.",
     treinos:[
-      { n:1, nome:'Ganhe tempo com elegância',  min:5, aula:null },
-      { n:2, nome:'Monte a resposta enquanto fala', min:6, aula:null },
-      { n:3, nome:'Admita o que não sabe',      min:4, aula:null },
-      { n:4, nome:'Reaproveite a pergunta',     min:5, aula:null },
-      { n:5, nome:'Feche sem ensaio',           min:5, aula:null }
+      { n:1, nome:"Ganhe tempo com elegância", min:5, aula:null },
+      { n:2, nome:"Monte a resposta enquanto fala", min:6, aula:null },
+      { n:3, nome:"Admita o que não sabe", min:4, aula:null },
+      { n:4, nome:"Reaproveite a pergunta", min:5, aula:null },
+      { n:5, nome:"Feche sem ensaio", min:5, aula:null }
     ]}
 ];
 
@@ -355,13 +321,13 @@ function fraseDoDia(){
 }
 
 const CONQUISTAS = [
-  { icone:"🌱", nome:"Primeiro passo",   desc:"Conclua seu primeiro treino",
-    teste:p => p.feitos >= 1,  faltam:p => 1 - p.feitos },
-  { icone:"⚡", nome:"Primeiro pilar",    desc:"Complete um pilar inteiro",
+  { icone:"🌱", nome:"Primeiro passo", desc:"Conclua seu primeiro treino",
+    teste:p => p.feitos >= 1, faltam:p => 1 - p.feitos },
+  { icone:"⚡", nome:"Primeiro pilar", desc:"Complete um pilar inteiro",
     teste:p => p.pilares >= 1, faltam:p => p.faltamParaPilar },
-  { icone:"🔥", nome:"Metade do caminho",desc:"Chegue a 13 treinos",
+  { icone:"🔥", nome:"Metade do caminho", desc:"Chegue a 13 treinos",
     teste:p => p.feitos >= 13, faltam:p => 13 - p.feitos },
-  { icone:"🎯", nome:"Quatro pilares",   desc:"Complete quatro pilares",
+  { icone:"🎯", nome:"Quatro pilares", desc:"Complete quatro pilares",
     teste:p => p.pilares >= 4, faltam:null },
   { icone:"🏆", nome:"Jornada completa", desc:"Conclua os 25 treinos",
     teste:p => p.feitos >= 25, faltam:p => 25 - p.feitos }
@@ -370,14 +336,14 @@ const CONQUISTAS = [
 /* ---------- Aluno (vem do Cademí) ---------- */
 const ALUNO = (function(){
   const p = new URLSearchParams(window.location.search);
-  const g = (p.get('cuser_gratis') || '').toLowerCase();
+  const g = (p.get("cuser_gratis") || "").toLowerCase();
   return {
-    id: p.get('cuser_id') || null,
-    email: p.get('cuser_email') || null,
-    nome: p.get('cuser_name') || null,
-    primeiroNome: p.get('cuser_fname') || null,
-    gratuito: g === '1' || g === 'true' || g === 'sim',
-    identificado: !!p.get('cuser_id')
+    id: p.get("cuser_id") || null,
+    email: p.get("cuser_email") || null,
+    nome: p.get("cuser_name") || null,
+    primeiroNome: p.get("cuser_fname") || null,
+    gratuito: g === "1" || g === "true" || g === "sim",
+    identificado: !!p.get("cuser_id")
   };
 })();
 
@@ -388,7 +354,7 @@ function pilarBloqueado(id){ return ALUNO.gratuito && id > PILARES_GRATUITOS; }
 const PADRAO = { concluidos:[], sequencia:0, ultimoDia:null };
 let prog = Object.assign({}, PADRAO);
 
-function chave(){ return ALUNO.id ? ('tae_' + ALUNO.id) : 'tae_visitante'; }
+function chave(){ return ALUNO.id ? ("tae_" + ALUNO.id) : "tae_visitante"; }
 function carregar(){
   try{
     const b = localStorage.getItem(chave());
@@ -398,7 +364,22 @@ function carregar(){
 }
 function salvar(){ try{ localStorage.setItem(chave(), JSON.stringify(prog)); }catch(e){} }
 
-function codigo(pilarId, n){ return pilarId + '.' + n; }
+function codigo(pilarId, n){ return pilarId + "." + n; }
+
+/* Notas em estrelas, gravadas pela página de treino. */
+function notas(){
+  try{
+    const quem = ALUNO.id || "visitante";
+    return JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
+  }catch(e){ return {}; }
+}
+
+function estrelas(pilarId, n){
+  const nota = notas()[codigo(pilarId, n)];
+  if(nota === undefined) return null;
+  return "★".repeat(nota) + "☆".repeat(5 - nota);
+}
+
 function feito(pilarId, n){ return prog.concluidos.indexOf(codigo(pilarId,n)) !== -1; }
 
 function resumo(){
@@ -408,7 +389,6 @@ function resumo(){
     p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
     feitos += c;
     if(c === p.treinos.length) pilares++;
-    // pilar comecado mas nao terminado: quanto falta para fechar
     else if(c > 0 && !pilarBloqueado(p.id)){
       const f = p.treinos.length - c;
       if(f < faltamParaPilar) faltamParaPilar = f;
@@ -418,17 +398,15 @@ function resumo(){
            sequencia:prog.sequencia, faltamParaPilar:faltamParaPilar };
 }
 
-/* ---------- Navegação ---------- */
 function irPara(tela){
-  document.querySelectorAll('.tela').forEach(function(s){ s.classList.remove('ativa'); });
-  document.getElementById('tela-' + tela).classList.add('ativa');
-  document.querySelectorAll('.aba').forEach(function(b){ b.classList.toggle('ativa', b.dataset.tela === tela); });
+  document.querySelectorAll(".tela").forEach(function(s){ s.classList.remove("ativa"); });
+  document.getElementById("tela-" + tela).classList.add("ativa");
+  document.querySelectorAll(".aba").forEach(function(b){ b.classList.toggle("ativa", b.dataset.tela === tela); });
   window.scrollTo(0,0);
-  if(tela === 'jornada')  montarPilares();
-  if(tela === 'evolucao') montarEvolucao();
+  if(tela === "jornada") montarPilares();
+  if(tela === "evolucao") montarEvolucao();
 }
 
-/* ---------- Telas ---------- */
 function montarHoje(){
   const hora = new Date().getHours();
   const s = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
@@ -436,7 +414,6 @@ function montarHoje(){
 
   const r = resumo();
 
-  // primeiro treino ainda nao concluido, em pilar liberado
   let sug = null, sugPilar = null;
   for(let i=0;i<PILARES.length && !sug;i++){
     const p = PILARES[i];
@@ -447,8 +424,8 @@ function montarHoje(){
   }
 
   const rotulo = document.getElementById("rotulo-treino");
-  const botao  = document.getElementById("sug-botao");
-  const sub    = document.getElementById("subtitulo");
+  const botao = document.getElementById("sug-botao");
+  const sub = document.getElementById("subtitulo");
   sub.textContent = fraseDoDia();
 
   if(!sug){
@@ -486,7 +463,6 @@ function montarHoje(){
   montarResumoPilares();
 }
 
-/* Visao compacta dos cinco pilares, no Inicio. Clicar leva a Jornada. */
 function montarResumoPilares(){
   document.getElementById("resumo-pilares").innerHTML = PILARES.map(function(p){
     const bloq = pilarBloqueado(p.id);
@@ -502,7 +478,6 @@ function montarResumoPilares(){
   }).join("");
 }
 
-/* Mostra a conquista mais proxima, e so quando o aluno esta perto dela. */
 function mostrarProximaConquista(r){
   const caixa = document.getElementById("proxima-conquista");
   let alvo = null;
@@ -524,48 +499,65 @@ function mostrarProximaConquista(r){
 }
 
 function montarPilares(){
-  document.getElementById('lista-pilares').innerHTML = PILARES.map(function(p){
+  document.getElementById("lista-pilares").innerHTML = PILARES.map(function(p){
     const bloq = pilarBloqueado(p.id);
     let c = 0;
     p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
 
     const linhas = p.treinos.map(function(t){
       const ok = feito(p.id, t.n);
-      const marca = '<div class="aula-marca' + (ok ? ' feita' : '') + '">' + (ok ? '✓' : t.n) + '</div>';
+      const marca = '<div class="aula-marca' + (ok ? " feita" : "") + '">' + (ok ? "✓" : t.n) + '</div>';
+      const est = estrelas(p.id, t.n);
+      const meta = est ? ('<span class="estrelas-aula">' + est + '</span>')
+                       : (t.aula ? "ainda não feito" : "em breve");
       const corpo = '<div class="aula-nome">' + t.nome +
-                    '<div class="aula-meta">' + t.min + ' min' + (t.aula ? '' : ' · em breve') + '</div></div>';
+                    '<div class="aula-meta">' + meta + '</div></div>';
       if(bloq || !t.aula){
         return '<div class="aula travada">' + marca + corpo + '<span class="aula-seta">🔒</span></div>';
       }
       return '<a class="aula" href="' + BASE_AULA + t.aula + '" target="_top">' + marca + corpo +
              '<span class="aula-seta">›</span></a>';
-    }).join('');
+    }).join("");
 
     return '<div class="pilar">' +
       '<div class="pilar-topo"><span class="pilar-nome">' + p.nome + '</span>' +
-      '<span class="pilar-contagem">' + (bloq ? 'bloqueado' : c + '/' + p.treinos.length) + '</span></div>' +
+      '<span class="pilar-contagem">' + (bloq ? "bloqueado" : c + "/" + p.treinos.length) + '</span></div>' +
       '<p class="pilar-resumo">' + p.resumo + '</p>' +
       '<div class="aulas">' + linhas + '</div></div>';
-  }).join('');
+  }).join("");
 }
 
 function montarEvolucao(){
   const r = resumo();
-  document.getElementById('e-seq').textContent = r.sequencia;
-  document.getElementById('e-feitos').textContent = r.feitos;
-  document.getElementById('e-pilares').textContent = r.pilares;
+  document.getElementById("e-seq").textContent = r.sequencia;
+  document.getElementById("e-feitos").textContent = r.feitos;
+  document.getElementById("e-pilares").textContent = r.pilares;
 
-  document.getElementById('lista-conquistas').innerHTML = CONQUISTAS.map(function(c){
+  document.getElementById("lista-conquistas").innerHTML = CONQUISTAS.map(function(c){
     const g = c.teste(r);
-    return '<div class="conquista ' + (g ? 'ganha' : 'pendente') + '">' +
+    return '<div class="conquista ' + (g ? "ganha" : "pendente") + '">' +
       '<div class="medalha">' + c.icone + '</div>' +
       '<div><div class="conquista-nome">' + c.nome + '</div>' +
-      '<div class="conquista-desc">' + (g ? 'Conquistada' : c.desc) + '</div></div></div>';
-  }).join('');
+      '<div class="conquista-desc">' + (g ? "Conquistada" : c.desc) + '</div></div></div>';
+  }).join("");
 }
 
-
 carregar();
+
+/* Guarda quem é o aluno da vez. A página de treino lê isto para
+   saber em qual progresso gravar, já que ela não recebe os dados do Cademí. */
+try{ localStorage.setItem("tae_aluno_atual", ALUNO.id || "visitante"); }catch(e){}
+
+/* Recarrega o progresso ao voltar para a aba. */
+document.addEventListener("visibilitychange", function(){
+  if(document.visibilityState === "visible"){
+    carregar();
+    montarHoje();
+    if(document.getElementById("tela-jornada").classList.contains("ativa")) montarPilares();
+    if(document.getElementById("tela-evolucao").classList.contains("ativa")) montarEvolucao();
+  }
+});
+
 montarHoje();
 </script>
 </body>
