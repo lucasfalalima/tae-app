@@ -95,6 +95,12 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 .botao.fantasma{background:transparent;color:var(--texto);border:1px solid var(--borda)}
 .botao.fantasma:hover{background:var(--alto)}
 .oculto{display:none}
+.voltar-painel{
+  display:block;text-align:center;margin-top:14px;
+  color:var(--fraco);font-size:13.5px;font-weight:600;text-decoration:none;
+  padding:8px;transition:color .14s ease;
+}
+.voltar-painel:hover{color:var(--texto)}
 
 .abertura{text-align:center;padding:14px 0 4px}
 .abertura .selo-abertura{font-size:40px;line-height:1;margin-bottom:14px}
@@ -136,6 +142,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
         e leva cerca de 3 minutos.</p>
       </div>
       <button class="botao" onclick="comecar()">Começar treino</button>
+      <a class="voltar-painel" id="b-voltar-abertura" href="#" target="_top">Voltar ao Painel</a>
     </section>
 
     <!-- ===== 1 ===== -->
@@ -202,7 +209,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
         Sua nota mais alta é a que vale.</p>
       </div>
 
-      <a class="botao" id="b-proximo" href="#" target="_top">Próximo treino</a>
+      <a class="botao" id="b-proximo" href="#" target="_top">Voltar ao Painel</a>
       <button class="botao fantasma" onclick="repetir()">Repetir treino</button>
     </section>
 
@@ -497,6 +504,7 @@ function comecar(){
 function repetir(){ window.location.reload(); }
 
 document.getElementById("b-proximo").href = PROXIMO;
+document.getElementById("b-voltar-abertura").href = PROXIMO;
 document.getElementById("cabecalho").style.display = "none";
 document.getElementById("barra").style.display = "none";
 montar1(); montar2(); montar3(); montar4(); montar5();
