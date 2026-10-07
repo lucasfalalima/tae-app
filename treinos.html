@@ -438,12 +438,21 @@ function fecha(idR, idB, txt){
 }
 
 /* ================= NAVEGAÇÃO ================= */
+/* Traz o treino de volta ao topo da tela. Como a página vive dentro de
+   uma moldura no Cademí, scrollIntoView também rola a página de fora —
+   window.scrollTo sozinho só moveria o conteúdo interno. */
+function enquadrar(){
+  const alvo = document.querySelector(".cartao");
+  if(alvo && alvo.scrollIntoView) alvo.scrollIntoView({ block:"start", behavior:"smooth" });
+  else window.scrollTo(0,0);
+}
+
 function ir(n){
   document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
   document.getElementById("p" + n).classList.remove("oculto");
   document.getElementById("passo").textContent = n + " de 5";
   document.getElementById("trilho").style.width = (n/5*100) + "%";
-  window.scrollTo(0,0);
+  enquadrar();
 }
 
 function terminar(){
@@ -473,7 +482,7 @@ function terminar(){
   const msg = MENSAGENS[pontos];
   document.getElementById("f-titulo").textContent = msg.t;
   document.getElementById("f-texto").textContent = msg.x;
-  window.scrollTo(0,0);
+  enquadrar();
 }
 
 function comecar(){
