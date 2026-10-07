@@ -102,19 +102,18 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 .abertura .ajuda{margin:0 auto;max-width:400px}
 
 .placar{text-align:center;padding:4px 0 2px}
+.estrelas{font-size:26px;letter-spacing:5px;margin-bottom:12px}
+.estrelas.cheias{color:var(--amarelo)}
+.placar h2{font-size:21px;margin-bottom:8px}
 .placar p{margin:0;font-size:14.5px;line-height:1.6}
 .nota-repetir{
   margin-top:12px !important;font-size:13px !important;
   color:var(--fraco) !important;line-height:1.55;
 }
-.estrelas{font-size:26px;letter-spacing:5px;margin-bottom:12px}
-.placar h2{font-size:21px;margin-bottom:8px}
-.tarefa{
-  margin-top:18px;padding:14px 15px;border-radius:0 9px 9px 0;
-  background:var(--alto);border-left:3px solid var(--amarelo);
-  font-size:14px;line-height:1.6;
+.rotulo{
+  font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--amarelo);
+  text-transform:uppercase;margin:22px 0 9px;
 }
-.tarefa b{color:var(--forte)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -128,6 +127,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     </div>
     <div class="trilho" id="barra"><i id="trilho" style="width:20%"></i></div>
 
+    <!-- ===== ABERTURA ===== -->
     <section class="etapa" id="p0">
       <div class="abertura">
         <div class="selo-abertura">🎯</div>
@@ -138,6 +138,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
       <button class="botao" onclick="comecar()">Começar treino</button>
     </section>
 
+    <!-- ===== 1 ===== -->
     <section class="etapa oculto" id="p1">
       <h2>Isso é um Objetivo Único?</h2>
       <p class="ajuda">Objetivo Único é uma coisa só que você quer que o outro faça depois que você falar.</p>
@@ -146,6 +147,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
       <button class="botao oculto" id="b1" onclick="ir(2)">Continuar</button>
     </section>
 
+    <!-- ===== 2 ===== -->
     <section class="etapa oculto" id="p2">
       <h2>O que essa pessoa queria?</h2>
       <p class="ajuda">Ela falou bastante. Mas o que ela queria mesmo?</p>
@@ -154,6 +156,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
       <button class="botao oculto" id="b2" onclick="ir(3)">Continuar</button>
     </section>
 
+    <!-- ===== 3 ===== -->
     <section class="etapa oculto" id="p3">
       <h2>Qual serve de âncora?</h2>
       <p class="ajuda">Âncora é uma palavra só. Toque nas que são uma palavra.</p>
@@ -163,6 +166,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
       <button class="botao" id="b3" onclick="conferir3()">Conferir</button>
     </section>
 
+    <!-- ===== 4 ===== -->
     <section class="etapa oculto" id="p4">
       <h2>O Rafael quer mais uma semana de prazo</h2>
       <p class="ajuda">Marque as 3 informações que ajudam ele a conseguir isso.</p>
@@ -178,15 +182,17 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
       <button class="botao" id="b4" onclick="conferir4()" disabled>Conferir</button>
     </section>
 
+    <!-- ===== 5 ===== -->
     <section class="etapa oculto" id="p5">
       <h2>Tire o que não precisa</h2>
-      <p class="ajuda" id="a5">A Ana vai pedir mais verba. Toque no que ela pode tirar da fala, até sobrarem 3.</p>
+      <p class="ajuda">A Ana vai pedir mais verba. Toque no que ela pode tirar da fala, até sobrarem 3.</p>
       <div class="lista" id="l5"></div>
       <div class="contador">faltam tirar <span id="n5">3</span></div>
       <div class="retorno" id="r5"></div>
       <button class="botao oculto" id="b5" onclick="terminar()">Ver resultado</button>
     </section>
 
+    <!-- ===== FIM ===== -->
     <section class="etapa oculto" id="fim">
       <div class="placar">
         <div class="estrelas" id="f-estrelas">★★★★★</div>
@@ -194,11 +200,6 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
         <p id="f-texto">—</p>
         <p class="nota-repetir">Você pode repetir o treino quantas vezes quiser.
         Sua nota mais alta é a que vale.</p>
-      </div>
-
-      <div class="tarefa">
-        <b>Hoje.</b> Antes da sua próxima conversa importante, escreva 3 palavras
-        num papel. Leve o papel.
       </div>
 
       <a class="botao" id="b-proximo" href="#" target="_top">Próximo treino</a>
@@ -209,7 +210,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 </div>
 
 <script>
-const PROXIMO = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+/* Qual treino é este. Vem da URL: treinos.html?t=1.1 */
 const CODIGO = new URLSearchParams(window.location.search).get("t") || "1.1";
 
 /* Guarda a nota deste treino. Mantém sempre a mais alta.
@@ -226,9 +227,14 @@ function guardarNota(estrelas){
   }catch(e){}
 }
 
+/* Endereço do próximo treino. Troque pelo link da próxima aula no Cademí. */
+const PROXIMO = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+
+/* ================= CONTEÚDO ================= */
+
 const OBJETIVOS = [
-  { t:"Quero que ele aprove o orçamento", ok:true, p:"Diz o que você quer que aconteça." },
-  { t:"Quero falar sobre o projeto", ok:false, p:"Isso é assunto. Falar sobre algo não é querer algo." },
+  { t:"Quero que ele aprove o orçamento", ok:true,  p:"Diz o que você quer que aconteça." },
+  { t:"Quero falar sobre o projeto",      ok:false, p:"Isso é assunto. Falar sobre algo não é querer algo." },
   { t:"Quero avisar do atraso e pedir ajuda", ok:false, p:"Tem um \"e\". São duas coisas." },
   { t:"Quero que a equipe entregue até quinta", ok:true, p:"Dá pra saber se deu certo ou não." }
 ];
@@ -271,9 +277,11 @@ const ANA = [
   { t:"O time todo concorda comigo", fica:false }
 ];
 
+/* ================= ESTADO ================= */
 let pontos = 0, ok1 = 0, ok2 = 0;
 let m3 = [], m4 = [], cortes = [];
 
+/* ================= 1 ================= */
 function montar1(){
   document.getElementById("l1").innerHTML = OBJETIVOS.map(function(o,i){
     return '<div class="item"><div class="frase">' + o.t + '</div><div class="dupla">' +
@@ -297,6 +305,7 @@ function r1(i, escolha){
   }
 }
 
+/* ================= 2 ================= */
 function montar2(){
   document.getElementById("l2").innerHTML = FALAS.map(function(f,i){
     return '<div class="item" style="margin-bottom:22px"><div class="fala">' + f.fala + '</div><div class="lista">' +
@@ -319,6 +328,7 @@ function r2(i, j){
   }
 }
 
+/* ================= 3 ================= */
 function montar3(){
   document.getElementById("l3").innerHTML = ANCORAS.map(function(a,i){
     return '<button class="op" onclick="m(3,' + i + ')"><span class="mk">✓</span><span>' + a.t + '</span></button>';
@@ -339,11 +349,13 @@ function conferir3(){
   r.innerHTML = certo
     ? "<b>✅ Correto.</b> Âncora é uma palavra. Frase você esquece no meio."
     : "<b>🛑 Errado.</b> As de uma palavra são âncoras. As outras já são a fala pronta.";
+  r.classList.add("visivel");
   const b = document.getElementById("b3");
   b.textContent = "Continuar";
   b.onclick = function(){ ir(4); };
 }
 
+/* ================= 4 ================= */
 function montar4(){
   document.getElementById("l4").innerHTML = INFOS.map(function(o,i){
     return '<button class="op" onclick="m(4,' + i + ')"><span class="mk">✓</span><span>' + o.t + '</span></button>';
@@ -363,11 +375,13 @@ function conferir4(){
   r.innerHTML = certas === 3
     ? "<b>✅ Correto.</b> O resto não ajuda ele a conseguir o prazo."
     : "<b>🛑 Errado.</b> Acertou " + certas + " de 3. A pergunta é: isso ajuda ele a conseguir o prazo?";
+  r.classList.add("visivel");
   const b = document.getElementById("b4");
   b.textContent = "Continuar"; b.disabled = false;
   b.onclick = function(){ ir(5); };
 }
 
+/* ================= 5 ================= */
 function montar5(){
   document.getElementById("l5").innerHTML = ANA.map(function(o,i){
     return '<button class="op" onclick="cortar(' + i + ')"><span class="mk">✕</span><span>' + o.t + '</span></button>';
@@ -388,10 +402,12 @@ function cortar(i){
     r.innerHTML = certo
       ? "<b>✅ Correto.</b> Sobrou o problema, o número e o que acontece se não resolver."
       : "<b>🛑 Errado.</b> Fica o problema, o número e o que acontece se não resolver.";
+    r.classList.add("visivel");
     document.getElementById("b5").classList.remove("oculto");
   }
 }
 
+/* ================= AUXILIARES ================= */
 function m(etapa, i){
   const lista = etapa === 3 ? m3 : m4;
   const b = document.querySelectorAll("#l" + etapa + " .op")[i];
@@ -405,18 +421,15 @@ function m(etapa, i){
   document.getElementById("n" + etapa).textContent = lista.length;
   if(etapa === 4) document.getElementById("b4").disabled = lista.length !== 3;
 }
-
 function nota(sel, i, txt, acertou){
   const d = document.createElement("div");
   d.className = "nota" + (acertou ? " nota-ok" : " nota-erro");
   d.innerHTML = '<b>' + (acertou ? "✅ Correto" : "🛑 Errado") + '</b> ' + txt;
   document.querySelectorAll(sel + " .item")[i].appendChild(d);
 }
-
 function todasFeitas(sel, total){
   return document.querySelectorAll(sel + " .op:disabled").length === total;
 }
-
 function fecha(idR, idB, txt){
   const r = document.getElementById(idR);
   r.innerHTML = "<b>" + txt + "</b>";
@@ -424,6 +437,7 @@ function fecha(idR, idB, txt){
   document.getElementById(idB).classList.remove("oculto");
 }
 
+/* ================= NAVEGAÇÃO ================= */
 function ir(n){
   document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
   document.getElementById("p" + n).classList.remove("oculto");
@@ -437,22 +451,24 @@ function terminar(){
   document.getElementById("fim").classList.remove("oculto");
   document.getElementById("passo").textContent = "concluído";
   document.getElementById("trilho").style.width = "100%";
-  document.getElementById("f-estrelas").textContent = "★".repeat(pontos) + "☆".repeat(5 - pontos);
+  const caixaEstrelas = document.getElementById("f-estrelas");
+  caixaEstrelas.textContent = "★".repeat(pontos) + "☆".repeat(5 - pontos);
+  caixaEstrelas.classList.toggle("cheias", pontos === 5);
   guardarNota(pontos);
 
   const MENSAGENS = [
-    { t:"Treino feito",
-      x:"Começar já é a parte mais difícil, e você começou. Assista à aula de novo com calma e volte aqui." },
-    { t:"Primeiro acerto",
-      x:"Você acertou uma, e isso quer dizer que já entendeu uma parte. Repita o treino e veja como a segunda vem mais fácil." },
-    { t:"Está pegando o jeito",
-      x:"Metade do caminho. O que você acertou aqui já dá pra usar na sua próxima conversa." },
-    { t:"Muito bom",
-      x:"Você entendeu a ideia: um objetivo, poucas informações, palavras curtas pra lembrar." },
-    { t:"Quase lá",
-      x:"Faltou pouco. Você já sabe separar o que importa do que é enfeite — é disso que se trata." },
-    { t:"5 de 5",
-      x:"Acertou tudo. Agora a parte que vale de verdade: use isso na vida real hoje." }
+    { t:"😞 Não foi dessa vez",
+      x:"Mas você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
+    { t:"😕 Você acertou uma",
+      x:"Uma já mostra que tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
+    { t:"😐 Metade do caminho",
+      x:"Você está pegando a lógica. Falta repetir até virar automático." },
+    { t:"🙂 Bom resultado",
+      x:"Você já sabe escolher um objetivo e separar o que importa. Dá pra usar isso hoje." },
+    { t:"😃 Quase perfeito",
+      x:"Faltou um detalhe, e você já domina o essencial: um objetivo, poucas informações, palavras curtas." },
+    { t:"🤩 Acertou tudo",
+      x:"Agora a parte que vale de verdade: use na sua próxima conversa." }
   ];
   const msg = MENSAGENS[pontos];
   document.getElementById("f-titulo").textContent = msg.t;
