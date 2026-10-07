@@ -489,6 +489,9 @@ function comecar(){
   document.getElementById("cabecalho").style.display = "";
   document.getElementById("barra").style.display = "";
   ir(1);
+  /* O cabeçalho e a barra acabaram de aparecer e mudaram a altura.
+     Enquadra de novo depois que o navegador refez o desenho. */
+  requestAnimationFrame(function(){ requestAnimationFrame(enquadrar); });
 }
 
 function repetir(){ window.location.reload(); }
