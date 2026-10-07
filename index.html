@@ -249,7 +249,7 @@ body{
 /* ===================================================================
    Preencha "aula" com o número da aula no Cademí quando ela existir.
    O número aparece no fim do endereço da aula.
-   Enquanto estiver null, o treino aparece como "em breve".
+   Enquanto estiver null, o treino aparece normal, mas o clique não leva a lugar nenhum.
    =================================================================== */
 const BASE_AULA = "https://aluno.falalima.com.br/area/conteudo/aula/";
 const TOTAL = 20;
@@ -439,6 +439,17 @@ function sincronizar(){
     .catch(function(){ /* sem internet: segue com o que está no navegador */ });
 }
 
+/* Número corrido do treino na jornada inteira (1 a 20).
+   Só para exibir: o progresso continua guardado como "pilar.treino" (ex.: 2.3). */
+function numeroGlobal(pilarId, n){
+  let total = 0;
+  for(let i=0;i<PILARES.length;i++){
+    if(PILARES[i].id === pilarId) return total + n;
+    total += PILARES[i].treinos.length;
+  }
+  return n;
+}
+
 function codigo(pilarId, n){ return pilarId + "." + n; }
 function nota(pilarId, n){ return NOTAS[codigo(pilarId, n)]; }
 function feito(pilarId, n){ return nota(pilarId, n) !== undefined; }
@@ -516,7 +527,7 @@ function montarHoje(){
     botao.onclick = function(e){ e.preventDefault(); irPara("jornada"); };
   }else{
     rotulo.textContent = comecou ? "Continue de onde parou" : "Comece seu treino";
-    document.getElementById("sug-nome").textContent = sug.nome;
+    document.getElementById("sug-nome").textContent = "Treino " + numeroGlobal(sugPilar.id, sug.n) + " - " + sug.nome;
     document.getElementById("sug-desc").textContent = sugPilar.nome;
     if(sug.aula){
       botao.textContent = comecou ? "Continuar" : "Começar";
@@ -524,7 +535,7 @@ function montarHoje(){
       botao.setAttribute("target","_top");
       botao.onclick = null;
     }else{
-      botao.textContent = "Em breve";
+      botao.textContent = comecou ? "Continuar" : "Começar";
       botao.href = "#";
       botao.removeAttribute("target");
       botao.onclick = function(e){ e.preventDefault(); };
@@ -589,13 +600,17 @@ function montarPilares(){
 
     const linhas = p.treinos.map(function(t){
       const ok = feito(p.id, t.n);
-      const marca = '<div class="aula-marca' + (ok ? " feita" : "") + '">' + (ok ? "✓" : t.n) + '</div>';
+      const marca = '<div class="aula-marca' + (ok ? " feita" : "") + '">' + (ok ? "✓" : numeroGlobal(p.id, t.n)) + '</div>';
       const est = estrelas(p.id, t.n);
-      const meta = est ? est : (t.aula ? "ainda não feito" : "em breve");
+      const meta = est ? est : "ainda não feito";
       const corpo = '<div class="aula-nome">' + t.nome +
                     '<div class="aula-meta">' + meta + '</div></div>';
-      if(bloq || !t.aula){
+      if(bloq){
         return '<div class="aula travada">' + marca + corpo + '<span class="aula-seta">🔒</span></div>';
+      }
+      /* Aula ainda sem link no Cademí: aparece normal, só não navega. */
+      if(!t.aula){
+        return '<div class="aula">' + marca + corpo + '<span class="aula-seta">›</span></div>';
       }
       return '<a class="aula" href="' + BASE_AULA + t.aula + '" target="_top">' + marca + corpo +
              '<span class="aula-seta">›</span></a>';
