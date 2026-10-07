@@ -527,8 +527,8 @@ function montarHoje(){
     botao.onclick = function(e){ e.preventDefault(); irPara("jornada"); };
   }else{
     rotulo.textContent = comecou ? "Continue de onde parou" : "Comece seu treino";
-    document.getElementById("sug-nome").textContent = "Treino " + numeroGlobal(sugPilar.id, sug.n) + " - " + sug.nome;
-    document.getElementById("sug-desc").textContent = sugPilar.nome;
+    document.getElementById("sug-nome").textContent = "Treino " + numeroGlobal(sugPilar.id, sug.n) + ": " + sug.nome;
+    document.getElementById("sug-desc").textContent = "Pilar " + sugPilar.id + ": " + sugPilar.nome;
     if(sug.aula){
       botao.textContent = comecou ? "Continuar" : "Começar";
       botao.href = BASE_AULA + sug.aula;
@@ -617,7 +617,7 @@ function montarPilares(){
     }).join("");
 
     return '<div class="pilar">' +
-      '<div class="pilar-topo"><span class="pilar-nome">' + p.nome + '</span>' +
+      '<div class="pilar-topo"><span class="pilar-nome">Pilar ' + p.id + ': ' + p.nome + '</span>' +
       '<span class="pilar-contagem">' + (bloq ? "bloqueado" : c + "/" + p.treinos.length) + '</span></div>' +
       '<p class="pilar-resumo">' + p.resumo + '</p>' +
       '<div class="aulas">' + linhas + '</div></div>';
