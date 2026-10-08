@@ -132,19 +132,19 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <span class="etiqueta" id="titulo-topo">Treino de dicção</span>
     <span class="passo" id="passo"></span>
   </div>
-  <div class="etapas oculto" id="trilha"><i></i><i></i><i></i><i></i></div>
+  <div class="etapas oculto" id="trilha"><i></i><i></i><i></i><i></i><i></i></div>
 
   <!-- ===== ABERTURA ===== -->
   <section class="etapa" id="e-abertura">
     <div class="abertura">
       <div class="icone">🗣️</div>
       <h2>Fala limpa</h2>
-      <p class="ajuda">Três leituras em voz alta e uma fala livre. Cada palavra que sai clara
+      <p class="ajuda">Três leituras em voz alta e duas falas livres. Cada palavra que sai clara
       acende em verde. O app também mede sua velocidade e avisa se escapar algum vício.</p>
     </div>
     <div class="como">
       <div><b>Leia</b>Três textos, do mais fácil ao trava-língua.</div>
-      <div><b>Fale</b>30 segundos livres sobre um tema sorteado.</div>
+      <div><b>Fale</b>Sobre o trabalho e depois sobre você, sem roteiro.</div>
       <div><b>Confira</b>Clareza, velocidade e vícios de cada etapa.</div>
     </div>
     <div class="aviso oculto" id="sem-suporte">Este navegador não reconhece voz.
@@ -168,15 +168,14 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <div class="mic oculto" id="l-mic"><span class="bolinha"></span>Ouvindo<span class="nivel"><i class="nivel-barra"></i></span></div>
     <div class="dica oculto" id="l-retorno"></div>
     <button class="botao" id="l-botao" onclick="botaoLeitura()">Começar a ler</button>
-    <button class="link oculto" id="l-repetir" onclick="repetirLeitura()">Ler este texto de novo</button>
+    <button class="botao fantasma oculto" id="l-repetir" onclick="repetirLeitura()">Ler este texto de novo</button>
   </section>
 
   <!-- ===== TEMA DA FALA LIVRE ===== -->
   <section class="etapa oculto" id="e-tema">
-    <h2>Agora, fala livre</h2>
-    <p class="ajuda">Fale por 30 segundos sobre o tema abaixo, com a mesma clareza das leituras.
-    Sem texto para seguir: aqui aparecem os vícios que a leitura esconde.</p>
-    <div class="tema"><small>Fale sobre:</small><p id="tema-texto">—</p></div>
+    <h2 id="t-titulo">—</h2>
+    <p class="ajuda" id="t-ajuda">—</p>
+    <div class="tema"><small id="t-rotulo">Fale sobre:</small><p id="tema-texto">—</p></div>
     <div style="text-align:right"><button class="link" onclick="sortearTema()">Sortear outro tema</button></div>
     <button class="botao" onclick="contagemLivre()">Começar a falar</button>
   </section>
@@ -225,8 +224,10 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
       <tbody id="f-tabela"></tbody>
     </table>
     <div class="dica" id="f-dica"></div>
-    <div class="rotulo">Sua fala livre</div>
+    <div class="rotulo">Fala livre</div>
     <div class="transcricao final" id="f-transcricao"></div>
+    <div class="rotulo">Sobre você</div>
+    <div class="transcricao final" id="f-transcricao2"></div>
     <p class="nota-repetir">Repita quantas vezes quiser. Sua nota mais alta é a que vale.</p>
     <button class="botao" onclick="refazer()">Fazer de novo</button>
     <a class="botao fantasma" id="b-proximo" href="#" target="_top">Voltar ao Painel</a>
@@ -391,7 +392,27 @@ const VICIOS = [
 ];
 const SONS = /^(é{2,}|e{2,}|eh+|hã+|ãh+|ã+|hum+|hm+|ahn*|ah+|uhm*)$/;
 
-const DURACAO_LIVRE = 30;      /* segundos de fala livre */
+/* Temas do último nível: falar de si, mais solto, para os vícios aparecerem. */
+const TEMAS_VOCE = [
+  "Quem é você: onde cresceu, o que faz hoje e o que gosta de fazer no tempo livre",
+  "Como foi o seu dia de ontem, do começo ao fim",
+  "Uma viagem ou um passeio que marcou você",
+  "Uma pessoa que foi importante na sua vida e por quê",
+  "Um hobby ou uma coisa que você ama fazer e como começou",
+  "Uma história engraçada que aconteceu com você"
+];
+
+/* As duas falas livres: nível 4 (trabalho) e nível 5 (sobre você). */
+const FALAS = [
+  { titulo:"Nível 4: fala livre",
+    ajuda:"Fale por 30 segundos sobre o tema abaixo, com a mesma clareza das leituras. Sem texto para seguir: aqui aparecem os vícios que a leitura esconde.",
+    rotulo:"Fale sobre:", temas:TEMAS },
+  { titulo:"Nível 5: fale sobre você",
+    ajuda:"Agora sem roteiro nenhum, como numa conversa com um amigo. Fale por 30 segundos. É quando a gente relaxa que os vícios mais aparecem.",
+    rotulo:"Conte:", temas:TEMAS_VOCE }
+];
+
+const DURACAO_LIVRE = 30;      /* segundos de cada fala livre */
 const LIMITE_LEITURA = 40;     /* segundos máximos por leitura */
 const LENTO = 100, RAPIDO = 170; /* palavras por minuto: ritmo bom fica entre os dois */
 
@@ -426,30 +447,109 @@ function marcarTrilha(n){
   document.querySelectorAll("#trilha i").forEach(function(el, i){
     el.className = i < n ? "feita" : i === n ? "atual" : "";
   });
-  document.getElementById("passo").textContent = n < 4 ? (n + 1) + " de 4" : "concluído";
+  document.getElementById("passo").textContent = n < 5 ? (n + 1) + " de 5" : "concluído";
 }
 
 /* ---------- microfone ---------- */
 function pedirMicrofone(){
   return navigator.mediaDevices.getUserMedia({ audio:true }).then(function(s){ fluxo = s; });
 }
+/* ---------- detector de hesitação pelo som ----------
+   O reconhecimento de voz descarta "ééé", "iii", "hum": eles nunca viram texto.
+   Por isso o app escuta o próprio som. Uma hesitação é um som de voz contínuo,
+   com o mesmo tom e o mesmo timbre, por mais de MIN_HESITACAO milissegundos.
+   Uma sílaba normal dura uns 200 ms e muda de som o tempo todo. */
+const MIN_HESITACAO = 550;
+let hesitacoes = [], aoMudarAtual = null;
+
 function iniciarNivel(){
   try{
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const an = audioCtx.createAnalyser(); an.fftSize = 512;
+    const an = audioCtx.createAnalyser(); an.fftSize = 2048; an.smoothingTimeConstant = 0;
     audioCtx.createMediaStreamSource(fluxo).connect(an);
-    const dados = new Uint8Array(an.fftSize);
+    const sr = audioCtx.sampleRate;
+    const onda = new Float32Array(an.fftSize), espectro = new Float32Array(an.frequencyBinCount);
+    const N = 1024, sr2 = sr / 2, lagMin = Math.floor(sr2 / 450), lagMax = Math.floor(sr2 / 70);
+    const curta = new Float32Array(N);
+    let piso = 0, trecho = null;
+
     (function loop(){
-      an.getByteTimeDomainData(dados);
-      let pico = 0;
-      for(let i = 0; i < dados.length; i++) pico = Math.max(pico, Math.abs(dados[i] - 128));
-      document.querySelectorAll(".nivel-barra").forEach(function(b){ b.style.width = Math.min(100, pico / 70 * 100) + "%"; });
+      an.getFloatTimeDomainData(onda);
+      let soma = 0, pico = 0;
+      for(let i = 0; i < N; i++){ const v = onda[i * 2]; curta[i] = v; soma += v * v; pico = Math.max(pico, Math.abs(v)); }
+      const rms = Math.sqrt(soma / N);
+      document.querySelectorAll(".nivel-barra").forEach(function(b){ b.style.width = Math.min(100, pico * 180) + "%"; });
+
+      /* Ruído de fundo: desce rápido, sobe devagar. */
+      if(!piso || rms < piso) piso = rms; else piso += (rms - piso) * 0.0015;
+      const limiar = Math.max(0.006, piso * 3.5);
+
+      let voz = false, tom = 0, timbre = 0;
+      if(rms > limiar){
+        /* Tom (autocorrelação) */
+        let melhor = 0, lag = 0;
+        for(let L = lagMin; L <= lagMax; L++){
+          let c = 0;
+          for(let i = 0; i < N - L; i++) c += curta[i] * curta[i + L];
+          if(c > melhor){ melhor = c; lag = L; }
+        }
+        const nitidez = melhor / soma;
+        if(lag && nitidez > 0.5){
+          tom = sr2 / lag;
+          /* Timbre: centro de massa do espectro até 4 kHz */
+          an.getFloatFrequencyData(espectro);
+          const ate = Math.floor(4000 / (sr / an.fftSize));
+          let num = 0, den = 0;
+          for(let k = 2; k < ate; k++){ const m = Math.pow(10, espectro[k] / 20); num += k * m; den += m; }
+          timbre = den ? num / den : 0;
+          voz = timbre > 0;
+        }
+      }
+
+      const agora = performance.now();
+      if(voz && trecho &&
+         Math.abs(tom - trecho.tom) / trecho.tom < 0.1 &&
+         Math.abs(timbre - trecho.timbre) / trecho.timbre < 0.18){
+        trecho.tom += (tom - trecho.tom) * 0.1;
+        trecho.timbre += (timbre - trecho.timbre) * 0.1;
+        if(!trecho.contado && agora - trecho.inicio >= MIN_HESITACAO){
+          trecho.contado = true;
+          hesitacoes.push({ pos:falado().split(/\s+/).filter(Boolean).length });
+          if(aoMudarAtual) aoMudarAtual();
+        }
+      }else if(voz){
+        trecho = { inicio:agora, tom:tom, timbre:timbre, contado:false };
+      }else{
+        trecho = null;
+      }
       quadro = requestAnimationFrame(loop);
     })();
   }catch(e){}
 }
+
+/* Junta os vícios do texto com as hesitações ouvidas pelo som,
+   colocando cada "ééé" no ponto da fala em que ele aconteceu. */
+function analisarTudo(){
+  const a = analisarVicios(falado());
+  let extra = 0;
+  hesitacoes.forEach(function(h){
+    let palavras = 0, onde = a.pedacos.length;
+    for(let i = 0; i < a.pedacos.length; i++){
+      if(palavras >= h.pos){ onde = i; break; }
+      palavras += a.pedacos[i].t.split(" ").length;
+    }
+    a.pedacos.splice(onde + extra, 0, { t:"ééé", v:true });
+    extra++;
+  });
+  if(hesitacoes.length){
+    a.contagem["é…"] = (a.contagem["é…"] || 0) + hesitacoes.length;
+    a.vicios += hesitacoes.length;
+  }
+  return a;
+}
+
 function ouvir(aoMudar){
-  textoFinal = ""; textoProvisorio = ""; confiancas = [];
+  textoFinal = ""; textoProvisorio = ""; confiancas = []; hesitacoes = []; aoMudarAtual = aoMudar;
   primeiraPalavra = 0; ultimaPalavra = 0;
   rec = new Reconhecedor();
   rec.lang = "pt-BR"; rec.continuous = true; rec.interimResults = true;
@@ -537,6 +637,7 @@ function alinhar(final){
     if(VICIOS_N.indexOf(d) !== -1 || SONS.test(d)) vicios++;
     else extras++;
   });
+  vicios += hesitacoes.length;
   if(final) for(let k = p; k < alvo.length; k++) alvo[k].s = "perdida";
   /* Palavras de 1 ou 2 letras ("a", "o", "de") o reconhecimento costuma pular
      mesmo quando ditas. Não contam contra o aluno: ficam neutras. */
@@ -636,15 +737,27 @@ function repetirLeitura(){ abrirLeitura(etapa); }
 
 function proximaEtapa(){
   if(etapa < 2) abrirLeitura(etapa + 1);
-  else { etapa = 3; marcarTrilha(3); sortearTema(); mostrar("e-tema"); }
+  else abrirFala(3);
+}
+
+/* Abre a tela de tema da fala livre (etapa 3) ou "sobre você" (etapa 4). */
+function abrirFala(n){
+  etapa = n; marcarTrilha(n); temaAtual = -1;
+  const F = FALAS[n - 3];
+  document.getElementById("t-titulo").textContent = F.titulo;
+  document.getElementById("t-ajuda").textContent = F.ajuda;
+  document.getElementById("t-rotulo").textContent = F.rotulo;
+  sortearTema();
+  mostrar("e-tema");
 }
 
 /* ---------- fala livre ---------- */
 function sortearTema(){
   let n;
-  do{ n = Math.floor(Math.random() * TEMAS.length); }while(n === temaAtual && TEMAS.length > 1);
+  const lista = FALAS[Math.max(0, etapa - 3)].temas;
+  do{ n = Math.floor(Math.random() * lista.length); }while(n === temaAtual && lista.length > 1);
   temaAtual = n;
-  document.getElementById("tema-texto").textContent = TEMAS[n];
+  document.getElementById("tema-texto").textContent = lista[n];
 }
 
 function contagemLivre(){
@@ -682,7 +795,7 @@ function desenharVicios(el, a, novosDesde){
 }
 
 function atualizarLivre(){
-  const a = analisarVicios(falado());
+  const a = analisarTudo();
   if(a.vicios > ultimoTotal){
     const c = document.getElementById("caixa-vicios");
     c.classList.remove("pulsa"); void c.offsetWidth; c.classList.add("pulsa");
@@ -701,20 +814,25 @@ function pararLivre(){
   const segundos = (Date.now() - inicio) / 1000;
   calar();
   setTimeout(function(){
-    const a = analisarVicios(falado());
+    const a = analisarTudo();
     const conf = confiancas.length
       ? Math.round(confiancas.reduce(function(s, c){ return s + c; }, 0) / confiancas.length * 100) : null;
-    resultados[3] = { clareza:conf, ppm:velocidade(a.total), vicios:a.vicios,
-      vpm:a.vicios / (Math.max(segundos, 5) / 60), total:a.total, analise:a };
-    final();
+    resultados[etapa] = { clareza:conf, ppm:velocidade(a.total), vicios:a.vicios,
+      segundos:Math.max(segundos, 5), total:a.total, analise:a };
+    if(etapa === 3) abrirFala(4); else final();
   }, 600);
 }
 
 /* ---------- resultado ---------- */
 function final(){
-  marcarTrilha(4);
+  marcarTrilha(5);
   mostrar("e-fim");
-  const L = resultados.slice(0, 3), F = resultados[3];
+  const L = resultados.slice(0, 3), F3 = resultados[3], F4 = resultados[4];
+  /* As duas falas livres somadas. */
+  const confs = [F3.clareza, F4.clareza].filter(function(c){ return c !== null; });
+  const F = { vicios:F3.vicios + F4.vicios, total:F3.total + F4.total,
+    vpm:(F3.vicios + F4.vicios) / ((F3.segundos + F4.segundos) / 60),
+    clareza:confs.length ? Math.round(confs.reduce(function(s, c){ return s + c; }, 0) / confs.length) : null };
   const clarezaMedia = Math.round(L.reduce(function(s, r){ return s + (r ? r.clareza : 0); }, 0) / 3);
   const ritmoBom = resultados.filter(function(r){ return r && r.ppm >= LENTO && r.ppm <= RAPIDO; }).length;
   const viciosLeitura = L.reduce(function(s, r){ return s + (r ? r.vicios : 0); }, 0);
@@ -732,12 +850,12 @@ function final(){
     "😃 Fala quase limpa", "🤩 Fala limpa"];
   document.getElementById("f-titulo").textContent = TIT[estrelas];
   document.getElementById("f-texto").textContent = "Clareza média de " + clarezaMedia +
-    "% nas leituras e " + (F.vicios === 0 ? "nenhum vício" : F.vicios + (F.vicios === 1 ? " vício" : " vícios")) + " na fala livre.";
+    "% nas leituras e " + (F.vicios === 0 ? "nenhum vício" : F.vicios + (F.vicios === 1 ? " vício" : " vícios")) + " nas falas livres.";
 
-  const nomes = ["Nível 1", "Nível 2", "Nível 3", "Fala livre"];
+  const nomes = ["Nível 1", "Nível 2", "Nível 3", "Fala livre", "Sobre você"];
   document.getElementById("f-tabela").innerHTML = resultados.map(function(r, i){
     if(!r) return "";
-    const cl = r.clareza === null ? "–" : r.clareza + "%" + (i === 3 ? "*" : "");
+    const cl = r.clareza === null ? "–" : r.clareza + "%" + (i >= 3 ? "*" : "");
     const ritmo = !r.ppm ? "–" : r.ppm < LENTO ? r.ppm + " (lento)" : r.ppm > RAPIDO ? r.ppm + " (rápido)" : r.ppm + " (bom)";
     return "<tr><td>" + nomes[i] + "</td>" +
       '<td class="' + (r.clareza === null ? "" : r.clareza >= 90 ? "boa" : "ruim") + '">' + cl + "</td>" +
@@ -747,15 +865,17 @@ function final(){
 
   /* Dica para o ponto mais fraco. */
   let dica;
-  if(poucaFala) dica = "Na fala livre quase nada foi captado. Fale um pouco mais alto e use os 30 segundos inteiros.";
+  if(poucaFala) dica = "Nas falas livres quase nada foi captado. Fale um pouco mais alto e use os 30 segundos inteiros.";
   else if(clarezaMedia < 85) dica = "<b>Seu ponto de atenção é a articulação.</b> Antes de uma reunião, leia um parágrafo em voz alta exagerando os movimentos da boca. Os finais das palavras são os que mais somem.";
-  else if(F.vicios > 0 && viciosLeitura === 0) dica = "<b>Na leitura você foi limpo; na fala livre os vícios apareceram.</b> É normal: eles surgem quando você pensa enquanto fala. No lugar do vício, faça uma pausa.";
+  else if(F.vicios > 0 && viciosLeitura === 0) dica = "<b>Na leitura você foi limpo; nas falas livres os vícios apareceram.</b> É normal: eles surgem quando você pensa enquanto fala. No lugar do vício, faça uma pausa.";
+  else if(F.vicios + viciosLeitura > 0) dica = "<b>Seu ponto de atenção são os vícios de linguagem</b>: apareceram " + (F.vicios + viciosLeitura) + " no treino. Quando sentir o \"é…\" ou o \"né\" chegando, feche a boca e respire. A pausa passa segurança; o vício passa dúvida.";
   else if(ritmoBom < 3) dica = "<b>Seu ponto de atenção é o ritmo.</b> Quem acelera parece nervoso; quem arrasta perde a atenção. Busque entre " + LENTO + " e " + RAPIDO + " palavras por minuto.";
   else dica = "<b>Dicção, ritmo e fala limpa no lugar.</b> Agora leve isso para a próxima conversa importante.";
   document.getElementById("f-dica").innerHTML = dica +
-    (F.clareza !== null ? '<br><small style="color:var(--fraco)">* Na fala livre, a clareza é estimada pela confiança do reconhecimento de voz.</small>' : "");
+    (F.clareza !== null ? '<br><small style="color:var(--fraco)">* Nas falas livres, a clareza é estimada pela confiança do reconhecimento de voz.</small>' : "");
 
-  desenharVicios(document.getElementById("f-transcricao"), F.analise, 999);
+  desenharVicios(document.getElementById("f-transcricao"), F3.analise, 999);
+  desenharVicios(document.getElementById("f-transcricao2"), F4.analise, 999);
   guardarNota(estrelas);
 }
 
