@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treino 9: O corpo fala antes</title>
+<style>
+:root{
+  --fundo:#111213;--cartao:#1b1d1f;--alto:#232629;--borda:#2c3034;
+  --amarelo:#f7d046;--amarelo2:#d9b32c;--texto:#dee2e6;--forte:#fff;
+  --fraco:#8d9499;--verde:#4ade80;--vermelho:#f87171;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.caixa{max-width:720px;margin:0 auto;padding:4px 2px 18px}
+.cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;padding:22px}
+.topo{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.etiqueta{font-size:13px;font-weight:700;color:var(--amarelo)}
+.passo{margin-left:auto;font-size:12.5px;color:var(--fraco);white-space:nowrap}
+h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
+.ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
+.oculto{display:none!important}
+
+.botao{display:block;width:100%;margin-top:14px;border:0;cursor:pointer;text-align:center;
+  background:var(--amarelo);color:#1a1500;font-size:15.5px;font-weight:700;
+  font-family:inherit;padding:14px;border-radius:10px;text-decoration:none;transition:background .14s}
+.botao:hover{background:var(--amarelo2)}
+.botao:focus-visible,.link:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.botao.fantasma{background:transparent;color:var(--texto);border:1px solid var(--borda)}
+.botao.fantasma:hover{background:var(--alto)}
+.botao.parar{background:var(--alto);color:var(--forte);border:1px solid var(--borda)}
+.link{background:none;border:0;color:var(--fraco);font:inherit;font-size:13px;cursor:pointer;
+  text-decoration:underline;padding:4px}
+
+/* ---------- abertura ---------- */
+.abertura{text-align:center;padding:10px 0 2px}
+.abertura .icone{font-size:40px;line-height:1;margin-bottom:12px}
+.abertura h2{font-size:20px}
+.abertura .ajuda{max-width:430px;margin:0 auto 4px}
+.como{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 4px;text-align:left}
+.como div{background:var(--alto);border-radius:10px;padding:11px 12px;font-size:12.5px;line-height:1.5}
+.como b{display:block;color:var(--forte);font-size:13.5px;margin-bottom:2px}
+.aviso{margin-top:14px;padding:12px 14px;border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.55;
+  background:rgba(248,113,113,.08);border-left:3px solid var(--vermelho)}
+
+/* ---------- tema ---------- */
+.tema{background:var(--alto);border-radius:12px;padding:16px 18px;margin-bottom:6px}
+.tema small{display:block;color:var(--fraco);font-size:12.5px;margin-bottom:5px}
+.tema p{margin:0;color:var(--forte);font-size:17px;line-height:1.45;font-weight:600}
+
+/* ---------- gravação: o coração do treino ---------- */
+.painel-vivo{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.medida{background:var(--alto);border-radius:12px;padding:12px 10px 10px;text-align:center;position:relative}
+.medida small{display:block;font-size:12px;color:var(--fraco);margin-top:3px}
+.numero{font-size:34px;font-weight:800;line-height:1.1;color:var(--forte);font-variant-numeric:tabular-nums}
+.medida.vicios .numero{color:var(--vermelho)}
+.medida.vicios.pulsa{animation:pulso .45s ease}
+@keyframes pulso{0%{background:rgba(248,113,113,.35)}100%{background:var(--alto)}}
+.relogio svg{display:block;margin:0 auto}
+.relogio .numero{position:absolute;top:22px;left:0;right:0;font-size:22px}
+.velocimetro svg{display:block;margin:0 auto}
+.agulha{transition:transform .5s cubic-bezier(.3,1.4,.6,1);transform-origin:50px 46px}
+
+.transcricao{background:#0d0e0f;border:1px solid var(--borda);border-radius:12px;padding:16px;
+  min-height:150px;max-height:260px;overflow-y:auto;font-size:18px;line-height:1.75;color:var(--forte)}
+.transcricao .provisorio{color:var(--fraco)}
+.transcricao .vazio{color:var(--fraco);font-size:15px}
+.vicio{background:rgba(248,113,113,.18);color:#ffb4b4;border-bottom:2px solid var(--vermelho);
+  border-radius:4px;padding:0 3px;font-weight:700}
+.vicio.novo{animation:acende .6s ease}
+@keyframes acende{0%{background:var(--vermelho);color:#2b0a0a}100%{background:rgba(248,113,113,.18)}}
+.mic{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--fraco)}
+.mic .bolinha{width:9px;height:9px;border-radius:50%;background:var(--vermelho);animation:pisca 1s infinite}
+@keyframes pisca{50%{opacity:.25}}
+.mic .nivel{flex:1;height:4px;background:var(--borda);border-radius:9px;overflow:hidden}
+.mic .nivel i{display:block;height:100%;width:0;background:var(--verde);transition:width .08s}
+.contagem{text-align:center;font-size:64px;font-weight:800;color:var(--amarelo);padding:30px 0}
+
+/* ---------- resultado ---------- */
+.placar{text-align:center;padding:2px 0 4px}
+.estrelas{font-size:28px;letter-spacing:5px;color:var(--fraco);margin-bottom:8px}
+.estrelas b{color:var(--amarelo);font-weight:400}
+.placar h2{font-size:21px}
+.placar p{margin:0;font-size:14.5px;line-height:1.6}
+.resumo{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 12px}
+.resumo .medida .numero{font-size:28px}
+.fichas{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
+.ficha{background:rgba(248,113,113,.12);color:#ffb4b4;border-radius:99px;padding:5px 11px;font-size:13.5px;font-weight:600}
+.ficha.limpa{background:rgba(74,222,128,.1);color:var(--verde)}
+.dica{padding:13px 15px;border-radius:0 10px 10px 0;background:rgba(247,208,70,.08);
+  border-left:3px solid var(--amarelo);font-size:14px;line-height:1.6;margin:12px 0 4px}
+.dica b{color:var(--forte)}
+.rotulo{font-size:13px;font-weight:700;color:var(--forte);margin:18px 0 8px}
+.transcricao.final{font-size:16px;max-height:200px}
+.nota-repetir{margin-top:10px!important;font-size:13px!important;color:var(--fraco)}
+
+@media(max-width:520px){
+  .cartao{padding:16px}
+  .como{grid-template-columns:1fr}
+  .numero{font-size:28px}
+  .transcricao{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ---------- leitura ---------- */
+.texto-alvo{background:#0d0e0f;border:1px solid var(--borda);border-radius:12px;padding:18px;
+  font-size:21px;line-height:1.8;color:#6b7176;margin-bottom:10px}
+.texto-alvo span{transition:color .2s,background .2s;border-radius:4px;padding:0 1px}
+.texto-alvo .ok{color:var(--forte);background:rgba(74,222,128,.16);box-shadow:inset 0 -2px 0 var(--verde)}
+.texto-alvo .perdida{color:#ffb4b4;background:rgba(248,113,113,.16);box-shadow:inset 0 -2px 0 var(--vermelho)}
+.etapas{display:flex;gap:6px;margin-bottom:16px}
+.etapas i{flex:1;height:4px;border-radius:9px;background:var(--borda)}
+.etapas i.feita{background:var(--amarelo)}
+.etapas i.atual{background:#8a7428}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
+.mini .medida .numero{font-size:24px}
+.medida.boa .numero{color:var(--verde)}
+.medida.ruim .numero{color:var(--vermelho)}
+.tabela{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 4px}
+.tabela th{text-align:left;font-weight:600;color:var(--fraco);font-size:12.5px;padding:6px 6px;border-bottom:1px solid var(--borda)}
+.tabela td{padding:9px 6px;border-bottom:1px solid var(--borda);color:var(--forte)}
+.tabela td.boa{color:var(--verde)} .tabela td.ruim{color:var(--vermelho)}
+.tabela tr:last-child td{border-bottom:0}
+.instrucoes{background:var(--alto);border-radius:12px;padding:14px 16px;margin:6px 0 4px}
+.instrucoes b{display:block;color:var(--amarelo);font-size:13.5px;margin-bottom:4px}
+.instrucoes p{margin:0;font-size:14.5px;line-height:1.6;color:var(--texto)}
+.texto-alvo .foco{text-decoration:underline dotted var(--amarelo);text-decoration-thickness:2px;text-underline-offset:5px}
+.texto-alvo .foco.ok{text-decoration-color:var(--verde)}
+.texto-alvo .foco.perdida{text-decoration-color:var(--vermelho)}
+.marca-pausa{display:inline-block;width:3px;height:1.05em;background:var(--amarelo);border-radius:2px;margin:0 6px;vertical-align:-2px;opacity:.85}
+.ouvir{margin:14px 0 4px}
+.ouvir-topo{font-size:14px;font-weight:700;color:var(--forte);margin-bottom:8px}
+.player{display:flex;align-items:center;gap:14px;background:var(--alto);border:1px solid var(--borda);border-radius:14px;padding:12px 16px}
+.play{flex:none;width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;background:var(--amarelo);color:#1a1500;
+  font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center;transition:background .14s}
+.play:hover{background:var(--amarelo2)}
+.play:focus-visible{outline:2px solid var(--amarelo);outline-offset:3px}
+.barra{flex:1;height:12px;background:var(--borda);border-radius:99px;cursor:pointer;overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:var(--amarelo);border-radius:99px}
+.tempo{flex:none;min-width:84px;text-align:right;font-size:14px;color:var(--fraco);font-variant-numeric:tabular-nums}
+.texto-alvo.com-foco .ok:not(.foco){background:none;box-shadow:none;color:var(--forte)}
+.selo{margin:10px 0 2px;font-size:13.5px;font-weight:700;color:var(--fraco)}
+.selo.ganhou{color:var(--amarelo)}
+.palco{position:relative;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:4/3;margin-bottom:10px}
+.palco video,.palco canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.selos-vivo{position:absolute;left:8px;right:8px;top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.sv{background:rgba(17,18,19,.82);border:1px solid var(--borda);border-radius:99px;padding:5px 10px;font-size:12.5px;font-weight:700;color:var(--fraco)}
+.sv.ok{color:var(--verde);border-color:rgba(74,222,128,.5)}
+.sv.ruim{color:var(--vermelho);border-color:rgba(248,113,113,.5)}
+.sv.meio{color:var(--amarelo);border-color:rgba(247,208,70,.5)}
+.relogio-vivo{position:absolute;right:10px;bottom:10px;background:rgba(17,18,19,.82);border-radius:99px;padding:6px 12px;font-weight:800;color:var(--amarelo);font-variant-numeric:tabular-nums}
+.aviso-vivo{position:absolute;left:0;right:0;bottom:0;padding:10px 14px;background:rgba(17,18,19,.75);color:var(--forte);font-size:14px;text-align:center}
+.carregando{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--fraco);font-size:14px;text-align:center;padding:20px}
+.tarefa{background:var(--alto);border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.tarefa small{display:block;color:var(--fraco);font-size:12.5px;margin-bottom:3px}
+.tarefa p{margin:0;color:var(--forte);font-size:16px;line-height:1.45;font-weight:600}
+.privacidade{font-size:12.5px;color:var(--fraco);margin-top:10px;text-align:center}
+.gravacao video{width:100%;border-radius:12px;background:#000;display:block}
+.barras{margin:12px 0 4px}
+.barra-linha{display:grid;grid-template-columns:96px 1fr 52px;gap:10px;align-items:center;margin:8px 0;font-size:13.5px}
+.barra-linha .trilho{height:10px;background:var(--borda);border-radius:99px;overflow:hidden;position:relative}
+.barra-linha .trilho i{display:block;height:100%;border-radius:99px;background:var(--fraco)}
+.barra-linha .trilho i.boa{background:var(--verde)} .barra-linha .trilho i.ruim{background:var(--vermelho)}
+.barra-linha .trilho b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--amarelo)}
+.barra-linha span:last-child{text-align:right;font-weight:700;color:var(--forte);font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="caixa">
+ <div class="cartao">
+  <div class="topo">
+    <span class="etiqueta" id="titulo-topo">Treino 9: O corpo fala antes</span>
+    <span class="passo" id="passo"></span>
+  </div>
+  <div class="etapas oculto" id="trilha"></div>
+
+  <!-- ===== ABERTURA ===== -->
+  <section class="etapa" id="e-abertura">
+    <div class="abertura">
+      <div class="icone">🪞</div>
+      <h2>Espelho da presença</h2>
+    </div>
+    <div class="instrucoes">
+      <b>Instruções</b>
+      <p>Ligue a câmera e faça 5 exercícios curtos falando. O app observa sua postura, seu olhar, seus gestos e sua expressão.</p>
+    </div>
+    <div class="aviso oculto" id="sem-camera">A câmera foi bloqueada. Clique no cadeado ao lado do endereço do site,
+      permita a câmera e toque em "Começar" de novo.</div>
+    <button class="botao" onclick="ligarCamera()">Começar</button>
+    <a class="botao fantasma" id="b-voltar-abertura" href="#" target="_top">Voltar ao Painel</a>
+    <p class="privacidade">🔒 A análise acontece no seu aparelho. Nenhuma imagem é enviada.</p>
+  </section>
+
+  <!-- ===== CÂMERA (preparo e exercícios) ===== -->
+  <section class="etapa oculto" id="e-camera">
+    <h2 id="c-titulo">Prepare-se</h2>
+    <p class="ajuda" id="c-ajuda">Apoie o aparelho na altura dos olhos. Deixe aparecer o rosto, os ombros e, se der, as mãos.</p>
+    <div class="tarefa oculto" id="c-tarefa"><small>Fale sobre:</small><p id="c-tarefa-texto"></p></div>
+    <div class="palco">
+      <video id="video" playsinline muted></video>
+      <canvas id="tela"></canvas>
+      <div class="selos-vivo">
+        <span class="sv" id="sv-postura">Postura</span>
+        <span class="sv" id="sv-olhar">Olhar</span>
+        <span class="sv" id="sv-gestos">Gestos</span>
+      </div>
+      <div class="relogio-vivo oculto" id="relogio">20</div>
+      <div class="aviso-vivo oculto" id="aviso-vivo"></div>
+      <div class="carregando" id="carregando">Carregando o analisador…<br>Isso leva alguns segundos na primeira vez.</div>
+    </div>
+    <button class="botao" id="c-botao" onclick="botaoCamera()">Calibrar</button>
+  </section>
+
+  <!-- ===== RESULTADO DE UM EXERCÍCIO ===== -->
+  <section class="etapa oculto" id="e-res">
+    <h2 id="r-titulo">—</h2>
+    <div class="barras" id="r-barras"></div>
+    <div class="dica" id="r-dica"></div>
+    <div class="ouvir gravacao oculto" id="r-grav">
+      <div class="ouvir-topo">🎬 Assista sua gravação <span style="font-weight:400;color:var(--fraco)">(do jeito que os outros veem você)</span></div>
+      <video id="r-video" controls playsinline></video>
+    </div>
+    <button class="botao" id="r-seguir" onclick="seguir()">Próximo exercício</button>
+    <button class="botao fantasma" onclick="repetir()">Fazer de novo</button>
+  </section>
+
+  <!-- ===== RESULTADO FINAL ===== -->
+  <section class="etapa oculto" id="e-fim">
+    <div class="placar">
+      <div class="estrelas" id="f-estrelas"></div>
+      <h2 id="f-titulo">—</h2>
+      <p id="f-texto">—</p>
+    </div>
+    <table class="tabela">
+      <thead><tr><th>Exercício</th><th>Resultado</th><th>Estrela</th></tr></thead>
+      <tbody id="f-tabela"></tbody>
+    </table>
+    <div class="dica" id="f-dica"></div>
+    <p class="nota-repetir">Repita quantas vezes quiser. Sua nota mais alta é a que vale.</p>
+    <button class="botao" onclick="refazer()">Fazer de novo</button>
+    <a class="botao fantasma" id="b-proximo" href="#" target="_top">Voltar ao Painel</a>
+  </section>
+ </div>
+</div>
+
+<script>
+/* ================= PROGRESSO NO CADEMÍ =================
+   O progresso fica numa nota interna do aluno no Cademí.
+   O Make só lê e grava (cenário "TAE - Progresso do aluno");
+   quem monta o conteúdo é o próprio app, para gastar poucos créditos.
+   Formato da nota: TAE|1.1=5|2.3=4|d2026-10-07|
+   treino=estrelas (a maior) e dAAAA-MM-DD (dias em que treinou). */
+const PROGRESSO_URL = "https://hook.us1.make.com/a9bpauyn4nsdi1dsq9pag166skfidr28";
+const DIAS_GUARDADOS = 90;
+const CACHE_MINUTOS = 10;
+
+function hojeTexto(){ return new Date().toLocaleDateString("sv-SE"); }
+
+function lerTextoProgresso(texto, destino){
+  if(!texto || texto.indexOf("TAE|") !== 0) return;
+  texto.split("|").forEach(function(parte){
+    if(/^d\d{4}-\d{2}-\d{2}$/.test(parte)){
+      if(destino.dias.indexOf(parte.slice(1)) === -1) destino.dias.push(parte.slice(1));
+    }else if(parte.indexOf("=") > 0){
+      const k = parte.split("=")[0], v = parseInt(parte.split("=")[1], 10);
+      if(!isNaN(v) && (!destino.notas[k] || v > destino.notas[k])) destino.notas[k] = v;
+    }
+  });
+}
+
+/* Resposta do Make = lista de notas do aluno. Junta todas as notas TAE
+   (pode haver mais de uma se a chave do Cademí for trocada) e guarda
+   o id da mais recente, que é a que será atualizada. */
+function lerRespostaCademi(texto){
+  const r = { nota:"", notas:{}, dias:[] };
+  const lista = (JSON.parse(texto).data || []).filter(function(n){
+    return n.body && n.body.indexOf("TAE|") === 0;
+  });
+  lista.sort(function(a,b){ return (b.updated_at || "").localeCompare(a.updated_at || ""); });
+  if(lista.length) r.nota = lista[0].id;
+  lista.forEach(function(n){ lerTextoProgresso(n.body, r); });
+  return r;
+}
+
+function juntarProgresso(a, b){
+  const r = { notas:Object.assign({}, a.notas), dias:a.dias.slice() };
+  Object.keys(b.notas).forEach(function(k){ if(!r.notas[k] || b.notas[k] > r.notas[k]) r.notas[k] = b.notas[k]; });
+  b.dias.forEach(function(d){ if(r.dias.indexOf(d) === -1) r.dias.push(d); });
+  return r;
+}
+
+function montarCorpo(p){
+  const partes = Object.keys(p.notas).sort().map(function(k){ return k + "=" + p.notas[k]; });
+  const dias = p.dias.slice().sort().slice(-DIAS_GUARDADOS).map(function(d){ return "d" + d; });
+  return "TAE|" + partes.concat(dias).map(function(x){ return x + "|"; }).join("");
+}
+
+function buscarCademi(aluno){
+  return fetch(PROGRESSO_URL + "?acao=ler&aluno=" + encodeURIComponent(aluno))
+    .then(function(r){ return r.text(); })
+    .then(function(t){
+      const p = lerRespostaCademi(t);
+      guardarCache(aluno, p);
+      return p;
+    });
+}
+
+/* Grava o progresso inteiro. Devolve o id da nota (nova ou a mesma). */
+function salvarCademi(aluno, nota, progresso, treino, primeira){
+  const url = PROGRESSO_URL + "?acao=salvar&aluno=" + encodeURIComponent(aluno) +
+    "&corpo=" + encodeURIComponent(montarCorpo(progresso)) +
+    "&treino=" + encodeURIComponent(treino || "") + "&primeira=" + (primeira ? "sim" : "nao") +
+    (nota ? "&nota=" + encodeURIComponent(nota) : "");
+  return fetch(url).then(function(r){ return r.text(); }).then(function(t){
+    t = (t || "").trim();
+    const id = /^note_\d+$/.test(t) ? t : nota;
+    guardarCache(aluno, { nota:id, notas:progresso.notas, dias:progresso.dias });
+    return id;
+  });
+}
+
+function guardarCache(aluno, p){
+  try{
+    localStorage.setItem("tae_cademi_" + aluno, JSON.stringify({
+      nota:p.nota, notas:p.notas, dias:p.dias, quando:Date.now() }));
+  }catch(e){}
+}
+
+function lerCache(aluno){
+  try{
+    const c = JSON.parse(localStorage.getItem("tae_cademi_" + aluno) || "null");
+    if(c && Date.now() - c.quando < CACHE_MINUTOS * 60000) return c;
+  }catch(e){}
+  return null;
+}
+/* ================= FIM PROGRESSO NO CADEMÍ ================= */
+
+/* Guarda a nota deste treino (vale a mais alta) no navegador e no Cademí. */
+function guardarNota(estrelas){
+  const hoje = hojeTexto();
+  let quem = "visitante";
+  const local = { notas:{}, dias:[] };
+  try{
+    quem = localStorage.getItem("tae_aluno_atual") || "visitante";
+    local.notas = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
+    if(local.notas[CODIGO] === undefined || estrelas > local.notas[CODIGO]) local.notas[CODIGO] = estrelas;
+    localStorage.setItem("tae_notas_" + quem, JSON.stringify(local.notas));
+    local.dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]");
+    if(local.dias.indexOf(hoje) === -1) local.dias.push(hoje);
+    localStorage.setItem("tae_dias_" + quem, JSON.stringify(local.dias));
+  }catch(e){}
+
+  if(quem === "visitante") return;
+
+  /* Usa o progresso do Cademí guardado há pouco pelo painel; se estiver
+     velho, busca de novo antes de gravar, para não apagar nada. */
+  const cache = lerCache(quem);
+  const obter = cache ? Promise.resolve(cache) : buscarCademi(quem);
+  obter.then(function(servidor){
+    const juntas = juntarProgresso(servidor, local);
+    return salvarCademi(quem, servidor.nota, juntas, CODIGO, servidor.notas[CODIGO] === undefined);
+  }).catch(function(){ /* sem internet: o painel reenvia depois */ });
+}
+
+
+
+/* Painel do TAE no Cademí. */
+const PROXIMO = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+/* ======================= ANÁLISE DO CORPO =======================
+   Recebe os pontos que o MediaPipe acha no rosto e no corpo e diz,
+   quadro a quadro, se a postura está boa, se o olhar está na câmera,
+   se as mãos estão se mexendo e se o rosto está expressivo.
+   Todos os limites ficam aqui em cima para ajustar com testes reais. */
+const LIM = {
+  ombroInclinacao: 7,     /* graus: acima disso os ombros estão tortos */
+  centro: 0.22,           /* nariz fora do meio dos ombros (em larguras de ombro) */
+  afundar: 0.80,          /* cabeça mais baixa que 80% da calibração = curvado */
+  giroCabeca: 0.18,       /* rosto virado para o lado */
+  inclinCabeca: 0.12,     /* rosto para cima ou para baixo */
+  olhoLado: 0.55,         /* olhos desviando para o lado */
+  olhoVertical: 0.40,     /* olhos desviando para cima/baixo, além do normal da pessoa */
+  gestoMov: 0.35,         /* velocidade das mãos (larguras de ombro por segundo) que já é gesto */
+  gestoAgitado: 1.8,      /* acima disso é gesto agitado */
+  sorriso: 0.35           /* intensidade de sorriso que conta como rosto expressivo */
+};
+
+function bs(face, nome){
+  const c = face && face.faceBlendshapes && face.faceBlendshapes[0];
+  if(!c) return 0;
+  for(let i = 0; i < c.categories.length; i++) if(c.categories[i].categoryName === nome) return c.categories[i].score;
+  return 0;
+}
+
+/* Medidas "cruas" de um quadro. */
+function medir(face, pose){
+  const m = { rosto:false, corpo:false };
+  const L = face && face.faceLandmarks && face.faceLandmarks[0];
+  if(L){
+    m.rosto = true;
+    const olhoE = L[33], olhoD = L[263], nariz = L[1], queixo = L[152];
+    const meioX = (olhoE.x + olhoD.x) / 2, meioY = (olhoE.y + olhoD.y) / 2;
+    const dist = Math.hypot(olhoD.x - olhoE.x, olhoD.y - olhoE.y) || 1e-6;
+    m.giro = (nariz.x - meioX) / dist;
+    m.inclin = (nariz.y - meioY) / ((queixo.y - meioY) || 1e-6);
+    m.olhoLado = Math.max(bs(face,"eyeLookOutLeft"), bs(face,"eyeLookInLeft"), bs(face,"eyeLookOutRight"), bs(face,"eyeLookInRight"));
+    m.olhoCima = (bs(face,"eyeLookUpLeft") + bs(face,"eyeLookUpRight")) / 2;
+    m.olhoBaixo = (bs(face,"eyeLookDownLeft") + bs(face,"eyeLookDownRight")) / 2;
+    m.sorriso = (bs(face,"mouthSmileLeft") + bs(face,"mouthSmileRight")) / 2;
+  }
+  const P = pose && pose.landmarks && pose.landmarks[0];
+  if(P && P[11].visibility > 0.5 && P[12].visibility > 0.5){
+    m.corpo = true;
+    const oE = P[11], oD = P[12];
+    m.largura = Math.hypot(oD.x - oE.x, oD.y - oE.y) || 1e-6;
+    let ang = Math.abs(Math.atan2(oD.y - oE.y, oD.x - oE.x) * 180 / Math.PI);
+    if(ang > 90) ang = 180 - ang;
+    m.ombroAng = ang;
+    const mx = (oE.x + oD.x) / 2, my = (oE.y + oD.y) / 2;
+    m.centro = Math.abs(P[0].x - mx) / m.largura;
+    m.altura = (my - P[0].y) / m.largura;           /* cabeça acima dos ombros */
+    m.ombros = [oE, oD];
+    m.pulsos = [P[15], P[16]].filter(function(p){ return p.visibility > 0.5 && p.y < 1.02; });
+  }
+  return m;
+}
+
+/* Calibração: média de alguns quadros com a pessoa reta, olhando a câmera. */
+function calibrar(amostras){
+  const ok = amostras.filter(function(m){ return m.rosto && m.corpo; });
+  if(ok.length < 5) return null;
+  const med = function(k){ return ok.reduce(function(s, m){ return s + m[k]; }, 0) / ok.length; };
+  return { giro:med("giro"), inclin:med("inclin"), altura:med("altura"),
+    olhoCima:med("olhoCima"), olhoBaixo:med("olhoBaixo") };
+}
+
+/* Julga um quadro em relação à calibração. */
+function julgar(m, base){
+  const j = { postura:false, olhar:false, motivoPostura:"", motivoOlhar:"" };
+  if(!m.corpo){ j.motivoPostura = "mostre os ombros"; }
+  else if(m.ombroAng > LIM.ombroInclinacao){ j.motivoPostura = "ombros tortos"; }
+  else if(m.centro > LIM.centro){ j.motivoPostura = "centralize o corpo"; }
+  else if(base && m.altura < base.altura * LIM.afundar){ j.motivoPostura = "endireite a coluna"; }
+  else j.postura = true;
+
+  if(!m.rosto){ j.motivoOlhar = "rosto fora da câmera"; }
+  else if(base && Math.abs(m.giro - base.giro) > LIM.giroCabeca){ j.motivoOlhar = "rosto virado"; }
+  else if(base && Math.abs(m.inclin - base.inclin) > LIM.inclinCabeca){ j.motivoOlhar = "cabeça para cima ou para baixo"; }
+  else if(m.olhoLado > LIM.olhoLado){ j.motivoOlhar = "olhar para o lado"; }
+  else if(base && (m.olhoCima - base.olhoCima > LIM.olhoVertical || m.olhoBaixo - base.olhoBaixo > LIM.olhoVertical)){ j.motivoOlhar = "olhar fugindo"; }
+  else j.olhar = true;
+
+  j.sorriso = !!m.rosto && m.sorriso > LIM.sorriso;
+  return j;
+}
+
+/* Velocidade das mãos entre dois quadros, em larguras de ombro por segundo. */
+function velocidadeMaos(ant, atual, dt){
+  if(!ant || !atual || !atual.corpo || !ant.corpo || dt <= 0) return 0;
+  let v = 0;
+  atual.pulsos.forEach(function(p, i){
+    const q = ant.pulsos[i];
+    if(q) v = Math.max(v, Math.hypot(p.x - q.x, p.y - q.y) / atual.largura / dt);
+  });
+  return v;
+}
+/* ======================= FIM ANÁLISE ======================= */
+
+/* ======================= CONFIGURAÇÃO ======================= */
+const CODIGO = new URLSearchParams(window.location.search).get("t") || "2.4";
+const TITULO = "Treino 9: O corpo fala antes";
+
+/* Cada exercício vale 1 estrela. foco = o que conta para a estrela. */
+const EXERCICIOS = [
+  { titulo:"Exercício 1: postura de base", curto:"Postura", duracao:20, foco:["postura"],
+    ajuda:"Costas retas, ombros relaxados e nivelados, corpo de frente para a câmera.",
+    temas:["Apresente-se: seu nome, o que você faz e há quanto tempo"] },
+  { titulo:"Exercício 2: olhar na câmera", curto:"Olhar", duracao:25, foco:["olhar"],
+    ajuda:"Olhe para a lente da câmera, não para a tela. É assim que o outro sente que você olha nos olhos dele. Se desviar para pensar, volte.",
+    temas:["O que você mais gosta no seu trabalho", "Um objetivo seu para os próximos meses", "Uma qualidade sua que ajuda a equipe"] },
+  { titulo:"Exercício 3: mãos que acompanham", curto:"Gestos", duracao:30, foco:["gestos"],
+    ajuda:"Deixe as mãos aparecerem e use-as para marcar as ideias: nem paradas, nem agitadas o tempo todo.",
+    temas:["Três motivos para trabalhar em equipe", "Três dicas para uma reunião produtiva", "Três coisas que você faria com um dia livre"] },
+  { titulo:"Exercício 4: rosto que conversa", curto:"Expressão", duracao:20, foco:["rosto"],
+    ajuda:"Deixe o rosto acompanhar o que você diz. Uma notícia boa merece um sorriso.",
+    temas:["Uma notícia boa que você recebeu recentemente", "Uma conquista sua que deu orgulho"] },
+  { titulo:"Exercício 5: tudo junto", curto:"Tudo junto", duracao:30, foco:["postura","olhar","gestos"],
+    ajuda:"Agora junte tudo: postura, olhar na câmera e mãos na medida, como numa reunião.",
+    temas:["Apresente uma ideia para melhorar algo na sua empresa", "Convença alguém a experimentar algo que você gosta"] }
+];
+
+/* Metas para ganhar a estrela (fração do tempo). */
+const META = { postura:0.80, olhar:0.70, gestoMin:0.15, gestoMax:0.60, agitadoMax:0.10, sorriso:0.15,
+  tudoPostura:0.75, tudoOlhar:0.65 };
+
+/* ======================= MOTOR ======================= */
+let fluxo = null, gravador = null, pedacos = [], gravUrl = null;
+let estado = "carregando", base = null, amostrasCal = [], fimCal = 0;
+let ex = 0, inicioEx = 0, ultimoT = 0, acum = null;
+let faceRes = null, poseRes = null, alterna = 0, ultimoVideoT = -1;
+let mAnt = null, tAnt = 0, vSuave = 0, janela = [];
+const resultados = [];
+const video = document.getElementById("video"), tela = document.getElementById("tela"), ctx = tela.getContext("2d");
+
+function mostrar(id){
+  document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
+  document.getElementById(id).classList.remove("oculto");
+  const alvo = document.querySelector(".cartao");
+  if(alvo && alvo.scrollIntoView) alvo.scrollIntoView({ block:"start", behavior:"smooth" });
+}
+function marcarTrilha(n){
+  const t = document.getElementById("trilha");
+  if(!t.children.length) t.innerHTML = new Array(EXERCICIOS.length + 1).join("<i></i>");
+  t.classList.remove("oculto");
+  t.querySelectorAll("i").forEach(function(el, i){ el.className = i < n ? "feita" : i === n ? "atual" : ""; });
+  document.getElementById("passo").textContent = n < EXERCICIOS.length ? (n + 1) + " de " + EXERCICIOS.length : "concluído";
+}
+function escapar(s){ return String(s).replace(/[&<>]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;" }[c]; }); }
+
+/* ---------- câmera ---------- */
+function ligarCamera(){
+  const pedir = function(audio){
+    return navigator.mediaDevices.getUserMedia({ audio:audio,
+      video:{ facingMode:"user", width:{ ideal:640 }, height:{ ideal:480 } } });
+  };
+  pedir(true).catch(function(){ return pedir(false); }).then(function(s){
+    fluxo = s;
+    video.srcObject = s;
+    video.play();
+    document.getElementById("sem-camera").classList.add("oculto");
+    estado = window.MP ? "preparar" : "carregando";
+    abrirPreparo();
+    requestAnimationFrame(loop);
+  }).catch(function(){ document.getElementById("sem-camera").classList.remove("oculto"); });
+}
+function quandoAnalisadorPronto(){
+  document.getElementById("carregando").classList.add("oculto");
+  if(estado === "carregando") estado = "preparar";
+}
+
+function abrirPreparo(){
+  document.getElementById("c-titulo").textContent = "Prepare-se";
+  document.getElementById("c-ajuda").textContent = "Apoie o aparelho na altura dos olhos. Deixe aparecer o rosto, os ombros e, se der, as mãos. Depois sente-se reto, olhe para a câmera e toque em Calibrar.";
+  document.getElementById("c-tarefa").classList.add("oculto");
+  document.getElementById("relogio").classList.add("oculto");
+  const b = document.getElementById("c-botao");
+  b.textContent = "Calibrar"; b.className = "botao";
+  mostrar("e-camera");
+}
+
+/* ---------- laço principal: analisa cada quadro ---------- */
+function loop(){
+  requestAnimationFrame(loop);
+  if(!window.MP || video.readyState < 2 || video.currentTime === ultimoVideoT) return;
+  ultimoVideoT = video.currentTime;
+  const agora = performance.now();
+  /* Rosto e corpo em quadros alternados, para pesar menos no celular. */
+  try{
+    if(alterna++ % 2 === 0) faceRes = MP.face.detectForVideo(video, agora);
+    else{
+      poseRes = MP.pose.detectForVideo(video, agora);
+      const mPose = medir(null, poseRes);
+      if(mAnt && tAnt){
+        const v = velocidadeMaos(mAnt, mPose, (agora - tAnt) / 1000);
+        vSuave = vSuave * 0.6 + v * 0.4;
+      }
+      if(mPose.corpo){ mAnt = mPose; tAnt = agora; }
+    }
+  }catch(e){ return; }
+
+  const m = medir(faceRes, poseRes);
+  const j = julgar(m, base);
+  const gesto = vSuave > LIM.gestoMov, agitado = vSuave > LIM.gestoAgitado;
+  janela.push({ t:agora, g:gesto, a:agitado });
+  while(janela.length && agora - janela[0].t > 2500) janela.shift();
+
+  atualizarSelos(m, j);
+  desenhar(m, j, gesto);
+
+  if(estado === "calibrando"){
+    amostrasCal.push(m);
+    const resta = Math.ceil((fimCal - agora) / 1000);
+    aviso(resta > 0 ? "Fique reto e olhe para a câmera… " + resta : "");
+    if(agora >= fimCal) terminarCalibracao();
+  }else if(estado === "gravando"){
+    const dt = Math.min(0.2, (agora - ultimoT) / 1000);
+    ultimoT = agora;
+    acum.tempo += dt;
+    if(j.postura) acum.postura += dt; else acum.motivosP[j.motivoPostura] = (acum.motivosP[j.motivoPostura] || 0) + dt;
+    if(j.olhar) acum.olhar += dt; else acum.motivosO[j.motivoOlhar] = (acum.motivosO[j.motivoOlhar] || 0) + dt;
+    if(gesto) acum.gesto += dt;
+    if(agitado) acum.agitado += dt;
+    if(j.sorriso) acum.sorriso += dt;
+    const resta = EXERCICIOS[ex].duracao - (agora - inicioEx) / 1000;
+    document.getElementById("relogio").textContent = Math.max(0, Math.ceil(resta));
+    if(resta <= 0) terminarExercicio();
+  }
+}
+
+function aviso(txt){
+  const el = document.getElementById("aviso-vivo");
+  el.textContent = txt; el.classList.toggle("oculto", !txt);
+}
+
+function estadoGestos(){
+  if(!janela.length) return "";
+  const g = janela.filter(function(x){ return x.g; }).length / janela.length;
+  const a = janela.filter(function(x){ return x.a; }).length / janela.length;
+  if(a > 0.3 || g > 0.9) return "agitado";
+  if(g < 0.1) return "parado";
+  return "na medida";
+}
+function selo(id, texto, classe){
+  const el = document.getElementById(id);
+  el.textContent = texto; el.className = "sv " + (classe || "");
+}
+function atualizarSelos(m, j){
+  if(!base){
+    selo("sv-postura", m.corpo ? "Ombros ✓" : "Mostre os ombros", m.corpo ? "ok" : "ruim");
+    selo("sv-olhar", m.rosto ? "Rosto ✓" : "Rosto fora", m.rosto ? "ok" : "ruim");
+    selo("sv-gestos", "Gestos", "");
+    return;
+  }
+  selo("sv-postura", j.postura ? "Postura ✓" : "Postura: " + j.motivoPostura, j.postura ? "ok" : "ruim");
+  selo("sv-olhar", j.olhar ? "Olhar ✓" : "Olhe para a câmera", j.olhar ? "ok" : "ruim");
+  const g = estadoGestos();
+  selo("sv-gestos", "Gestos: " + g, g === "na medida" ? "ok" : g === "agitado" ? "ruim" : "meio");
+}
+
+/* Linha dos ombros (verde/vermelha), ponto do nariz e pulsos. */
+function desenhar(m, j, gesto){
+  const w = video.videoWidth, h = video.videoHeight;
+  if(tela.width !== w){ tela.width = w; tela.height = h; }
+  ctx.clearRect(0, 0, w, h);
+  const P = poseRes && poseRes.landmarks && poseRes.landmarks[0];
+  if(m.corpo && P){
+    ctx.lineWidth = Math.max(3, w / 120); ctx.lineCap = "round";
+    ctx.strokeStyle = !base || j.postura ? "#4ade80" : "#f87171";
+    ctx.beginPath(); ctx.moveTo(P[11].x * w, P[11].y * h); ctx.lineTo(P[12].x * w, P[12].y * h); ctx.stroke();
+    ctx.fillStyle = gesto ? "#f7d046" : "rgba(255,255,255,.7)";
+    m.pulsos.forEach(function(p){ ctx.beginPath(); ctx.arc(p.x * w, p.y * h, w / 60, 0, 7); ctx.fill(); });
+  }
+}
+
+/* ---------- calibração ---------- */
+function botaoCamera(){
+  if(estado === "preparar"){
+    amostrasCal = []; fimCal = performance.now() + 3000; estado = "calibrando";
+    document.getElementById("c-botao").textContent = "Calibrando…";
+  }else if(estado === "pronto"){
+    comecarExercicio();
+  }else if(estado === "gravando"){
+    terminarExercicio();
+  }
+}
+function terminarCalibracao(){
+  base = calibrar(amostrasCal);
+  if(!base){
+    estado = "preparar";
+    aviso("Não consegui ver seu rosto e seus ombros. Afaste um pouco o aparelho e tente de novo.");
+    document.getElementById("c-botao").textContent = "Calibrar";
+    return;
+  }
+  aviso("");
+  abrirExercicio(0);
+}
+
+/* ---------- exercícios ---------- */
+function abrirExercicio(n){
+  ex = n; estado = "pronto"; marcarTrilha(n);
+  const E = EXERCICIOS[n];
+  document.getElementById("c-titulo").textContent = E.titulo;
+  document.getElementById("c-ajuda").textContent = E.ajuda;
+  document.getElementById("c-tarefa-texto").textContent = E.temas[Math.floor(Math.random() * E.temas.length)];
+  document.getElementById("c-tarefa").classList.remove("oculto");
+  document.getElementById("relogio").textContent = E.duracao;
+  document.getElementById("relogio").classList.add("oculto");
+  const b = document.getElementById("c-botao");
+  b.textContent = "Começar (" + E.duracao + " segundos)"; b.className = "botao";
+  aviso("");
+  mostrar("e-camera");
+}
+function comecarExercicio(){
+  acum = { tempo:0, postura:0, olhar:0, gesto:0, agitado:0, sorriso:0, motivosP:{}, motivosO:{} };
+  estado = "gravando"; inicioEx = ultimoT = performance.now();
+  document.getElementById("relogio").classList.remove("oculto");
+  const b = document.getElementById("c-botao");
+  b.textContent = "Terminar agora"; b.className = "botao parar";
+  gravar();
+}
+function gravar(){
+  pedacos = []; gravador = null;
+  if(gravUrl){ URL.revokeObjectURL(gravUrl); gravUrl = null; }
+  try{
+    gravador = new MediaRecorder(fluxo);
+    gravador.ondataavailable = function(e){ if(e.data && e.data.size) pedacos.push(e.data); };
+    gravador.onstop = function(){
+      if(!pedacos.length) return;
+      gravUrl = URL.createObjectURL(new Blob(pedacos, { type:gravador.mimeType || "video/webm" }));
+      document.getElementById("r-video").src = gravUrl;
+      document.getElementById("r-grav").classList.remove("oculto");
+    };
+    gravador.start();
+  }catch(e){ gravador = null; }
+}
+function terminarExercicio(){
+  if(estado !== "gravando") return;
+  estado = "pronto";
+  try{ gravador && gravador.state !== "inactive" && gravador.stop(); }catch(e){}
+  const t = Math.max(acum.tempo, 1);
+  resultados[ex] = { postura:acum.postura / t, olhar:acum.olhar / t, gesto:acum.gesto / t,
+    agitado:acum.agitado / t, sorriso:acum.sorriso / t,
+    motivoP:maior(acum.motivosP), motivoO:maior(acum.motivosO) };
+  mostrarResultado();
+}
+function maior(o){ let k = "", v = 0; for(const x in o) if(o[x] > v){ v = o[x]; k = x; } return k; }
+
+/* ---------- regra da estrela ---------- */
+function gestosOk(r){ return r.gesto >= META.gestoMin && r.gesto <= META.gestoMax && r.agitado <= META.agitadoMax; }
+function ganhouEstrela(r, n){
+  if(!r) return false;
+  const f = EXERCICIOS[n].foco;
+  if(f.length > 1) return r.postura >= META.tudoPostura && r.olhar >= META.tudoOlhar && gestosOk(r);
+  if(f[0] === "postura") return r.postura >= META.postura;
+  if(f[0] === "olhar") return r.olhar >= META.olhar;
+  if(f[0] === "gestos") return gestosOk(r);
+  return r.sorriso >= META.sorriso;
+}
+
+/* ---------- resultado de um exercício ---------- */
+function pct(x){ return Math.round(x * 100) + "%"; }
+function linha(nome, valor, bom, marca, marca2){
+  return '<div class="barra-linha"><span>' + nome + '</span><span class="trilho"><i class="' + (bom ? "boa" : "ruim") +
+    '" style="width:' + Math.min(100, valor * 100) + '%"></i>' +
+    (marca !== undefined ? '<b style="left:' + marca * 100 + '%"></b>' : "") +
+    (marca2 !== undefined ? '<b style="left:' + marca2 * 100 + '%"></b>' : "") +
+    '</span><span>' + pct(valor) + "</span></div>";
+}
+function mostrarResultado(){
+  const r = resultados[ex], E = EXERCICIOS[ex], f = E.foco, tudo = f.length > 1;
+  document.getElementById("r-titulo").textContent = "Como foi o exercício " + (ex + 1);
+  let barras = "";
+  if(f.indexOf("postura") !== -1) barras += linha("Postura boa", r.postura, r.postura >= (tudo ? META.tudoPostura : META.postura), tudo ? META.tudoPostura : META.postura);
+  if(f.indexOf("olhar") !== -1) barras += linha("Olhar na câmera", r.olhar, r.olhar >= (tudo ? META.tudoOlhar : META.olhar), tudo ? META.tudoOlhar : META.olhar);
+  if(f.indexOf("gestos") !== -1) barras += linha("Gesticulando", r.gesto, gestosOk(r), META.gestoMin, META.gestoMax);
+  if(f.indexOf("rosto") !== -1) barras += linha("Rosto expressivo", r.sorriso, r.sorriso >= META.sorriso, META.sorriso);
+  document.getElementById("r-barras").innerHTML = barras +
+    '<div style="font-size:12px;color:var(--fraco)">A marca amarela mostra a meta.</div>';
+
+  const msgs = [];
+  if(f.indexOf("postura") !== -1){
+    if(r.postura >= (tudo ? META.tudoPostura : META.postura)) msgs.push("<b>Postura firme.</b>");
+    else msgs.push("<b>Postura:</b> o que mais apareceu foi \"" + escapar(r.motivoP || "postura") + "\". Apoie as costas, solte os ombros e fique de frente.");
+  }
+  if(f.indexOf("olhar") !== -1){
+    if(r.olhar >= (tudo ? META.tudoOlhar : META.olhar)) msgs.push("<b>Bom contato visual.</b>");
+    else msgs.push("<b>Olhar:</b> " + (r.motivoO === "olhar fugindo" || r.motivoO === "cabeça para cima ou para baixo"
+      ? "você olhou muito para a tela ou para baixo. Mire na lente da câmera." : "o olhar fugiu bastante. Pode desviar para pensar, mas volte para a câmera."));
+  }
+  if(f.indexOf("gestos") !== -1){
+    if(gestosOk(r)) msgs.push("<b>Gestos na medida.</b>");
+    else if(r.agitado > META.agitadoMax || r.gesto > META.gestoMax) msgs.push("<b>Gestos:</b> mãos agitadas demais. Gesticule para marcar as ideias e depois deixe as mãos descansarem.");
+    else msgs.push("<b>Gestos:</b> as mãos ficaram quase paradas" + (r.gesto === 0 ? " ou fora da câmera" : "") + ". Use-as para marcar o primeiro, o segundo e o terceiro ponto.");
+  }
+  if(f.indexOf("rosto") !== -1){
+    msgs.push(r.sorriso >= META.sorriso ? "<b>Rosto vivo.</b> A expressão acompanhou a fala."
+      : "<b>Expressão:</b> o rosto ficou sério durante quase toda a notícia boa. Deixe o sorriso aparecer.");
+  }
+  document.getElementById("r-dica").innerHTML = msgs.join(" ");
+  document.getElementById("r-grav").classList.add("oculto");
+  document.getElementById("r-seguir").textContent = ex < EXERCICIOS.length - 1 ? "Próximo exercício" : "Ver resultado final";
+  mostrar("e-res");
+}
+function seguir(){ if(ex < EXERCICIOS.length - 1) abrirExercicio(ex + 1); else final(); }
+function repetir(){ abrirExercicio(ex); }
+
+/* ---------- resultado final ---------- */
+function final(){
+  marcarTrilha(EXERCICIOS.length);
+  const ganhos = EXERCICIOS.map(function(e, i){ return ganhouEstrela(resultados[i], i); });
+  const estrelas = ganhos.filter(Boolean).length;
+  document.getElementById("f-estrelas").innerHTML = "<b>" + "★".repeat(estrelas) + "</b>" + "★".repeat(5 - estrelas);
+  const TIT = ["😞 Não foi dessa vez", "😕 Uma estrela", "😐 Metade do caminho", "🙂 Bom resultado", "😃 Quase perfeito", "🤩 Presença completa"];
+  document.getElementById("f-titulo").textContent = TIT[estrelas];
+  document.getElementById("f-texto").textContent = "Você ganhou estrela em " + estrelas + " de 5 exercícios.";
+  document.getElementById("f-tabela").innerHTML = EXERCICIOS.map(function(e, i){
+    const r = resultados[i]; if(!r) return "";
+    let res;
+    if(e.foco.length > 1) res = "postura " + pct(r.postura) + " · olhar " + pct(r.olhar);
+    else if(e.foco[0] === "postura") res = pct(r.postura) + " do tempo";
+    else if(e.foco[0] === "olhar") res = pct(r.olhar) + " do tempo";
+    else if(e.foco[0] === "gestos") res = pct(r.gesto) + " gesticulando";
+    else res = pct(r.sorriso) + " expressivo";
+    return "<tr><td>" + e.curto + '</td><td class="' + (ganhos[i] ? "boa" : "ruim") + '">' + res +
+      '</td><td class="' + (ganhos[i] ? "boa" : "ruim") + '">' + (ganhos[i] ? "★" : "☆") + "</td></tr>";
+  }).join("");
+  const DICAS = {
+    postura:"<b>Seu ponto de atenção é a postura.</b> Antes de uma reunião, apoie as costas, solte os ombros e coloque os dois pés no chão.",
+    olhar:"<b>Seu ponto de atenção é o olhar.</b> Em chamadas de vídeo, olhe para a lente, não para o rosto na tela. Cole um adesivo perto da câmera para lembrar.",
+    gestos:"<b>Seu ponto de atenção são os gestos.</b> Use as mãos para marcar as ideias principais e deixe-as descansar entre elas.",
+    rosto:"<b>Seu ponto de atenção é a expressão.</b> Rosto parado passa frieza. Deixe o rosto acompanhar o que você diz."
+  };
+  const falhou = ganhos.indexOf(false);
+  document.getElementById("f-dica").innerHTML = falhou === -1
+    ? "<b>Postura, olhar e gestos trabalhando a seu favor.</b> Seu corpo agora fala antes, e fala bem."
+    : DICAS[EXERCICIOS[falhou].foco.length > 1 ? (resultados[falhou].postura < META.tudoPostura ? "postura" : resultados[falhou].olhar < META.tudoOlhar ? "olhar" : "gestos") : EXERCICIOS[falhou].foco[0]];
+  mostrar("e-fim");
+  guardarNota(estrelas);
+}
+function refazer(){ resultados.length = 0; abrirExercicio(0); }
+
+document.getElementById("titulo-topo").textContent = TITULO;
+document.title = TITULO;
+document.getElementById("b-proximo").href = PROXIMO;
+document.getElementById("b-voltar-abertura").href = PROXIMO;
+</script>
+
+<script type="module">
+/* Carrega o analisador de rosto e corpo (MediaPipe, do Google). Roda no aparelho. */
+const V = "1.1.0";
+try{
+  const mp = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@" + V + "/vision_bundle.mjs");
+  const arquivos = await mp.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@" + V + "/wasm");
+  const criar = async function(delegate){
+    const face = await mp.FaceLandmarker.createFromOptions(arquivos, {
+      baseOptions:{ modelAssetPath:"https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task", delegate:delegate },
+      runningMode:"VIDEO", numFaces:1, outputFaceBlendshapes:true });
+    const pose = await mp.PoseLandmarker.createFromOptions(arquivos, {
+      baseOptions:{ modelAssetPath:"https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task", delegate:delegate },
+      runningMode:"VIDEO", numPoses:1 });
+    return { face:face, pose:pose };
+  };
+  try{ window.MP = await criar("GPU"); }catch(e){ window.MP = await criar("CPU"); }
+  quandoAnalisadorPronto();
+}catch(e){
+  document.getElementById("carregando").textContent = "Não foi possível carregar o analisador. Confira sua internet e recarregue a página.";
+}
+</script>
+</body>
+</html>
