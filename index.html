@@ -158,6 +158,22 @@ body{
 .tela{display:none}
 .tela.ativa{display:block}
 
+.aviso-admin{margin:4px 0 10px;padding:11px 14px;border-radius:10px;font-size:13px;line-height:1.5;
+  background:rgba(247,208,70,.1);border:1px solid rgba(247,208,70,.35);color:var(--texto)}
+/* ---------- Situações ---------- */
+.grade-sit{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px;margin-top:6px}
+.sit{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;cursor:pointer;
+  background:var(--cartao);border:1px solid var(--borda);border-radius:12px;padding:14px;
+  font-family:inherit;color:var(--texto);transition:border-color .14s ease,background .14s ease}
+.sit:hover{border-color:var(--amarelo);background:var(--cartao-alto)}
+.sit:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.sit-icone{font-size:26px;line-height:1;flex:none}
+.sit b{display:block;color:#fff;font-size:15px;margin-bottom:3px}
+.sit span{display:block;font-size:12.5px;color:var(--texto-fraco);line-height:1.45}
+.sit em{display:inline-block;margin-top:7px;font-style:normal;font-size:11.5px;font-weight:700;color:var(--amarelo)}
+.sit-aberta{grid-column:1/-1;background:var(--cartao-alto);border:1px solid var(--borda);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.55}
+.sit-aberta ol{margin:8px 0 0;padding-left:20px}
+
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -167,7 +183,7 @@ body{
 <nav class="abas">
   <button class="aba ativa" data-tela="hoje" onclick="irPara('hoje')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Início
+    Painel
   </button>
   <button class="aba" data-tela="jornada" onclick="irPara('jornada')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 5h11l3 3.5-3 3.5H6"/><path d="M6 15h8l2.5 3"/></svg>
@@ -177,10 +193,15 @@ body{
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
     Evolução
   </button>
+  <button class="aba" data-tela="situacoes" onclick="irPara('situacoes')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+    Situações
+  </button>
 </nav>
 
 <!-- ========== INÍCIO ========== -->
 <section class="tela ativa" id="tela-hoje">
+  <div class="aviso-admin" id="aviso-admin" hidden>👀 Você está na visão de administrador do Cademí. Aqui o progresso não é lido nem salvo. Para ver suas estrelas, entre com uma conta de aluno.</div>
   <div class="topo">
     <h1 id="saudacao">Bom dia</h1>
     <p id="subtitulo">—</p>
@@ -241,6 +262,17 @@ body{
     <div class="etiqueta">Conquistas</div>
     <div id="lista-conquistas"></div>
   </div>
+</section>
+
+<!-- ===== SITUAÇÕES (modo avulso) =====
+     Cada situação junta treinos de vários pilares para um momento real.
+     Para editar: lista SITUACOES no código. -->
+<section class="tela" id="tela-situacoes">
+  <div class="topo">
+    <h1>Situações</h1>
+    <p>Tem um momento importante chegando? Escolha a situação e treine para ela.</p>
+  </div>
+  <div class="grade-sit" id="lista-situacoes"></div>
 </section>
 
 </div>
@@ -341,8 +373,12 @@ const CONQUISTAS = [
 const ALUNO = (function(){
   const p = new URLSearchParams(window.location.search);
   const g = (p.get("cuser_gratis") || "").toLowerCase();
+  /* Aluno de verdade tem ID numérico. Na visão de administrador o Cademí
+     manda outro valor: aí o progresso não é lido nem salvo. */
+  const bruto = p.get("cuser_id") || "";
   return {
-    id: p.get("cuser_id") || null,
+    id: /^\d+$/.test(bruto) ? bruto : null,
+    modoAdmin: !!bruto && !/^\d+$/.test(bruto),
     email: p.get("cuser_email") || null,
     nome: p.get("cuser_name") || null,
     primeiroNome: p.get("cuser_fname") || null,
@@ -592,6 +628,57 @@ function resumo(){
 }
 
 /* ---------- Navegação ---------- */
+/* ---------- Situações ----------
+   treinos = números da Jornada (1 a 20) que compõem a situação. */
+const SITUACOES = [
+  { icone:"💼", nome:"Entrevista de emprego", desc:"Responder bem, sem travar, e passar segurança.", treinos:[5, 9, 6, 8, 12] },
+  { icone:"📊", nome:"Apresentar resultados", desc:"Mostrar números para a chefia com clareza.", treinos:[1, 2, 7, 16, 19] },
+  { icone:"💻", nome:"Reunião online", desc:"Câmera, olhar, voz e objetividade na chamada.", treinos:[9, 6, 1, 10, 5] },
+  { icone:"💰", nome:"Pedir aumento ou promoção", desc:"Pedir com firmeza e sustentar a conversa.", treinos:[12, 8, 14, 10, 7] },
+  { icone:"🗣️", nome:"Dar um feedback difícil", desc:"Ser direto sem machucar a relação.", treinos:[3, 13, 4, 7, 10] },
+  { icone:"🎤", nome:"Falar para muita gente", desc:"Abrir, conduzir e fechar uma apresentação.", treinos:[16, 17, 18, 19, 20] },
+  { icone:"🤝", nome:"Negociar com cliente", desc:"Defender seu preço e seus prazos.", treinos:[14, 11, 4, 8, 10] },
+  { icone:"🙋", nome:"Se apresentar a alguém novo", desc:"Causar boa impressão nos primeiros segundos.", treinos:[1, 9, 6, 16, 5] }
+];
+
+function nomeTreinoGlobal(num){
+  let total = 0;
+  for(let i = 0; i < PILARES.length; i++){
+    const p = PILARES[i];
+    if(num <= total + p.treinos.length){
+      const t = p.treinos[num - total - 1];
+      return { pilar:p, t:t };
+    }
+    total += p.treinos.length;
+  }
+  return null;
+}
+
+function montarSituacoes(){
+  const el = document.getElementById("lista-situacoes");
+  el.innerHTML = SITUACOES.map(function(s, i){
+    return '<button class="sit" onclick="abrirSituacao(' + i + ')"><span class="sit-icone">' + s.icone + '</span>' +
+      '<span><b>' + s.nome + '</b><span>' + s.desc + '</span><em>' + s.treinos.length + ' treinos</em></span></button>';
+  }).join("");
+}
+
+function abrirSituacao(i){
+  montarSituacoes();
+  const s = SITUACOES[i];
+  const itens = s.treinos.map(function(num){
+    const x = nomeTreinoGlobal(num);
+    if(!x) return "";
+    const ok = feito(x.pilar.id, x.t.n);
+    const nome = "Treino " + num + ": " + x.t.nome + (ok ? " ✓" : "");
+    return "<li>" + (x.t.aula ? '<a href="' + BASE_AULA + x.t.aula + '" target="_top" style="color:inherit">' + nome + "</a>" : nome) + "</li>";
+  }).join("");
+  const caixa = document.createElement("div");
+  caixa.className = "sit-aberta";
+  caixa.innerHTML = "<b>" + s.icone + " " + s.nome + "</b><br>Faça estes treinos, nesta ordem:<ol>" + itens + "</ol>";
+  const cards = document.querySelectorAll("#lista-situacoes .sit");
+  cards[i].after(caixa);
+}
+
 function irPara(tela){
   document.querySelectorAll(".tela").forEach(function(s){ s.classList.remove("ativa"); });
   document.getElementById("tela-" + tela).classList.add("ativa");
@@ -599,6 +686,7 @@ function irPara(tela){
   window.scrollTo(0,0);
   if(tela === "jornada") montarPilares();
   if(tela === "evolucao") montarEvolucao();
+  if(tela === "situacoes") montarSituacoes();
 }
 
 /* ---------- Início ---------- */
@@ -751,6 +839,7 @@ carregar();
 /* Guarda quem é o aluno da vez. A página de treino lê isto para saber
    em qual progresso gravar, já que ela não recebe os dados do Cademí. */
 try{ localStorage.setItem("tae_aluno_atual", ALUNO.id || "visitante"); }catch(e){}
+if(ALUNO.modoAdmin) document.getElementById("aviso-admin").hidden = false;
 
 /* Recarrega ao voltar para a aba, para refletir treino feito em outra. */
 document.addEventListener("visibilitychange", function(){
