@@ -503,6 +503,11 @@ const resultados = [];
 const video = document.getElementById("video"), tela = document.getElementById("tela"), ctx = tela.getContext("2d");
 
 function mostrar(id){
+  /* Ao trocar de tela, para qualquer gravação que esteja tocando
+     (a câmera ao vivo, id "video", continua ligada). */
+  document.querySelectorAll("audio, video").forEach(function(m){
+    if(m.id !== "video" && !m.paused){ try{ m.pause(); }catch(e){} }
+  });
   document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
   document.getElementById(id).classList.remove("oculto");
   const alvo = document.querySelector(".cartao");
