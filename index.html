@@ -267,7 +267,7 @@ const PILARES = [
   { id:2, nome:"Segurança",
     resumo:"Transmitir confiança no verbal e no não verbal.",
     treinos:[
-      { n:1, nome:"A pausa no lugar do vício", aula:null },
+      { n:1, nome:"Dicção e articulação", aula:null },
       { n:2, nome:"Desacelere o fim da frase", aula:null },
       { n:3, nome:"Afirme sem pedir licença", aula:null },
       { n:4, nome:"O corpo fala antes", aula:null },
@@ -543,6 +543,52 @@ function sincronizar(forcar){
     });
     fila.catch(function(){});
   }).catch(function(){ /* sem internet: segue com o que está no navegador */ });
+}
+
+/* Número corrido do treino na jornada inteira (1 a 20).
+   Só para exibir: o progresso continua guardado como "pilar.treino" (ex.: 2.3). */
+function numeroGlobal(pilarId, n){
+  let total = 0;
+  for(let i=0;i<PILARES.length;i++){
+    if(PILARES[i].id === pilarId) return total + n;
+    total += PILARES[i].treinos.length;
+  }
+  return n;
+}
+
+function codigo(pilarId, n){ return pilarId + "." + n; }
+function nota(pilarId, n){ return NOTAS[codigo(pilarId, n)]; }
+function feito(pilarId, n){ return nota(pilarId, n) !== undefined; }
+
+function estrelas(pilarId, n){
+  const v = nota(pilarId, n);
+  if(v === undefined) return null;
+  const classe = v === 5 ? "estrelas-aula cheias" : "estrelas-aula";
+  return '<span class="' + classe + '">' + "★".repeat(v) + "☆".repeat(5 - v) + '</span>';
+}
+
+/* Média das estrelas dos treinos já feitos. Null quando não há nenhum. */
+function notaMedia(){
+  const valores = Object.keys(NOTAS).map(function(k){ return NOTAS[k]; });
+  if(!valores.length) return null;
+  const soma = valores.reduce(function(a,b){ return a + b; }, 0);
+  return soma / valores.length;
+}
+
+function resumo(){
+  let feitos = 0, pilares = 0, faltamParaPilar = 99;
+  PILARES.forEach(function(p){
+    let c = 0;
+    p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
+    feitos += c;
+    if(c === p.treinos.length) pilares++;
+    else if(c > 0 && !pilarBloqueado(p.id)){
+      const f = p.treinos.length - c;
+      if(f < faltamParaPilar) faltamParaPilar = f;
+    }
+  });
+  return { feitos:feitos, pilares:pilares, total:TOTAL,
+           sequencia:SEQUENCIA, faltamParaPilar:faltamParaPilar };
 }
 
 /* ---------- Navegação ---------- */
