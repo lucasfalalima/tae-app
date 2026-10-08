@@ -184,7 +184,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     </div>
     <div class="mic oculto" id="l-mic"><span class="bolinha"></span>Ouvindo<span class="nivel"><i class="nivel-barra"></i></span></div>
     <div class="dica oculto" id="l-retorno"></div>
-    <div class="ouvir oculto" id="l-ouvir"><div class="ouvir-topo">🎧 Ouça sua leitura</div><div class="player"><button class="play" id="l-play" onclick="tocar('l')" aria-label="Tocar">▶</button><div class="barra" id="l-barra" onclick="pular(event, 'l')"><i id="l-prog"></i></div><span class="tempo" id="l-tempo">0:00</span></div><audio id="l-audio" preload="auto"></audio></div>
+    <div class="ouvir oculto" id="l-ouvir"><div class="ouvir-topo">🔈 Ouça sua gravação</div><div class="player"><button class="play" id="l-play" onclick="tocar('l')" aria-label="Tocar">▶</button><div class="barra" id="l-barra" onclick="pular(event, 'l')"><i id="l-prog"></i></div><span class="tempo" id="l-tempo">0:00</span></div><audio id="l-audio" preload="auto"></audio></div>
     <button class="botao" id="l-botao" onclick="botaoLeitura()">Começar a ler</button>
     <button class="botao fantasma oculto" id="l-repetir" onclick="repetirLeitura()">Ler este texto de novo</button>
   </section>
@@ -242,7 +242,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <div class="fichas" id="fr-fichas"></div>
     <div class="transcricao final" id="fr-transcricao"></div>
     <div class="dica" id="fr-dica"></div>
-    <div class="ouvir oculto" id="fr-ouvir"><div class="ouvir-topo">🎧 Ouça sua fala</div><div class="player"><button class="play" id="fr-play" onclick="tocar('fr')" aria-label="Tocar">▶</button><div class="barra" id="fr-barra" onclick="pular(event, 'fr')"><i id="fr-prog"></i></div><span class="tempo" id="fr-tempo">0:00</span></div><audio id="fr-audio" preload="auto"></audio></div>
+    <div class="ouvir oculto" id="fr-ouvir"><div class="ouvir-topo">🔈 Ouça sua gravação</div><div class="player"><button class="play" id="fr-play" onclick="tocar('fr')" aria-label="Tocar">▶</button><div class="barra" id="fr-barra" onclick="pular(event, 'fr')"><i id="fr-prog"></i></div><span class="tempo" id="fr-tempo">0:00</span></div><audio id="fr-audio" preload="auto"></audio></div>
     <button class="botao" id="fr-seguir" onclick="seguirDepoisDaFala()">—</button>
     <button class="botao fantasma" onclick="repetirFala()">Falar de novo</button>
   </section>
@@ -258,8 +258,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
       <tbody id="f-tabela"></tbody>
     </table>
     <div class="dica" id="f-dica"></div>
-    <div class="rotulo">Sua fala livre</div>
-    <div class="transcricao final" id="f-transcricao"></div>
+
     <p class="nota-repetir">Repita quantas vezes quiser. Sua nota mais alta é a que vale.</p>
     <button class="botao" onclick="refazer()">Fazer de novo</button>
     <a class="botao fantasma" id="b-proximo" href="#" target="_top">Voltar ao Painel</a>
@@ -1090,7 +1089,6 @@ function final(){
   if(fala && fala.total < 20) dica = "Na fala livre quase nada foi captado. Fale um pouco mais alto e use os 30 segundos inteiros.";
   document.getElementById("f-dica").innerHTML = dica;
 
-  desenharVicios(document.getElementById("f-transcricao"), fala.analise, 999);
   guardarNota(estrelas);
 }
 
