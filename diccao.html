@@ -122,6 +122,9 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 .tabela td{padding:9px 6px;border-bottom:1px solid var(--borda);color:var(--forte)}
 .tabela td.boa{color:var(--verde)} .tabela td.ruim{color:var(--vermelho)}
 .tabela tr:last-child td{border-bottom:0}
+.instrucoes{background:var(--alto);border-radius:12px;padding:14px 16px;margin:6px 0 4px}
+.instrucoes b{display:block;color:var(--amarelo);font-size:13.5px;margin-bottom:4px}
+.instrucoes p{margin:0;font-size:14.5px;line-height:1.6;color:var(--texto)}
 </style>
 </head>
 <body>
@@ -139,13 +142,11 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <div class="abertura">
       <div class="icone">🗣️</div>
       <h2>Fala limpa</h2>
-      <p class="ajuda">Três leituras em voz alta e duas falas livres. Cada palavra que sai clara
-      acende em verde. O app também mede sua velocidade e avisa se escapar algum vício.</p>
     </div>
-    <div class="como">
-      <div><b>Leia</b>Três textos, do mais fácil ao trava-língua.</div>
-      <div><b>Fale</b>Sobre o trabalho e depois sobre você, sem roteiro.</div>
-      <div><b>Confira</b>Clareza, velocidade e vícios de cada etapa.</div>
+    <div class="instrucoes">
+      <b>Instruções</b>
+      <p>Leia 3 textos em voz alta e depois fale à vontade sobre o trabalho e sobre você:
+      o app mostra na hora a clareza, a velocidade e os vícios de cada etapa.</p>
     </div>
     <div class="aviso oculto" id="sem-suporte">Este navegador não reconhece voz.
       Abra o treino no <b>Google Chrome</b> (computador ou Android) para fazer este exercício.</div>
@@ -213,6 +214,21 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
   </section>
 
   <!-- ===== RESULTADO ===== -->
+  <!-- ===== RESULTADO DE CADA FALA LIVRE ===== -->
+  <section class="etapa oculto" id="e-fala-res">
+    <h2 id="fr-titulo">—</h2>
+    <div class="mini">
+      <div class="medida" id="fr-c-vicios"><div class="numero" id="fr-vicios">0</div><small>vícios</small></div>
+      <div class="medida" id="fr-c-ppm"><div class="numero" id="fr-ppm">–</div><small>palavras/min</small></div>
+      <div class="medida" id="fr-c-clareza"><div class="numero" id="fr-clareza">–</div><small>clareza*</small></div>
+    </div>
+    <div class="fichas" id="fr-fichas"></div>
+    <div class="transcricao final" id="fr-transcricao"></div>
+    <div class="dica" id="fr-dica"></div>
+    <button class="botao" id="fr-seguir" onclick="seguirDepoisDaFala()">—</button>
+    <button class="botao fantasma" onclick="repetirFala()">Falar de novo</button>
+  </section>
+
   <section class="etapa oculto" id="e-fim">
     <div class="placar">
       <div class="estrelas" id="f-estrelas"></div>
@@ -542,7 +558,7 @@ function analisarTudo(){
     extra++;
   });
   if(hesitacoes.length){
-    a.contagem["é…"] = (a.contagem["é…"] || 0) + hesitacoes.length;
+    a.contagem["ééé"] = (a.contagem["ééé"] || 0) + hesitacoes.length;
     a.vicios += hesitacoes.length;
   }
   return a;
@@ -606,11 +622,11 @@ function analisarVicios(texto){
     }
     if(!achou){
       const w = p[i];
-      if(SONS.test(w)){ achou = "é…"; i++; }
-      else if(w === "é" && p[i + 1] === "é"){ achou = "é…"; while(p[i] === "é") i++; }
+      if(SONS.test(w)){ achou = "ééé"; i++; }
+      else if(w === "é" && p[i + 1] === "é"){ achou = "ééé"; while(p[i] === "é") i++; }
       else if(VICIOS.indexOf(w) !== -1){ achou = w; i++; }
     }
-    if(achou){ contagem[achou] = (contagem[achou] || 0) + 1; pedacos.push({ t:achou === "é…" ? "é…" : orig.slice(ini, i).join(" "), v:true }); }
+    if(achou){ contagem[achou] = (contagem[achou] || 0) + 1; pedacos.push({ t:achou === "ééé" ? "ééé" : orig.slice(ini, i).join(" "), v:true }); }
     else { pedacos.push({ t:orig[i], v:false }); i++; }
   }
   return { pedacos:pedacos, contagem:contagem, total:p.length,
@@ -819,9 +835,47 @@ function pararLivre(){
       ? Math.round(confiancas.reduce(function(s, c){ return s + c; }, 0) / confiancas.length * 100) : null;
     resultados[etapa] = { clareza:conf, ppm:velocidade(a.total), vicios:a.vicios,
       segundos:Math.max(segundos, 5), total:a.total, analise:a };
-    if(etapa === 3) abrirFala(4); else final();
+    mostrarResultadoFala();
   }, 600);
 }
+
+/* Resultado de uma fala livre, antes de seguir. */
+function mostrarResultadoFala(){
+  const r = resultados[etapa], a = r.analise;
+  document.getElementById("fr-titulo").textContent = "Como foi o Nível " + (etapa + 1);
+  const vpm = r.vicios / (r.segundos / 60);
+  pintarCaixa("fr-c-vicios", "fr-vicios", r.vicios, r.vicios === 0);
+  pintarCaixa("fr-c-ppm", "fr-ppm", r.ppm || "–", r.ppm >= LENTO && r.ppm <= RAPIDO);
+  pintarCaixa("fr-c-clareza", "fr-clareza", r.clareza === null ? "–" : r.clareza + "%", r.clareza === null ? null : r.clareza >= 90);
+
+  const ordem = Object.keys(a.contagem).sort(function(x, y){ return a.contagem[y] - a.contagem[x]; });
+  document.getElementById("fr-fichas").innerHTML = ordem.length
+    ? ordem.map(function(k){ return '<span class="ficha">"' + escapar(k) + '" ×' + a.contagem[k] + "</span>"; }).join("")
+    : '<span class="ficha limpa">Nenhum vício encontrado</span>';
+  desenharVicios(document.getElementById("fr-transcricao"), a, 999);
+
+  let dica;
+  if(r.total < 20) dica = "Quase nada foi captado. Fale um pouco mais alto, mais perto do microfone, e use os 30 segundos inteiros.";
+  else if(r.vicios === 0) dica = "<b>Fala limpa.</b> Nenhum vício em " + Math.round(r.segundos) + " segundos.";
+  else if(vpm > 6) dica = "<b>Muitos vícios: " + vpm.toFixed(1).replace(".", ",") + " por minuto.</b> Fale um pouco mais devagar e, no lugar do vício, faça uma pausa.";
+  else dica = "<b>" + r.vicios + (r.vicios === 1 ? " vício" : " vícios") + " em " + Math.round(r.segundos) + " segundos.</b> No lugar deles, uma pausa curta.";
+  if(r.ppm > RAPIDO) dica += " Você também acelerou: " + r.ppm + " palavras por minuto.";
+  document.getElementById("fr-dica").innerHTML = dica +
+    '<br><small style="color:var(--fraco)">* Na fala livre, a clareza é estimada pela confiança do reconhecimento de voz.</small>';
+
+  document.getElementById("fr-seguir").textContent = etapa === 3 ? "Ir para o Nível 5" : "Ver resultado final";
+  mostrar("e-fala-res");
+}
+
+function pintarCaixa(caixa, numero, valor, bom){
+  document.getElementById(numero).textContent = valor;
+  const c = document.getElementById(caixa);
+  c.classList.toggle("boa", bom === true);
+  c.classList.toggle("ruim", bom === false);
+}
+
+function seguirDepoisDaFala(){ if(etapa === 3) abrirFala(4); else final(); }
+function repetirFala(){ abrirFala(etapa); }
 
 /* ---------- resultado ---------- */
 function final(){
