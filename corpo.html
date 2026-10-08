@@ -142,7 +142,8 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 .texto-alvo.com-foco .ok:not(.foco){background:none;box-shadow:none;color:var(--forte)}
 .selo{margin:10px 0 2px;font-size:13.5px;font-weight:700;color:var(--fraco)}
 .selo.ganhou{color:var(--amarelo)}
-.palco{position:relative;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:3/4;width:min(100%, calc(70vh * 0.75));margin:0 auto 10px}
+.palco{position:relative;border-radius:12px;overflow:hidden;background:#000;margin:0 auto 10px;
+  height:min(74vh, 720px);width:min(100%, calc(min(74vh, 720px) * 0.667))}
 .palco video,.palco canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 .selos-vivo{position:absolute;left:8px;right:8px;top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .sv{background:rgba(17,18,19,.82);border:1px solid var(--borda);border-radius:99px;padding:5px 10px;font-size:12.5px;font-weight:700;color:var(--fraco)}
@@ -156,7 +157,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 .tarefa small{display:block;color:var(--fraco);font-size:12.5px;margin-bottom:3px}
 .tarefa p{margin:0;color:var(--forte);font-size:16px;line-height:1.45;font-weight:600}
 .privacidade{font-size:12.5px;color:var(--fraco);margin:12px 0 0;text-align:center;line-height:1.5}
-.gravacao video{width:100%;border-radius:12px;background:#000;display:block}
+.gravacao video{display:block;margin:0 auto;border-radius:12px;background:#000;object-fit:cover;height:min(74vh, 720px);width:min(100%, calc(min(74vh, 720px) * 0.667))}
 .barras{margin:12px 0 4px}
 .barra-linha{display:grid;grid-template-columns:96px 1fr 52px;gap:10px;align-items:center;margin:8px 0;font-size:13.5px}
 .barra-linha .trilho{height:10px;background:var(--borda);border-radius:99px;overflow:hidden;position:relative}
@@ -523,7 +524,7 @@ function ligarCamera(){
     return navigator.mediaDevices.getUserMedia({ audio:audio,
       /* No celular em pé, pede a câmera já em retrato. */
       video: window.innerHeight > window.innerWidth
-        ? { facingMode:"user", width:{ ideal:480 }, height:{ ideal:640 }, aspectRatio:{ ideal:0.75 } }
+        ? { facingMode:"user", width:{ ideal:480 }, height:{ ideal:640 }, aspectRatio:{ ideal:0.667 } }
         : { facingMode:"user", width:{ ideal:640 }, height:{ ideal:480 } } });
   };
   pedir(true).catch(function(){ return pedir(false); }).then(function(s){
