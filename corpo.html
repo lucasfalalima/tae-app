@@ -142,7 +142,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 .texto-alvo.com-foco .ok:not(.foco){background:none;box-shadow:none;color:var(--forte)}
 .selo{margin:10px 0 2px;font-size:13.5px;font-weight:700;color:var(--fraco)}
 .selo.ganhou{color:var(--amarelo)}
-.palco{position:relative;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:4/3;margin-bottom:10px}
+.palco{position:relative;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:3/4;width:min(100%, calc(70vh * 0.75));margin:0 auto 10px}
 .palco video,.palco canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 .selos-vivo{position:absolute;left:8px;right:8px;top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .sv{background:rgba(17,18,19,.82);border:1px solid var(--borda);border-radius:99px;padding:5px 10px;font-size:12.5px;font-weight:700;color:var(--fraco)}
@@ -521,7 +521,10 @@ function escapar(s){ return String(s).replace(/[&<>]/g, function(c){ return { "&
 function ligarCamera(){
   const pedir = function(audio){
     return navigator.mediaDevices.getUserMedia({ audio:audio,
-      video:{ facingMode:"user", width:{ ideal:640 }, height:{ ideal:480 } } });
+      /* No celular em pé, pede a câmera já em retrato. */
+      video: window.innerHeight > window.innerWidth
+        ? { facingMode:"user", width:{ ideal:480 }, height:{ ideal:640 }, aspectRatio:{ ideal:0.75 } }
+        : { facingMode:"user", width:{ ideal:640 }, height:{ ideal:480 } } });
   };
   pedir(true).catch(function(){ return pedir(false); }).then(function(s){
     fluxo = s;
