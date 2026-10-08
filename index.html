@@ -527,7 +527,7 @@ function sincronizar(forcar){
 
     /* O que o navegador tem a mais que o Cademí. */
     const novos = Object.keys(local.notas).filter(function(k){
-      return !servidor.notas[k] || local.notas[k] > servidor.notas[k];
+      return servidor.notas[k] === undefined || local.notas[k] > servidor.notas[k];
     });
     const diasNovos = local.dias.some(function(d){ return servidor.dias.indexOf(d) === -1; });
     if(!novos.length && !diasNovos) return;
@@ -538,7 +538,7 @@ function sincronizar(forcar){
     const envios = novos.length ? novos : [""];
     envios.forEach(function(k){
       fila = fila.then(function(nota){
-        return salvarCademi(quem, nota, juntas, k, k && !servidor.notas[k]);
+        return salvarCademi(quem, nota, juntas, k, k && servidor.notas[k] === undefined);
       });
     });
     fila.catch(function(){});
