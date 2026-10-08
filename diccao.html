@@ -496,6 +496,11 @@ function iguais(a, b){
 function escapar(s){ return s.replace(/[&<>]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;" }[c]; }); }
 
 function mostrar(id){
+  /* Ao trocar de tela, para qualquer gravação que esteja tocando
+     (a câmera ao vivo, id "video", continua ligada). */
+  document.querySelectorAll("audio, video").forEach(function(m){
+    if(m.id !== "video" && !m.paused){ try{ m.pause(); }catch(e){} }
+  });
   document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
   document.getElementById(id).classList.remove("oculto");
   const alvo = document.querySelector(".cartao");
