@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treino 6: Dicção e articulação</title>
+<style>
+:root{
+  --fundo:#111213;--cartao:#1b1d1f;--alto:#232629;--borda:#2c3034;
+  --amarelo:#f7d046;--amarelo2:#d9b32c;--texto:#dee2e6;--forte:#fff;
+  --fraco:#8d9499;--verde:#4ade80;--vermelho:#f87171;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.caixa{max-width:720px;margin:0 auto;padding:4px 2px 18px}
+.cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;padding:22px}
+.topo{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.etiqueta{font-size:13px;font-weight:700;color:var(--amarelo)}
+.passo{margin-left:auto;font-size:12.5px;color:var(--fraco);white-space:nowrap}
+h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
+.ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
+.oculto{display:none!important}
+
+.botao{display:block;width:100%;margin-top:14px;border:0;cursor:pointer;text-align:center;
+  background:var(--amarelo);color:#1a1500;font-size:15.5px;font-weight:700;
+  font-family:inherit;padding:14px;border-radius:10px;text-decoration:none;transition:background .14s}
+.botao:hover{background:var(--amarelo2)}
+.botao:focus-visible,.link:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.botao.fantasma{background:transparent;color:var(--texto);border:1px solid var(--borda)}
+.botao.fantasma:hover{background:var(--alto)}
+.botao.parar{background:var(--alto);color:var(--forte);border:1px solid var(--borda)}
+.link{background:none;border:0;color:var(--fraco);font:inherit;font-size:13px;cursor:pointer;
+  text-decoration:underline;padding:4px}
+
+/* ---------- abertura ---------- */
+.abertura{text-align:center;padding:10px 0 2px}
+.abertura .icone{font-size:40px;line-height:1;margin-bottom:12px}
+.abertura h2{font-size:20px}
+.abertura .ajuda{max-width:430px;margin:0 auto 4px}
+.como{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 4px;text-align:left}
+.como div{background:var(--alto);border-radius:10px;padding:11px 12px;font-size:12.5px;line-height:1.5}
+.como b{display:block;color:var(--forte);font-size:13.5px;margin-bottom:2px}
+.aviso{margin-top:14px;padding:12px 14px;border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.55;
+  background:rgba(248,113,113,.08);border-left:3px solid var(--vermelho)}
+
+/* ---------- tema ---------- */
+.tema{background:var(--alto);border-radius:12px;padding:16px 18px;margin-bottom:6px}
+.tema small{display:block;color:var(--fraco);font-size:12.5px;margin-bottom:5px}
+.tema p{margin:0;color:var(--forte);font-size:17px;line-height:1.45;font-weight:600}
+
+/* ---------- gravação: o coração do treino ---------- */
+.painel-vivo{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.medida{background:var(--alto);border-radius:12px;padding:12px 10px 10px;text-align:center;position:relative}
+.medida small{display:block;font-size:12px;color:var(--fraco);margin-top:3px}
+.numero{font-size:34px;font-weight:800;line-height:1.1;color:var(--forte);font-variant-numeric:tabular-nums}
+.medida.vicios .numero{color:var(--vermelho)}
+.medida.vicios.pulsa{animation:pulso .45s ease}
+@keyframes pulso{0%{background:rgba(248,113,113,.35)}100%{background:var(--alto)}}
+.relogio svg{display:block;margin:0 auto}
+.relogio .numero{position:absolute;top:22px;left:0;right:0;font-size:22px}
+.velocimetro svg{display:block;margin:0 auto}
+.agulha{transition:transform .5s cubic-bezier(.3,1.4,.6,1);transform-origin:50px 46px}
+
+.transcricao{background:#0d0e0f;border:1px solid var(--borda);border-radius:12px;padding:16px;
+  min-height:150px;max-height:260px;overflow-y:auto;font-size:18px;line-height:1.75;color:var(--forte)}
+.transcricao .provisorio{color:var(--fraco)}
+.transcricao .vazio{color:var(--fraco);font-size:15px}
+.vicio{background:rgba(248,113,113,.18);color:#ffb4b4;border-bottom:2px solid var(--vermelho);
+  border-radius:4px;padding:0 3px;font-weight:700}
+.vicio.novo{animation:acende .6s ease}
+@keyframes acende{0%{background:var(--vermelho);color:#2b0a0a}100%{background:rgba(248,113,113,.18)}}
+.mic{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--fraco)}
+.mic .bolinha{width:9px;height:9px;border-radius:50%;background:var(--vermelho);animation:pisca 1s infinite}
+@keyframes pisca{50%{opacity:.25}}
+.mic .nivel{flex:1;height:4px;background:var(--borda);border-radius:9px;overflow:hidden}
+.mic .nivel i{display:block;height:100%;width:0;background:var(--verde);transition:width .08s}
+.contagem{text-align:center;font-size:64px;font-weight:800;color:var(--amarelo);padding:30px 0}
+
+/* ---------- resultado ---------- */
+.placar{text-align:center;padding:2px 0 4px}
+.estrelas{font-size:28px;letter-spacing:5px;color:var(--fraco);margin-bottom:8px}
+.estrelas b{color:var(--amarelo);font-weight:400}
+.placar h2{font-size:21px}
+.placar p{margin:0;font-size:14.5px;line-height:1.6}
+.resumo{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 12px}
+.resumo .medida .numero{font-size:28px}
+.fichas{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
+.ficha{background:rgba(248,113,113,.12);color:#ffb4b4;border-radius:99px;padding:5px 11px;font-size:13.5px;font-weight:600}
+.ficha.limpa{background:rgba(74,222,128,.1);color:var(--verde)}
+.dica{padding:13px 15px;border-radius:0 10px 10px 0;background:rgba(247,208,70,.08);
+  border-left:3px solid var(--amarelo);font-size:14px;line-height:1.6;margin:12px 0 4px}
+.dica b{color:var(--forte)}
+.rotulo{font-size:13px;font-weight:700;color:var(--forte);margin:18px 0 8px}
+.transcricao.final{font-size:16px;max-height:200px}
+.nota-repetir{margin-top:10px!important;font-size:13px!important;color:var(--fraco)}
+
+@media(max-width:520px){
+  .cartao{padding:16px}
+  .como{grid-template-columns:1fr}
+  .numero{font-size:28px}
+  .transcricao{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ---------- leitura ---------- */
+.texto-alvo{background:#0d0e0f;border:1px solid var(--borda);border-radius:12px;padding:18px;
+  font-size:21px;line-height:1.8;color:#6b7176;margin-bottom:10px}
+.texto-alvo span{transition:color .2s,background .2s;border-radius:4px;padding:0 1px}
+.texto-alvo .ok{color:var(--forte);background:rgba(74,222,128,.16);box-shadow:inset 0 -2px 0 var(--verde)}
+.texto-alvo .perdida{color:#ffb4b4;background:rgba(248,113,113,.16);box-shadow:inset 0 -2px 0 var(--vermelho)}
+.etapas{display:flex;gap:6px;margin-bottom:16px}
+.etapas i{flex:1;height:4px;border-radius:9px;background:var(--borda)}
+.etapas i.feita{background:var(--amarelo)}
+.etapas i.atual{background:#8a7428}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
+.mini .medida .numero{font-size:24px}
+.medida.boa .numero{color:var(--verde)}
+.medida.ruim .numero{color:var(--vermelho)}
+.tabela{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 4px}
+.tabela th{text-align:left;font-weight:600;color:var(--fraco);font-size:12.5px;padding:6px 6px;border-bottom:1px solid var(--borda)}
+.tabela td{padding:9px 6px;border-bottom:1px solid var(--borda);color:var(--forte)}
+.tabela td.boa{color:var(--verde)} .tabela td.ruim{color:var(--vermelho)}
+.tabela tr:last-child td{border-bottom:0}
+</style>
+</head>
+<body>
+<div class="caixa">
+ <div class="cartao">
+
+  <div class="topo">
+    <span class="etiqueta" id="titulo-topo">Treino de dicção</span>
+    <span class="passo" id="passo"></span>
+  </div>
+  <div class="etapas oculto" id="trilha"><i></i><i></i><i></i><i></i></div>
+
+  <!-- ===== ABERTURA ===== -->
+  <section class="etapa" id="e-abertura">
+    <div class="abertura">
+      <div class="icone">🗣️</div>
+      <h2>Fala limpa</h2>
+      <p class="ajuda">Três leituras em voz alta e uma fala livre. Cada palavra que sai clara
+      acende em verde. O app também mede sua velocidade e avisa se escapar algum vício.</p>
+    </div>
+    <div class="como">
+      <div><b>Leia</b>Três textos, do mais fácil ao trava-língua.</div>
+      <div><b>Fale</b>30 segundos livres sobre um tema sorteado.</div>
+      <div><b>Confira</b>Clareza, velocidade e vícios de cada etapa.</div>
+    </div>
+    <div class="aviso oculto" id="sem-suporte">Este navegador não reconhece voz.
+      Abra o treino no <b>Google Chrome</b> (computador ou Android) para fazer este exercício.</div>
+    <div class="aviso oculto" id="sem-mic">O microfone foi bloqueado. Clique no cadeado ao lado do
+      endereço do site, permita o microfone e toque em "Começar" de novo.</div>
+    <button class="botao" onclick="comecar()">Começar</button>
+    <a class="botao fantasma" id="b-voltar-abertura" href="#" target="_top">Voltar ao Painel</a>
+  </section>
+
+  <!-- ===== LEITURA ===== -->
+  <section class="etapa oculto" id="e-leitura">
+    <h2 id="l-titulo">—</h2>
+    <p class="ajuda" id="l-ajuda">—</p>
+    <div class="texto-alvo" id="l-texto"></div>
+    <div class="mini" id="l-vivo">
+      <div class="medida"><div class="numero" id="l-clareza">0</div><small id="l-clareza-txt">palavras claras</small></div>
+      <div class="medida"><div class="numero" id="l-ppm">–</div><small>palavras/min</small></div>
+      <div class="medida vicios"><div class="numero" id="l-vicios">0</div><small>vícios</small></div>
+    </div>
+    <div class="mic oculto" id="l-mic"><span class="bolinha"></span>Ouvindo<span class="nivel"><i class="nivel-barra"></i></span></div>
+    <div class="dica oculto" id="l-retorno"></div>
+    <button class="botao" id="l-botao" onclick="botaoLeitura()">Começar a ler</button>
+    <button class="link oculto" id="l-repetir" onclick="repetirLeitura()">Ler este texto de novo</button>
+  </section>
+
+  <!-- ===== TEMA DA FALA LIVRE ===== -->
+  <section class="etapa oculto" id="e-tema">
+    <h2>Agora, fala livre</h2>
+    <p class="ajuda">Fale por 30 segundos sobre o tema abaixo, com a mesma clareza das leituras.
+    Sem texto para seguir: aqui aparecem os vícios que a leitura esconde.</p>
+    <div class="tema"><small>Fale sobre:</small><p id="tema-texto">—</p></div>
+    <div style="text-align:right"><button class="link" onclick="sortearTema()">Sortear outro tema</button></div>
+    <button class="botao" onclick="contagemLivre()">Começar a falar</button>
+  </section>
+
+  <section class="etapa oculto" id="e-contagem"><div class="contagem" id="contagem">3</div></section>
+
+  <!-- ===== FALA LIVRE ===== -->
+  <section class="etapa oculto" id="e-livre">
+    <div class="painel-vivo">
+      <div class="medida vicios" id="caixa-vicios"><div class="numero" id="v-vicios">0</div><small>vícios</small></div>
+      <div class="medida velocimetro">
+        <svg width="100" height="54" viewBox="0 0 100 54" aria-hidden="true">
+          <path d="M8 46 A42 42 0 0 1 29 9.6" stroke="#5b6166" stroke-width="7" fill="none"/>
+          <path d="M30.9 8.6 A42 42 0 0 1 69.1 8.6" stroke="#4ade80" stroke-width="7" fill="none"/>
+          <path d="M71 9.6 A42 42 0 0 1 92 46" stroke="#f87171" stroke-width="7" fill="none"/>
+          <g class="agulha" id="agulha" style="transform:rotate(-90deg)">
+            <line x1="50" y1="46" x2="50" y2="12" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <circle cx="50" cy="46" r="4.5" fill="#fff"/>
+        </svg>
+        <small><span id="v-ppm">0</span> palavras/min</small>
+      </div>
+      <div class="medida relogio">
+        <svg width="62" height="62" viewBox="0 0 62 62" aria-hidden="true">
+          <circle cx="31" cy="31" r="27" stroke="#2c3034" stroke-width="5" fill="none"/>
+          <circle id="anel" cx="31" cy="31" r="27" stroke="#f7d046" stroke-width="5" fill="none"
+            stroke-dasharray="169.6" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 31 31)"/>
+        </svg>
+        <div class="numero" id="v-tempo">30</div><small>segundos</small>
+      </div>
+    </div>
+    <div class="transcricao" id="ao-vivo" aria-live="polite"><span class="vazio">Pode começar a falar…</span></div>
+    <div class="mic"><span class="bolinha"></span>Ouvindo<span class="nivel"><i class="nivel-barra"></i></span></div>
+    <button class="botao parar" onclick="pararLivre()">Terminar agora</button>
+  </section>
+
+  <!-- ===== RESULTADO ===== -->
+  <section class="etapa oculto" id="e-fim">
+    <div class="placar">
+      <div class="estrelas" id="f-estrelas"></div>
+      <h2 id="f-titulo">—</h2>
+      <p id="f-texto">—</p>
+    </div>
+    <table class="tabela">
+      <thead><tr><th>Etapa</th><th>Clareza</th><th>Velocidade</th><th>Vícios</th></tr></thead>
+      <tbody id="f-tabela"></tbody>
+    </table>
+    <div class="dica" id="f-dica"></div>
+    <div class="rotulo">Sua fala livre</div>
+    <div class="transcricao final" id="f-transcricao"></div>
+    <p class="nota-repetir">Repita quantas vezes quiser. Sua nota mais alta é a que vale.</p>
+    <button class="botao" onclick="refazer()">Fazer de novo</button>
+    <a class="botao fantasma" id="b-proximo" href="#" target="_top">Voltar ao Painel</a>
+  </section>
+
+ </div>
+</div>
+
+<script>
+/* ================= PROGRESSO NO CADEMÍ =================
+   O progresso fica numa nota interna do aluno no Cademí.
+   O Make só lê e grava (cenário "TAE - Progresso do aluno");
+   quem monta o conteúdo é o próprio app, para gastar poucos créditos.
+   Formato da nota: TAE|1.1=5|2.3=4|d2026-10-07|
+   treino=estrelas (a maior) e dAAAA-MM-DD (dias em que treinou). */
+const PROGRESSO_URL = "https://hook.us1.make.com/a9bpauyn4nsdi1dsq9pag166skfidr28";
+const DIAS_GUARDADOS = 90;
+const CACHE_MINUTOS = 10;
+
+function hojeTexto(){ return new Date().toLocaleDateString("sv-SE"); }
+
+function lerTextoProgresso(texto, destino){
+  if(!texto || texto.indexOf("TAE|") !== 0) return;
+  texto.split("|").forEach(function(parte){
+    if(/^d\d{4}-\d{2}-\d{2}$/.test(parte)){
+      if(destino.dias.indexOf(parte.slice(1)) === -1) destino.dias.push(parte.slice(1));
+    }else if(parte.indexOf("=") > 0){
+      const k = parte.split("=")[0], v = parseInt(parte.split("=")[1], 10);
+      if(!isNaN(v) && (!destino.notas[k] || v > destino.notas[k])) destino.notas[k] = v;
+    }
+  });
+}
+
+/* Resposta do Make = lista de notas do aluno. Junta todas as notas TAE
+   (pode haver mais de uma se a chave do Cademí for trocada) e guarda
+   o id da mais recente, que é a que será atualizada. */
+function lerRespostaCademi(texto){
+  const r = { nota:"", notas:{}, dias:[] };
+  const lista = (JSON.parse(texto).data || []).filter(function(n){
+    return n.body && n.body.indexOf("TAE|") === 0;
+  });
+  lista.sort(function(a,b){ return (b.updated_at || "").localeCompare(a.updated_at || ""); });
+  if(lista.length) r.nota = lista[0].id;
+  lista.forEach(function(n){ lerTextoProgresso(n.body, r); });
+  return r;
+}
+
+function juntarProgresso(a, b){
+  const r = { notas:Object.assign({}, a.notas), dias:a.dias.slice() };
+  Object.keys(b.notas).forEach(function(k){ if(!r.notas[k] || b.notas[k] > r.notas[k]) r.notas[k] = b.notas[k]; });
+  b.dias.forEach(function(d){ if(r.dias.indexOf(d) === -1) r.dias.push(d); });
+  return r;
+}
+
+function montarCorpo(p){
+  const partes = Object.keys(p.notas).sort().map(function(k){ return k + "=" + p.notas[k]; });
+  const dias = p.dias.slice().sort().slice(-DIAS_GUARDADOS).map(function(d){ return "d" + d; });
+  return "TAE|" + partes.concat(dias).map(function(x){ return x + "|"; }).join("");
+}
+
+function buscarCademi(aluno){
+  return fetch(PROGRESSO_URL + "?acao=ler&aluno=" + encodeURIComponent(aluno))
+    .then(function(r){ return r.text(); })
+    .then(function(t){
+      const p = lerRespostaCademi(t);
+      guardarCache(aluno, p);
+      return p;
+    });
+}
+
+/* Grava o progresso inteiro. Devolve o id da nota (nova ou a mesma). */
+function salvarCademi(aluno, nota, progresso, treino, primeira){
+  const url = PROGRESSO_URL + "?acao=salvar&aluno=" + encodeURIComponent(aluno) +
+    "&corpo=" + encodeURIComponent(montarCorpo(progresso)) +
+    "&treino=" + encodeURIComponent(treino || "") + "&primeira=" + (primeira ? "sim" : "nao") +
+    (nota ? "&nota=" + encodeURIComponent(nota) : "");
+  return fetch(url).then(function(r){ return r.text(); }).then(function(t){
+    t = (t || "").trim();
+    const id = /^note_\d+$/.test(t) ? t : nota;
+    guardarCache(aluno, { nota:id, notas:progresso.notas, dias:progresso.dias });
+    return id;
+  });
+}
+
+function guardarCache(aluno, p){
+  try{
+    localStorage.setItem("tae_cademi_" + aluno, JSON.stringify({
+      nota:p.nota, notas:p.notas, dias:p.dias, quando:Date.now() }));
+  }catch(e){}
+}
+
+function lerCache(aluno){
+  try{
+    const c = JSON.parse(localStorage.getItem("tae_cademi_" + aluno) || "null");
+    if(c && Date.now() - c.quando < CACHE_MINUTOS * 60000) return c;
+  }catch(e){}
+  return null;
+}
+/* ================= FIM PROGRESSO NO CADEMÍ ================= */
+
+/* Guarda a nota deste treino (vale a mais alta) no navegador e no Cademí. */
+function guardarNota(estrelas){
+  const hoje = hojeTexto();
+  let quem = "visitante";
+  const local = { notas:{}, dias:[] };
+  try{
+    quem = localStorage.getItem("tae_aluno_atual") || "visitante";
+    local.notas = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
+    if(!local.notas[CODIGO] || estrelas > local.notas[CODIGO]) local.notas[CODIGO] = estrelas;
+    localStorage.setItem("tae_notas_" + quem, JSON.stringify(local.notas));
+    local.dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]");
+    if(local.dias.indexOf(hoje) === -1) local.dias.push(hoje);
+    localStorage.setItem("tae_dias_" + quem, JSON.stringify(local.dias));
+  }catch(e){}
+
+  if(quem === "visitante") return;
+
+  /* Usa o progresso do Cademí guardado há pouco pelo painel; se estiver
+     velho, busca de novo antes de gravar, para não apagar nada. */
+  const cache = lerCache(quem);
+  const obter = cache ? Promise.resolve(cache) : buscarCademi(quem);
+  obter.then(function(servidor){
+    const juntas = juntarProgresso(servidor, local);
+    return salvarCademi(quem, servidor.nota, juntas, CODIGO, !servidor.notas[CODIGO]);
+  }).catch(function(){ /* sem internet: o painel reenvia depois */ });
+}
+
+
+/* Painel do TAE no Cademí. */
+const PROXIMO = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+
+/* ======================= CONFIGURAÇÃO =======================
+   Tudo o que você pode querer mudar fica aqui. */
+const CODIGO = new URLSearchParams(window.location.search).get("t") || "2.1";
+const TITULO = "Treino 6: Dicção e articulação";
+
+const LEITURAS = [
+  { titulo:"Nível 1: frase simples",
+    ajuda:"Leia em voz alta, no seu ritmo normal. Cada palavra que sair clara fica verde.",
+    texto:"Bom dia a todos. Hoje vou apresentar os resultados do mês e os próximos passos da equipe." },
+  { titulo:"Nível 2: fala profissional",
+    ajuda:"Um trecho mais longo, como numa reunião. Abra bem a boca nas sílabas finais.",
+    texto:"O projeto atrasou por causa da troca de fornecedor. Para recuperar o prazo, proponho dividir a entrega em etapas e começar pelo que o cliente mais precisa." },
+  { titulo:"Nível 3: trava-língua",
+    ajuda:"Agora o desafio. Mais vale devagar e claro do que rápido e embolado.",
+    texto:"O rato roeu a roupa do rei de Roma, e a rainha, com raiva, resolveu remendar. O peito do pé de Pedro é preto." }
+];
+
+const TEMAS = [
+  "Como foi a sua última semana de trabalho",
+  "O que você faz no seu trabalho, explicado para alguém de fora da sua área",
+  "Uma ideia para deixar as reuniões da sua equipe mais curtas",
+  "Um problema que você resolveu recentemente e como resolveu",
+  "O que você mudaria na sua empresa se fosse o diretor por um dia",
+  "Um conselho que você daria para alguém no primeiro emprego"
+];
+
+/* Vícios procurados. Expressões com mais de uma palavra vêm primeiro. */
+const VICIOS = [
+  "tipo assim","meio que","na verdade","quer dizer","sei lá",
+  "né","tipo","aí","sabe","entendeu","enfim","basicamente","assim","então","tá"
+];
+const SONS = /^(é{2,}|e{2,}|eh+|hã+|ãh+|ã+|hum+|hm+|ahn*|ah+|uhm*)$/;
+
+const DURACAO_LIVRE = 30;      /* segundos de fala livre */
+const LIMITE_LEITURA = 40;     /* segundos máximos por leitura */
+const LENTO = 100, RAPIDO = 170; /* palavras por minuto: ritmo bom fica entre os dois */
+
+/* ======================= MOTOR ======================= */
+const Reconhecedor = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, ouvindo = false, fluxo = null, audioCtx = null, quadro = null;
+let etapa = 0, inicio = 0, primeiraPalavra = 0, ultimaPalavra = 0, relogio = null;
+let textoFinal = "", textoProvisorio = "", confiancas = [], ultimoTotal = 0, temaAtual = -1;
+const resultados = [];
+
+const NUM = { "0":"zero","1":"um","2":"dois","3":"tres","4":"quatro","5":"cinco",
+  "6":"seis","7":"sete","8":"oito","9":"nove","10":"dez" };
+
+/* Para comparar: minúsculas, sem acento, sem pontuação, números por extenso. */
+function norm(w){
+  w = w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
+  return NUM[w] || w;
+}
+function iguais(a, b){
+  return a === b || a + "s" === b || b + "s" === a;
+}
+function escapar(s){ return s.replace(/[&<>]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;" }[c]; }); }
+
+function mostrar(id){
+  document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
+  document.getElementById(id).classList.remove("oculto");
+  const alvo = document.querySelector(".cartao");
+  if(alvo && alvo.scrollIntoView) alvo.scrollIntoView({ block:"start", behavior:"smooth" });
+}
+function marcarTrilha(n){
+  document.getElementById("trilha").classList.remove("oculto");
+  document.querySelectorAll("#trilha i").forEach(function(el, i){
+    el.className = i < n ? "feita" : i === n ? "atual" : "";
+  });
+  document.getElementById("passo").textContent = n < 4 ? (n + 1) + " de 4" : "concluído";
+}
+
+/* ---------- microfone ---------- */
+function pedirMicrofone(){
+  return navigator.mediaDevices.getUserMedia({ audio:true }).then(function(s){ fluxo = s; });
+}
+function iniciarNivel(){
+  try{
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const an = audioCtx.createAnalyser(); an.fftSize = 512;
+    audioCtx.createMediaStreamSource(fluxo).connect(an);
+    const dados = new Uint8Array(an.fftSize);
+    (function loop(){
+      an.getByteTimeDomainData(dados);
+      let pico = 0;
+      for(let i = 0; i < dados.length; i++) pico = Math.max(pico, Math.abs(dados[i] - 128));
+      document.querySelectorAll(".nivel-barra").forEach(function(b){ b.style.width = Math.min(100, pico / 70 * 100) + "%"; });
+      quadro = requestAnimationFrame(loop);
+    })();
+  }catch(e){}
+}
+function ouvir(aoMudar){
+  textoFinal = ""; textoProvisorio = ""; confiancas = [];
+  primeiraPalavra = 0; ultimaPalavra = 0;
+  rec = new Reconhecedor();
+  rec.lang = "pt-BR"; rec.continuous = true; rec.interimResults = true;
+  rec.onresult = function(ev){
+    let prov = "";
+    for(let i = ev.resultIndex; i < ev.results.length; i++){
+      const r = ev.results[i];
+      if(r.isFinal){ textoFinal += " " + r[0].transcript; if(r[0].confidence > 0) confiancas.push(r[0].confidence); }
+      else prov += r[0].transcript;
+    }
+    textoProvisorio = prov;
+    const agora = Date.now();
+    if(!primeiraPalavra) primeiraPalavra = agora;
+    ultimaPalavra = agora;
+    aoMudar();
+  };
+  rec.onend = function(){ if(ouvindo){ try{ rec.start(); }catch(e){} } };
+  rec.onerror = function(e){
+    if(e.error === "not-allowed" || e.error === "service-not-allowed"){
+      calar(); mostrar("e-abertura"); document.getElementById("sem-mic").classList.remove("oculto");
+    }
+  };
+  ouvindo = true; inicio = Date.now();
+  try{ rec.start(); }catch(e){}
+  iniciarNivel();
+}
+function calar(){
+  ouvindo = false;
+  clearInterval(relogio);
+  if(quadro) cancelAnimationFrame(quadro);
+  try{ rec && rec.stop(); }catch(e){}
+  try{ audioCtx && audioCtx.close(); }catch(e){}
+}
+function falado(){ return (textoFinal + " " + textoProvisorio).trim(); }
+
+/* Palavras por minuto, contando do primeiro ao último som reconhecido. */
+function velocidade(nPalavras){
+  const ms = (ultimaPalavra || Date.now()) - (primeiraPalavra || inicio);
+  if(nPalavras < 4 || ms < 1500) return 0;
+  return Math.round(nPalavras / (ms / 60000));
+}
+
+/* ---------- vícios ---------- */
+function analisarVicios(texto){
+  const orig = texto.trim().split(/\s+/).filter(function(w){ return norm(w); });
+  const p = orig.map(function(w){ return w.toLowerCase().replace(/[.,!?;:"“”()]/g,""); });
+  const pedacos = [], contagem = {};
+  const multi = VICIOS.filter(function(v){ return v.indexOf(" ") > 0; }).map(function(v){ return v.split(" "); });
+  let i = 0;
+  while(i < p.length){
+    let achou = null; const ini = i;
+    for(let m = 0; m < multi.length; m++){
+      if(multi[m].every(function(w, j){ return p[i + j] === w; })){ achou = multi[m].join(" "); i += multi[m].length; break; }
+    }
+    if(!achou){
+      const w = p[i];
+      if(SONS.test(w)){ achou = "é…"; i++; }
+      else if(w === "é" && p[i + 1] === "é"){ achou = "é…"; while(p[i] === "é") i++; }
+      else if(VICIOS.indexOf(w) !== -1){ achou = w; i++; }
+    }
+    if(achou){ contagem[achou] = (contagem[achou] || 0) + 1; pedacos.push({ t:achou === "é…" ? "é…" : orig.slice(ini, i).join(" "), v:true }); }
+    else { pedacos.push({ t:orig[i], v:false }); i++; }
+  }
+  return { pedacos:pedacos, contagem:contagem, total:p.length,
+    vicios:Object.keys(contagem).reduce(function(s, k){ return s + contagem[k]; }, 0) };
+}
+
+/* ---------- leitura: casa o que foi dito com o texto ---------- */
+const VICIOS_N = VICIOS.filter(function(v){ return v.indexOf(" ") < 0; }).map(norm);
+let alvo = [];  /* [{t:"Bom", n:"bom", s:"" | "ok" | "perdida"}] */
+
+/* Lê o que foi reconhecido e marca no texto. Palavra reconhecida = verde.
+   Palavra que ficou para trás sem ser reconhecida = vermelha (engolida). */
+function alinhar(final){
+  const ditas = falado().split(/\s+/).map(norm).filter(Boolean);
+  alvo.forEach(function(w){ w.s = ""; });
+  let p = 0, vicios = 0, extras = 0;
+  ditas.forEach(function(d){
+    for(let j = p; j < Math.min(p + 4, alvo.length); j++){
+      if(iguais(alvo[j].n, d)){
+        for(let k = p; k < j; k++) alvo[k].s = "perdida";
+        alvo[j].s = "ok"; p = j + 1; return;
+      }
+    }
+    if(VICIOS_N.indexOf(d) !== -1 || SONS.test(d)) vicios++;
+    else extras++;
+  });
+  if(final) for(let k = p; k < alvo.length; k++) alvo[k].s = "perdida";
+  /* Palavras de 1 ou 2 letras ("a", "o", "de") o reconhecimento costuma pular
+     mesmo quando ditas. Não contam contra o aluno: ficam neutras. */
+  alvo.forEach(function(w){ if(w.s === "perdida" && w.n.length <= 2) w.s = ""; });
+  const contam = alvo.filter(function(w){ return w.n.length > 2; });
+  const ok = contam.filter(function(w){ return w.s === "ok"; }).length;
+  return { ok:ok, de:contam.length, clareza:Math.round(ok / contam.length * 100), vicios:vicios,
+    fim:p >= alvo.length || (alvo[alvo.length - 1].s === "ok"), ppm:velocidade(ditas.length) };
+}
+
+function desenharAlvo(){
+  document.getElementById("l-texto").innerHTML = alvo.map(function(w){
+    return '<span class="' + w.s + '">' + escapar(w.t) + "</span>";
+  }).join(" ");
+}
+
+function abrirLeitura(n){
+  etapa = n; marcarTrilha(n);
+  const L = LEITURAS[n];
+  alvo = L.texto.split(/\s+/).map(function(t){ return { t:t, n:norm(t), s:"" }; });
+  document.getElementById("l-titulo").textContent = L.titulo;
+  document.getElementById("l-ajuda").textContent = L.ajuda;
+  document.getElementById("l-clareza").textContent = "0/" + alvo.filter(function(w){ return w.n.length > 2; }).length;
+  document.getElementById("l-clareza-txt").textContent = "palavras claras";
+  document.getElementById("l-ppm").textContent = "–";
+  document.getElementById("l-vicios").textContent = "0";
+  ["l-clareza","l-ppm","l-vicios"].forEach(function(id){ document.getElementById(id).parentNode.classList.remove("boa","ruim"); });
+  document.getElementById("l-retorno").classList.add("oculto");
+  document.getElementById("l-repetir").classList.add("oculto");
+  document.getElementById("l-mic").classList.add("oculto");
+  const b = document.getElementById("l-botao");
+  b.textContent = "Começar a ler"; b.className = "botao"; b.dataset.estado = "pronto";
+  desenharAlvo();
+  mostrar("e-leitura");
+}
+
+function botaoLeitura(){
+  const b = document.getElementById("l-botao");
+  if(b.dataset.estado === "pronto"){
+    b.textContent = "Terminei"; b.className = "botao parar"; b.dataset.estado = "lendo";
+    document.getElementById("l-mic").classList.remove("oculto");
+    ouvir(function(){
+      const a = alinhar(false);
+      desenharAlvo();
+      document.getElementById("l-clareza").textContent = a.ok + "/" + a.de;
+      document.getElementById("l-ppm").textContent = a.ppm || "–";
+      document.getElementById("l-vicios").textContent = a.vicios;
+      if(a.fim) setTimeout(fecharLeitura, 700); /* leu até o fim: encerra sozinho */
+    });
+    relogio = setInterval(function(){ if(Date.now() - inicio > LIMITE_LEITURA * 1000) fecharLeitura(); }, 500);
+  }else if(b.dataset.estado === "lendo"){
+    fecharLeitura();
+  }else{
+    proximaEtapa();
+  }
+}
+
+function fecharLeitura(){
+  if(!ouvindo) return;
+  calar();
+  setTimeout(function(){
+    const a = alinhar(true);
+    desenharAlvo();
+    resultados[etapa] = { clareza:a.clareza, ppm:a.ppm, vicios:a.vicios };
+    pintar("l-clareza", a.clareza + "%", a.clareza >= 90);
+    document.getElementById("l-clareza-txt").textContent = "clareza";
+    pintar("l-ppm", a.ppm || "–", a.ppm >= LENTO && a.ppm <= RAPIDO);
+    pintar("l-vicios", a.vicios, a.vicios === 0);
+    document.getElementById("l-mic").classList.add("oculto");
+
+    const perdidas = alvo.filter(function(w){ return w.s === "perdida"; }).map(function(w){ return w.t.replace(/[.,!?;:]/g,""); });
+    let msg;
+    if(a.clareza >= 95) msg = "<b>Dicção limpa.</b> Todas as palavras saíram claras.";
+    else if(a.clareza >= 80) msg = "<b>Boa leitura.</b> Algumas palavras não ficaram claras: <b>" +
+      escapar(perdidas.slice(0, 5).join(", ")) + "</b>. Abra mais a boca nelas.";
+    else msg = "<b>Muitas palavras se perderam.</b> Leia de novo mais devagar, articulando cada sílaba, principalmente o final das palavras.";
+    if(a.ppm > RAPIDO) msg += " Você acelerou: " + a.ppm + " palavras por minuto. Diminua um pouco.";
+    else if(a.ppm && a.ppm < LENTO) msg += " Ritmo um pouco arrastado. Pode soltar mais.";
+    const ret = document.getElementById("l-retorno");
+    ret.innerHTML = msg; ret.classList.remove("oculto");
+
+    const b = document.getElementById("l-botao");
+    b.className = "botao"; b.dataset.estado = "feito";
+    b.textContent = etapa < 2 ? "Próximo nível" : "Ir para a fala livre";
+    document.getElementById("l-repetir").classList.remove("oculto");
+  }, 600);
+}
+
+function pintar(id, valor, bom){
+  const el = document.getElementById(id);
+  el.textContent = valor;
+  el.parentNode.classList.toggle("boa", !!bom);
+  el.parentNode.classList.toggle("ruim", !bom);
+}
+
+function repetirLeitura(){ abrirLeitura(etapa); }
+
+function proximaEtapa(){
+  if(etapa < 2) abrirLeitura(etapa + 1);
+  else { etapa = 3; marcarTrilha(3); sortearTema(); mostrar("e-tema"); }
+}
+
+/* ---------- fala livre ---------- */
+function sortearTema(){
+  let n;
+  do{ n = Math.floor(Math.random() * TEMAS.length); }while(n === temaAtual && TEMAS.length > 1);
+  temaAtual = n;
+  document.getElementById("tema-texto").textContent = TEMAS[n];
+}
+
+function contagemLivre(){
+  mostrar("e-contagem");
+  let n = 3; const el = document.getElementById("contagem"); el.textContent = n;
+  const t = setInterval(function(){
+    n--; if(n > 0){ el.textContent = n; return; }
+    clearInterval(t); comecarLivre();
+  }, 800);
+}
+
+function comecarLivre(){
+  ultimoTotal = 0;
+  document.getElementById("v-vicios").textContent = "0";
+  document.getElementById("v-ppm").textContent = "0";
+  document.getElementById("ao-vivo").innerHTML = '<span class="vazio">Pode começar a falar…</span>';
+  mostrar("e-livre");
+  ouvir(atualizarLivre);
+  relogio = setInterval(function(){
+    const passou = (Date.now() - inicio) / 1000, resta = Math.max(0, DURACAO_LIVRE - passou);
+    document.getElementById("v-tempo").textContent = Math.ceil(resta);
+    document.getElementById("anel").style.strokeDashoffset = (169.6 * passou / DURACAO_LIVRE).toFixed(1);
+    if(resta <= 0) pararLivre();
+  }, 200);
+}
+
+function desenharVicios(el, a, novosDesde){
+  if(!a.pedacos.length){ el.innerHTML = '<span class="vazio">Pode começar a falar…</span>'; return; }
+  let n = 0;
+  el.innerHTML = a.pedacos.map(function(p){
+    if(!p.v) return escapar(p.t);
+    n++; return '<span class="vicio' + (n > novosDesde ? " novo" : "") + '">' + escapar(p.t) + "</span>";
+  }).join(" ");
+  el.scrollTop = el.scrollHeight;
+}
+
+function atualizarLivre(){
+  const a = analisarVicios(falado());
+  if(a.vicios > ultimoTotal){
+    const c = document.getElementById("caixa-vicios");
+    c.classList.remove("pulsa"); void c.offsetWidth; c.classList.add("pulsa");
+  }
+  desenharVicios(document.getElementById("ao-vivo"), a, ultimoTotal);
+  ultimoTotal = a.vicios;
+  document.getElementById("v-vicios").textContent = a.vicios;
+  const ppm = velocidade(a.total);
+  document.getElementById("v-ppm").textContent = ppm;
+  const ang = Math.max(-90, Math.min(90, (ppm - 135) / 70 * 90));
+  document.getElementById("agulha").style.transform = "rotate(" + ang + "deg)";
+}
+
+function pararLivre(){
+  if(!ouvindo) return;
+  const segundos = (Date.now() - inicio) / 1000;
+  calar();
+  setTimeout(function(){
+    const a = analisarVicios(falado());
+    const conf = confiancas.length
+      ? Math.round(confiancas.reduce(function(s, c){ return s + c; }, 0) / confiancas.length * 100) : null;
+    resultados[3] = { clareza:conf, ppm:velocidade(a.total), vicios:a.vicios,
+      vpm:a.vicios / (Math.max(segundos, 5) / 60), total:a.total, analise:a };
+    final();
+  }, 600);
+}
+
+/* ---------- resultado ---------- */
+function final(){
+  marcarTrilha(4);
+  mostrar("e-fim");
+  const L = resultados.slice(0, 3), F = resultados[3];
+  const clarezaMedia = Math.round(L.reduce(function(s, r){ return s + (r ? r.clareza : 0); }, 0) / 3);
+  const ritmoBom = resultados.filter(function(r){ return r && r.ppm >= LENTO && r.ppm <= RAPIDO; }).length;
+  const viciosLeitura = L.reduce(function(s, r){ return s + (r ? r.vicios : 0); }, 0);
+
+  /* Nota: clareza vale até 2, ritmo até 1, vícios até 2. Mínimo 1 estrela. */
+  let pts = 0;
+  if(clarezaMedia >= 95) pts += 2; else if(clarezaMedia >= 85) pts += 1;
+  if(ritmoBom >= 3) pts += 1;
+  if(viciosLeitura === 0 && F.vpm <= 2) pts += 2; else if(F.vpm <= 5) pts += 1;
+  const estrelas = Math.max(1, Math.min(5, pts));
+  const poucaFala = F.total < 20;
+
+  document.getElementById("f-estrelas").innerHTML = "<b>" + "★".repeat(estrelas) + "</b>" + "★".repeat(5 - estrelas);
+  const TIT = ["", "😕 Bastante coisa para limpar", "😐 Dá para melhorar", "🙂 No caminho certo",
+    "😃 Fala quase limpa", "🤩 Fala limpa"];
+  document.getElementById("f-titulo").textContent = TIT[estrelas];
+  document.getElementById("f-texto").textContent = "Clareza média de " + clarezaMedia +
+    "% nas leituras e " + (F.vicios === 0 ? "nenhum vício" : F.vicios + (F.vicios === 1 ? " vício" : " vícios")) + " na fala livre.";
+
+  const nomes = ["Nível 1", "Nível 2", "Nível 3", "Fala livre"];
+  document.getElementById("f-tabela").innerHTML = resultados.map(function(r, i){
+    if(!r) return "";
+    const cl = r.clareza === null ? "–" : r.clareza + "%" + (i === 3 ? "*" : "");
+    const ritmo = !r.ppm ? "–" : r.ppm < LENTO ? r.ppm + " (lento)" : r.ppm > RAPIDO ? r.ppm + " (rápido)" : r.ppm + " (bom)";
+    return "<tr><td>" + nomes[i] + "</td>" +
+      '<td class="' + (r.clareza === null ? "" : r.clareza >= 90 ? "boa" : "ruim") + '">' + cl + "</td>" +
+      '<td class="' + (r.ppm >= LENTO && r.ppm <= RAPIDO ? "boa" : "ruim") + '">' + ritmo + "</td>" +
+      '<td class="' + (r.vicios === 0 ? "boa" : "ruim") + '">' + r.vicios + "</td></tr>";
+  }).join("");
+
+  /* Dica para o ponto mais fraco. */
+  let dica;
+  if(poucaFala) dica = "Na fala livre quase nada foi captado. Fale um pouco mais alto e use os 30 segundos inteiros.";
+  else if(clarezaMedia < 85) dica = "<b>Seu ponto de atenção é a articulação.</b> Antes de uma reunião, leia um parágrafo em voz alta exagerando os movimentos da boca. Os finais das palavras são os que mais somem.";
+  else if(F.vicios > 0 && viciosLeitura === 0) dica = "<b>Na leitura você foi limpo; na fala livre os vícios apareceram.</b> É normal: eles surgem quando você pensa enquanto fala. No lugar do vício, faça uma pausa.";
+  else if(ritmoBom < 3) dica = "<b>Seu ponto de atenção é o ritmo.</b> Quem acelera parece nervoso; quem arrasta perde a atenção. Busque entre " + LENTO + " e " + RAPIDO + " palavras por minuto.";
+  else dica = "<b>Dicção, ritmo e fala limpa no lugar.</b> Agora leve isso para a próxima conversa importante.";
+  document.getElementById("f-dica").innerHTML = dica +
+    (F.clareza !== null ? '<br><small style="color:var(--fraco)">* Na fala livre, a clareza é estimada pela confiança do reconhecimento de voz.</small>' : "");
+
+  desenharVicios(document.getElementById("f-transcricao"), F.analise, 999);
+  guardarNota(estrelas);
+}
+
+/* ---------- início ---------- */
+function comecar(){
+  if(!Reconhecedor){ document.getElementById("sem-suporte").classList.remove("oculto"); return; }
+  pedirMicrofone().then(function(){
+    document.getElementById("sem-mic").classList.add("oculto");
+    resultados.length = 0;
+    abrirLeitura(0);
+  }).catch(function(){ document.getElementById("sem-mic").classList.remove("oculto"); });
+}
+function refazer(){ comecar(); }
+
+document.getElementById("titulo-topo").textContent = TITULO;
+document.title = TITULO;
+document.getElementById("b-proximo").href = PROXIMO;
+document.getElementById("b-voltar-abertura").href = PROXIMO;
+if(!Reconhecedor) document.getElementById("sem-suporte").classList.remove("oculto");
+</script>
+</body>
+</html>
