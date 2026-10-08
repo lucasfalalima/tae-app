@@ -129,8 +129,16 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 .texto-alvo .foco.ok{text-decoration-color:var(--verde)}
 .texto-alvo .foco.perdida{text-decoration-color:var(--vermelho)}
 .marca-pausa{display:inline-block;width:3px;height:1.05em;background:var(--amarelo);border-radius:2px;margin:0 6px;vertical-align:-2px;opacity:.85}
-.ouvir{display:flex;align-items:center;gap:10px;margin:10px 0 2px;font-size:13px;color:var(--fraco);flex-wrap:wrap}
-.ouvir audio{height:36px;flex:1;min-width:200px}
+.ouvir{margin:14px 0 4px}
+.ouvir-topo{font-size:14px;font-weight:700;color:var(--forte);margin-bottom:8px}
+.player{display:flex;align-items:center;gap:14px;background:var(--alto);border:1px solid var(--borda);border-radius:14px;padding:12px 16px}
+.play{flex:none;width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;background:var(--amarelo);color:#1a1500;
+  font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center;transition:background .14s}
+.play:hover{background:var(--amarelo2)}
+.play:focus-visible{outline:2px solid var(--amarelo);outline-offset:3px}
+.barra{flex:1;height:12px;background:var(--borda);border-radius:99px;cursor:pointer;overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:var(--amarelo);border-radius:99px}
+.tempo{flex:none;min-width:84px;text-align:right;font-size:14px;color:var(--fraco);font-variant-numeric:tabular-nums}
 .texto-alvo.com-foco .ok:not(.foco){background:none;box-shadow:none;color:var(--forte)}
 .selo{margin:10px 0 2px;font-size:13.5px;font-weight:700;color:var(--fraco)}
 .selo.ganhou{color:var(--amarelo)}
@@ -154,8 +162,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     </div>
     <div class="instrucoes">
       <b>Instruções</b>
-      <p>São 5 exercícios, e cada um vale 1 estrela: 4 leituras em voz alta, cada uma focada num erro comum,
-      e uma fala livre sobre você. O app mostra na hora o que saiu inteiro, sua velocidade, suas pausas e seus vícios.</p>
+      <p>Leia 4 textos em voz alta e depois fale sobre você. O app mostra o que saiu inteiro, sua velocidade, suas pausas e seus vícios.</p>
     </div>
     <div class="aviso oculto" id="sem-suporte">Este navegador não reconhece voz.
       Abra o treino no <b>Google Chrome</b> (computador ou Android) para fazer este exercício.</div>
@@ -177,7 +184,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     </div>
     <div class="mic oculto" id="l-mic"><span class="bolinha"></span>Ouvindo<span class="nivel"><i class="nivel-barra"></i></span></div>
     <div class="dica oculto" id="l-retorno"></div>
-    <div class="ouvir oculto" id="l-ouvir"><span>Ouça sua leitura:</span><audio controls id="l-audio"></audio></div>
+    <div class="ouvir oculto" id="l-ouvir"><div class="ouvir-topo">🎧 Ouça sua leitura</div><div class="player"><button class="play" id="l-play" onclick="tocar('l')" aria-label="Tocar">▶</button><div class="barra" id="l-barra" onclick="pular(event, 'l')"><i id="l-prog"></i></div><span class="tempo" id="l-tempo">0:00</span></div><audio id="l-audio" preload="auto"></audio></div>
     <button class="botao" id="l-botao" onclick="botaoLeitura()">Começar a ler</button>
     <button class="botao fantasma oculto" id="l-repetir" onclick="repetirLeitura()">Ler este texto de novo</button>
   </section>
@@ -235,7 +242,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <div class="fichas" id="fr-fichas"></div>
     <div class="transcricao final" id="fr-transcricao"></div>
     <div class="dica" id="fr-dica"></div>
-    <div class="ouvir oculto" id="fr-ouvir"><span>Ouça sua fala:</span><audio controls id="fr-audio"></audio></div>
+    <div class="ouvir oculto" id="fr-ouvir"><div class="ouvir-topo">🎧 Ouça sua fala</div><div class="player"><button class="play" id="fr-play" onclick="tocar('fr')" aria-label="Tocar">▶</button><div class="barra" id="fr-barra" onclick="pular(event, 'fr')"><i id="fr-prog"></i></div><span class="tempo" id="fr-tempo">0:00</span></div><audio id="fr-audio" preload="auto"></audio></div>
     <button class="botao" id="fr-seguir" onclick="seguirDepoisDaFala()">—</button>
     <button class="botao fantasma" onclick="repetirFala()">Falar de novo</button>
   </section>
@@ -470,6 +477,7 @@ const LENTO = 100, RAPIDO = 170; /* palavras por minuto: ritmo bom fica entre os
 const Reconhecedor = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, ouvindo = false, fluxo = null, audioCtx = null, quadro = null;
 let etapa = 0, inicio = 0, primeiraPalavra = 0, ultimaPalavra = 0, relogio = null;
+let historico = [];
 let textoFinal = "", textoProvisorio = "", confiancas = [], ultimoTotal = 0, temaAtual = -1;
 const resultados = [];
 
@@ -612,7 +620,7 @@ function analisarTudo(){
 function ouvir(aoMudar){
   textoFinal = ""; textoProvisorio = ""; confiancas = []; hesitacoes = []; pausas = []; aoMudarAtual = aoMudar;
   gravar();
-  primeiraPalavra = 0; ultimaPalavra = 0;
+  primeiraPalavra = 0; ultimaPalavra = 0; historico = [];
   rec = new Reconhecedor();
   rec.lang = "pt-BR"; rec.continuous = true; rec.interimResults = true;
   rec.onresult = function(ev){
@@ -626,6 +634,7 @@ function ouvir(aoMudar){
     const agora = Date.now();
     if(!primeiraPalavra) primeiraPalavra = agora;
     ultimaPalavra = agora;
+    historico.push({ t:agora, n:falado().split(/\s+/).filter(Boolean).length });
     aoMudar();
   };
   rec.onend = function(){ if(ouvindo){ try{ rec.start(); }catch(e){} } };
@@ -647,14 +656,46 @@ function gravar(){
     gravador.ondataavailable = function(e){ if(e.data && e.data.size) pedacosAudio.push(e.data); };
     gravador.onstop = function(){
       if(!pedacosAudio.length) return;
+      duracaoGravacao = (Date.now() - inicioGravacao) / 1000;
       gravacaoUrl = URL.createObjectURL(new Blob(pedacosAudio, { type:gravador.mimeType || "audio/webm" }));
       ["l", "fr"].forEach(function(p){
-        document.getElementById(p + "-audio").src = gravacaoUrl;
+        const a = document.getElementById(p + "-audio");
+        a.src = gravacaoUrl;
+        document.getElementById(p + "-prog").style.width = "0";
+        document.getElementById(p + "-tempo").textContent = "0:00 / " + mmss(duracaoGravacao);
       });
     };
-    gravador.start();
+    gravador.start(); inicioGravacao = Date.now();
   }catch(e){ gravador = null; }
 }
+/* Player: a gravação do Chrome às vezes não informa a duração,
+   então usamos o tempo que a gravação durou. */
+let inicioGravacao = 0, duracaoGravacao = 0;
+function mmss(s){ s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+function durDe(a){ return isFinite(a.duration) && a.duration > 0 ? a.duration : duracaoGravacao; }
+function tocar(p){
+  const a = document.getElementById(p + "-audio");
+  if(a.paused){ a.play(); } else { a.pause(); }
+}
+function pular(ev, p){
+  const a = document.getElementById(p + "-audio"), b = ev.currentTarget.getBoundingClientRect();
+  const d = durDe(a); if(!d) return;
+  a.currentTime = Math.max(0, Math.min(d - 0.05, (ev.clientX - b.left) / b.width * d));
+}
+["l", "fr"].forEach(function(p){
+  const a = document.getElementById(p + "-audio");
+  function atualizar(){
+    const d = durDe(a);
+    document.getElementById(p + "-prog").style.width = d ? Math.min(100, a.currentTime / d * 100) + "%" : "0";
+    document.getElementById(p + "-tempo").textContent = mmss(a.currentTime) + " / " + mmss(d);
+  }
+  a.addEventListener("timeupdate", atualizar);
+  a.addEventListener("loadedmetadata", atualizar);
+  a.addEventListener("play", function(){ document.getElementById(p + "-play").textContent = "❚❚"; });
+  a.addEventListener("pause", function(){ document.getElementById(p + "-play").textContent = "▶"; });
+  a.addEventListener("ended", function(){ document.getElementById(p + "-play").textContent = "▶"; a.currentTime = 0; atualizar(); });
+});
+
 function mostrarGravacao(prefixo){
   const caixa = document.getElementById(prefixo + "-ouvir");
   caixa.classList.toggle("oculto", !gravador);
@@ -670,6 +711,22 @@ function calar(){
 function falado(){ return (textoFinal + " " + textoProvisorio).trim(); }
 
 /* Palavras por minuto, contando do primeiro ao último som reconhecido. */
+/* Velocidade ao vivo: palavras dos últimos JANELA_PPM segundos.
+   Reage rápido quando a pessoa acerta o ritmo; a média desde o início
+   ficava "presa" no começo, quando ainda se está pensando. */
+const JANELA_PPM = 6;
+function velocidadeAoVivo(){
+  if(historico.length < 2) return 0;
+  const ult = historico[historico.length - 1];
+  if(ult.t - historico[0].t < 3000) return 0;
+  let base = historico[0];
+  for(let i = historico.length - 1; i >= 0; i--){
+    if(ult.t - historico[i].t >= JANELA_PPM * 1000){ base = historico[i]; break; }
+  }
+  const ms = ult.t - base.t;
+  if(ms < 2500) return 0;
+  return Math.max(0, Math.round((ult.n - base.n) / (ms / 60000)));
+}
 function velocidade(nPalavras){
   const ms = (ultimaPalavra || Date.now()) - (primeiraPalavra || inicio);
   if(nPalavras < 4 || ms < 1500) return 0;
@@ -834,7 +891,7 @@ function fecharLeitura(){
     if(a.ppm > RAPIDO) msg += " Você acelerou: " + a.ppm + " palavras por minuto. Diminua um pouco.";
     else if(a.ppm && a.ppm < LENTO && L.tipo !== "p") msg += " Ritmo um pouco arrastado. Pode soltar mais.";
     const ret = document.getElementById("l-retorno");
-    ret.innerHTML = msg + linhaEstrela(resultados[etapa]); ret.classList.remove("oculto");
+    ret.innerHTML = msg; ret.classList.remove("oculto");
     mostrarGravacao("l");
 
     const b = document.getElementById("l-botao");
@@ -921,10 +978,17 @@ function atualizarLivre(){
   desenharVicios(document.getElementById("ao-vivo"), a, ultimoTotal);
   ultimoTotal = a.vicios;
   document.getElementById("v-vicios").textContent = a.vicios;
-  const ppm = velocidade(a.total);
+  const ppm = velocidadeAoVivo();
+  const agulha = document.getElementById("agulha");
+  if(!ppm){
+    document.getElementById("v-ppm").textContent = "…";
+    agulha.style.opacity = ".3";
+    return;
+  }
   document.getElementById("v-ppm").textContent = ppm;
+  agulha.style.opacity = "1";
   const ang = Math.max(-90, Math.min(90, (ppm - 135) / 70 * 90));
-  document.getElementById("agulha").style.transform = "rotate(" + ang + "deg)";
+  agulha.style.transform = "rotate(" + ang + "deg)";
 }
 
 function pararLivre(){
@@ -962,7 +1026,7 @@ function mostrarResultadoFala(){
   else if(vpm > 6) dica = "<b>Muitos vícios: " + vpm.toFixed(1).replace(".", ",") + " por minuto.</b> Fale um pouco mais devagar e, no lugar do vício, faça uma pausa.";
   else dica = "<b>" + r.vicios + (r.vicios === 1 ? " vício" : " vícios") + " em " + Math.round(r.segundos) + " segundos.</b> No lugar deles, uma pausa curta.";
   if(r.ppm > RAPIDO) dica += " Você também acelerou: " + r.ppm + " palavras por minuto.";
-  document.getElementById("fr-dica").innerHTML = dica + linhaEstrela(r) +
+  document.getElementById("fr-dica").innerHTML = dica +
     '<br><small style="color:var(--fraco)">* Na fala livre, a clareza é estimada pela confiança do reconhecimento de voz.</small>';
 
   document.getElementById("fr-seguir").textContent = etapa < TOTAL - 1 ? "Ir para o Nível " + (etapa + 2) : "Ver resultado final";
