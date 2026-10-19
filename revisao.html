@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisão TAE</title>
+<style>
+:root{
+  --fundo:#111213;--cartao:#1b1d1f;--alto:#232629;--borda:#2c3034;
+  --amarelo:#f7d046;--amarelo2:#d9b32c;--texto:#dee2e6;--forte:#fff;
+  --fraco:#8d9499;--verde:#4ade80;--vermelho:#f87171;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.caixa{max-width:720px;margin:0 auto;padding:4px 2px 18px}
+.cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;padding:22px}
+
+.topo{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.etiqueta{font-size:11.5px;font-weight:700;letter-spacing:.09em;color:var(--amarelo);text-transform:uppercase}
+.passo{margin-left:auto;font-size:12.5px;color:var(--fraco);white-space:nowrap}
+.trilho{height:4px;background:var(--borda);border-radius:99px;overflow:hidden;margin-bottom:20px}
+.trilho i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .35s ease}
+
+h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
+.ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
+.origem{
+  display:inline-block;margin-bottom:12px;padding:4px 10px;border-radius:99px;
+  background:var(--alto);border:1px solid var(--borda);
+  font-size:11.5px;font-weight:600;color:var(--fraco);
+}
+
+.lista{display:flex;flex-direction:column;gap:8px}
+.op{
+  display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;
+  background:var(--alto);border:1.5px solid var(--borda);border-radius:11px;
+  padding:12px 14px;cursor:pointer;font-family:inherit;font-size:14.5px;
+  line-height:1.5;color:var(--texto);transition:border-color .13s,background .13s;
+}
+.op:hover:not(:disabled){border-color:var(--amarelo)}
+.op:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.op:disabled{cursor:default}
+.op .mk{
+  flex-shrink:0;width:22px;height:22px;border-radius:6px;margin-top:1px;
+  border:1.5px solid var(--borda);display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;color:transparent;
+  transition:all .13s ease;
+}
+.op.certa{border-color:var(--verde);background:rgba(74,222,128,.09)}
+.op.certa .mk{background:var(--verde);border-color:var(--verde);color:#06240f}
+.op.errada{border-color:var(--vermelho);background:rgba(248,113,113,.07)}
+.op.errada .mk{background:var(--vermelho);border-color:var(--vermelho);color:#2b0a0a}
+
+.retorno{
+  display:none;margin-top:14px;padding:13px 15px;border-radius:0 10px 10px 0;
+  background:rgba(74,222,128,.09);border-left:3px solid var(--verde);
+  font-size:14px;line-height:1.6;
+}
+.retorno.visivel{display:block}
+.retorno b{color:var(--forte)}
+.retorno.erro{background:rgba(248,113,113,.07);border-left-color:var(--vermelho)}
+
+.botao{
+  display:block;width:100%;margin-top:10px;border:0;cursor:pointer;text-align:center;
+  background:var(--amarelo);color:#1a1500;font-size:15.5px;font-weight:700;
+  font-family:inherit;padding:14px;border-radius:10px;text-decoration:none;
+  transition:background .14s ease;
+}
+.botao:first-of-type{margin-top:16px}
+.botao:hover{background:var(--amarelo2)}
+.botao.fantasma{background:transparent;color:var(--texto);border:1px solid var(--borda)}
+.botao.fantasma:hover{background:var(--alto)}
+.oculto{display:none}
+.sair{
+  display:block;text-align:center;margin-top:16px;
+  color:var(--fraco);font-size:13px;font-weight:600;text-decoration:none;
+  padding:8px;transition:color .14s ease;
+}
+.sair:hover{color:var(--texto)}
+
+.abertura{text-align:center;padding:14px 0 4px}
+.abertura .selo{font-size:40px;line-height:1;margin-bottom:14px}
+.abertura h2{font-size:20px;margin-bottom:9px}
+.abertura .ajuda{margin:0 auto;max-width:420px}
+.voltar-painel{
+  display:block;text-align:center;margin-top:12px;
+  background:var(--alto);border:1px solid var(--borda);border-radius:10px;
+  color:var(--fraco);font-size:14px;font-weight:600;text-decoration:none;
+  padding:13px;transition:background .14s ease,color .14s ease;
+}
+.voltar-painel:hover{background:var(--cartao);color:var(--texto)}
+
+.placar{text-align:center;padding:4px 0 2px}
+.placar .nota{font-size:40px;font-weight:800;color:var(--amarelo);line-height:1.1}
+.placar .de{font-size:13.5px;color:var(--fraco);margin-top:4px}
+.placar h2{margin:16px 0 8px;font-size:21px}
+.placar p{margin:0;font-size:14.5px;line-height:1.6}
+.revisados{
+  margin-top:20px;padding:14px 15px;border-radius:0 9px 9px 0;
+  background:var(--alto);border-left:3px solid var(--amarelo);
+  font-size:13.5px;line-height:1.6;text-align:left;
+}
+.revisados b{color:var(--forte);display:block;margin-bottom:5px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="caixa">
+  <div class="cartao">
+
+    <div class="topo" id="cabecalho">
+      <span class="etiqueta">Revisão</span>
+      <span class="passo" id="passo">1 de 8</span>
+    </div>
+    <div class="trilho" id="barra"><i id="trilho" style="width:12%"></i></div>
+
+    <!-- ===== ABERTURA ===== -->
+    <section class="etapa" id="abertura">
+      <div class="abertura">
+        <div class="selo">🔁</div>
+        <h2>Revisão</h2>
+        <p class="ajuda" id="ab-texto">—</p>
+      </div>
+      <button class="botao" id="ab-botao" onclick="comecar()">Começar revisão</button>
+      <a class="voltar-painel" id="ab-voltar" href="#" target="_top">← Voltar ao Painel</a>
+    </section>
+
+    <!-- ===== PERGUNTA ===== -->
+    <section class="etapa oculto" id="pergunta">
+      <div class="origem" id="p-origem">—</div>
+      <h2 id="p-texto">—</h2>
+      <div class="lista" id="p-opcoes"></div>
+      <div class="retorno" id="p-retorno"></div>
+      <button class="botao oculto" id="p-proxima" onclick="proxima()">Continuar</button>
+      <a class="sair" id="p-voltar" href="#" target="_top">← Voltar ao Painel</a>
+    </section>
+
+    <!-- ===== RESULTADO ===== -->
+    <section class="etapa oculto" id="fim">
+      <div class="placar">
+        <div class="nota"><span id="f-acertos">0</span>/<span id="f-total">8</span></div>
+        <div class="de">respostas certas</div>
+        <h2 id="f-titulo">—</h2>
+        <p id="f-texto">—</p>
+      </div>
+      <div class="revisados" id="f-revisados"></div>
+      <a class="botao" id="f-voltar" href="#" target="_top">Voltar ao Painel</a>
+      <button class="botao fantasma" onclick="location.reload()">Nova revisão</button>
+    </section>
+
+  </div>
+</div>
+
+<script>
+/* ===================================================================
+   REVISÃO
+
+   Pergunta de novo sobre o que o aluno já fez, misturando assuntos.
+   As perguntas são diferentes das do treino de propósito: repetir a
+   mesma pergunta ensina a resposta decorada, não a técnica.
+
+   O banco é por código de treino ("1.1") ou de preparação ("p.entrevista").
+   A revisão só sorteia perguntas do que o aluno já concluiu.
+   =================================================================== */
+
+const VOLTAR = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+const QUANTAS = 8;
+
+const BANCO = {
+
+  /* ---------- Treino 1 · Organização de ideias ---------- */
+  "1.1": { nome:"Organização de ideias", perguntas:[
+    { p:"Qual destes é um Objetivo Único de verdade?",
+      o:["Quero falar sobre o projeto novo",
+         "Quero que ele libere a verba até sexta",
+         "Quero explicar a situação e ouvir a opinião dele",
+         "Quero alinhar as expectativas do time"],
+      c:1,
+      e:"Diz o que você quer que aconteça, e dá para saber se deu certo. “Falar sobre” é assunto, não objetivo." },
+    { p:"Por que três informações, e não cinco?",
+      o:["Porque cinco demora muito para falar",
+         "Porque três é o limite do que se fala sem perder, lembra sem anotar e o outro entende sem esforço",
+         "Porque fica mais bonito na apresentação",
+         "Porque três é o número que os especialistas recomendam"],
+      c:1,
+      e:"Não é regra de estilo, é limite de memória — a sua e a de quem ouve." },
+    { p:"Qual destas serve como âncora?",
+      o:["o atraso que tivemos na aprovação do financeiro",
+         "prazo",
+         "preciso de mais uma semana para entregar",
+         "explicar tudo o que houve desde março"],
+      c:1,
+      e:"Âncora é uma palavra. As outras já são a fala pronta — e fala pronta é o que trava quando você perde o fio." },
+    { p:"O que causa o branco, segundo o treino?",
+      o:["Falta de conhecimento sobre o assunto",
+         "Nervosismo, que não tem solução",
+         "Excesso de texto para lembrar",
+         "Falar rápido demais"],
+      c:2,
+      e:"Quem decora perde uma palavra e não tem a próxima. Quem ancora perde a palavra e continua." }
+  ]},
+
+  /* ---------- Treino 6 · Dicção ---------- */
+  "2.1": { nome:"Dicção e articulação", perguntas:[
+    { p:"Qual é o erro mais comum na fala do brasileiro no trabalho?",
+      o:["Falar alto demais",
+         "Comer o R no final dos verbos",
+         "Usar palavras difíceis",
+         "Falar devagar demais"],
+      c:1,
+      e:"“Fazê”, “dizê”, “trabalhá”. Passa despercebido na conversa e pesa numa entrevista ou apresentação." },
+    { p:"O “ééé” entre as frases é sinal de quê?",
+      o:["Que a pessoa está pensando com cuidado",
+         "Que a pessoa não domina o assunto",
+         "Que a pessoa não aguenta o silêncio",
+         "Que a pessoa está nervosa, e só isso"],
+      c:2,
+      e:"O som preenche o vazio que a pausa deixaria. Treinar é aprender a deixar o vazio ali." },
+    { p:"Qual a velocidade que funciona melhor numa reunião?",
+      o:["A mais rápida possível, para não tomar tempo",
+         "Bem devagar, para todos entenderem",
+         "Média, com pausa entre as ideias",
+         "Varia conforme a sua personalidade"],
+      c:2,
+      e:"A pausa é o que separa uma ideia da outra. Sem ela, tudo vira um bloco só." }
+  ]},
+
+  /* ---------- Treino 9 · O corpo fala ---------- */
+  "2.4": { nome:"O corpo fala antes", perguntas:[
+    { p:"Numa chamada de vídeo, para onde olhar ao falar?",
+      o:["Para a sua própria imagem na tela",
+         "Para a lente da câmera",
+         "Para o rosto de quem está falando",
+         "Para as anotações, para não esquecer"],
+      c:1,
+      e:"Olhar a própria imagem parece, do outro lado, que você olha para baixo ou para o lado." },
+    { p:"O que a postura encolhida comunica antes de você falar?",
+      o:["Humildade e respeito",
+         "Concentração no assunto",
+         "Insegurança sobre o que você vai dizer",
+         "Nada, ninguém repara"],
+      c:2,
+      e:"Quem ouve decide se acredita antes da primeira palavra. O corpo chega antes." },
+    { p:"Gesto demais e gesto de menos: qual o problema de cada um?",
+      o:["Gesto demais distrai; gesto de menos passa rigidez",
+         "Gesto demais passa energia; gesto de menos passa calma",
+         "Os dois são iguais, é questão de gosto",
+         "Gesto não influencia em nada"],
+      c:0,
+      e:"O gesto serve a ideia. Quando ele vira ruído de fundo, atrapalha o que você diz." }
+  ]},
+
+  /* ---------- Preparação · Entrevista ---------- */
+  "p.entrevista": { nome:"Entrevista de emprego", perguntas:[
+    { p:"“Fale sobre você.” Por onde começar?",
+      o:["Por onde você nasceu e estudou",
+         "Pelo que você faz hoje, com um resultado",
+         "Pelos seus adjetivos: proativo, dedicado",
+         "Perguntando o que exatamente eles querem saber"],
+      c:1,
+      e:"Fato e número no começo. Adjetivo todo mundo usa, e história de vida gasta o tempo em que prestam atenção." },
+    { p:"Falar do defeito: qual estrutura funciona?",
+      o:["Dizer um defeito que na verdade é qualidade",
+         "Dizer que você não tem defeito relevante",
+         "Nomear um defeito real e dizer o que faz a respeito",
+         "Dizer um defeito grave, para parecer honesto"],
+      c:2,
+      e:"Defeito sem ação soa como desabafo; “perfeccionista” soa como fuga. Defeito mais o que você faz soa como maturidade." },
+    { p:"Perguntaram sua pretensão salarial. O que fazer?",
+      o:["Devolver a pergunta para eles",
+         "Dizer que aceita o que puderem pagar",
+         "Dar uma faixa, com referência de mercado",
+         "Pedir o dobro, para negociar depois"],
+      c:2,
+      e:"Faixa mostra preparo e deixa espaço. Devolver a pergunta entrega a decisão ao outro lado." }
+  ]},
+
+  /* ---------- Preparação · Reunião online ---------- */
+  "p.reuniao": { nome:"Reunião online", perguntas:[
+    { p:"Alguém te interrompeu no meio da frase. O melhor caminho?",
+      o:["Falar por cima até a pessoa parar",
+         "Ficar quieto e deixar passar",
+         "Esperar a pessoa terminar e retomar seu ponto",
+         "Escrever no chat o que ia dizer"],
+      c:2,
+      e:"Retomar com calma mantém a fala e a relação. Ceder sempre ensina que te interromper não custa nada." },
+    { p:"Qual destes é um sinal de que você não foi ouvido?",
+      o:["Alguém faz uma pergunta sobre o que você disse",
+         "Alguém repete sua ideia como se fosse nova",
+         "Alguém anota enquanto você fala",
+         "Pedem para você detalhar"],
+      c:1,
+      e:"Ideia reciclada é o sinal mais claro de que entrou como ruído, não como contribuição." },
+    { p:"Como encerrar sua participação?",
+      o:["Com “é isso, não sei se ficou claro”",
+         "Com “alguma dúvida?”",
+         "Com o que você entrega e o que precisa",
+         "Deixando a frase no ar"],
+      c:2,
+      e:"Fechar com entrega e pedido deixa a sala sabendo o que fazer." }
+  ]},
+
+  /* ---------- Preparação · Pedir aumento ---------- */
+  "p.aumento": { nome:"Pedir aumento", perguntas:[
+    { p:"Qual destes NÃO é argumento para um aumento?",
+      o:["Assumi a carteira de dois colegas",
+         "Estou há três anos sem aumento",
+         "Reduzi o cancelamento em 15%",
+         "Passei a treinar os novos do time"],
+      c:1,
+      e:"Tempo de casa fala de você. O que convence é o que você entrega a mais." },
+    { p:"“Não tenho orçamento agora.” O que fazer?",
+      o:["Agradecer e encerrar o assunto",
+         "Perguntar quando seria possível revisitar",
+         "Dizer que vai procurar outro lugar",
+         "Insistir que você merece"],
+      c:1,
+      e:"Sem data, o assunto morre. Com data, o não vira adiamento." },
+    { p:"A resposta foi não, sem prazo. E agora?",
+      o:["Nunca mais tocar no assunto",
+         "Perguntar o que precisaria mudar para ser sim",
+         "Reduzir o ritmo de trabalho",
+         "Pedir demissão"],
+      c:1,
+      e:"Essa pergunta transforma um não em critério. Sem ela, você sai sem saber o que fazer diferente." }
+  ]},
+
+  /* ---------- Preparação · Apresentar resultados ---------- */
+  "p.resultados": { nome:"Apresentar resultados", perguntas:[
+    { p:"Por onde começar uma apresentação de resultados?",
+      o:["Pelo contexto do período",
+         "Pelo resultado principal",
+         "Agradecendo a oportunidade",
+         "Pedindo que acompanhem os slides"],
+      c:1,
+      e:"Resultado primeiro, explicação depois. Contexto na frente gasta o tempo de maior atenção." },
+    { p:"Qual destes mede esforço, e não resultado?",
+      o:["Receita acima da meta",
+         "Cancelamento que caiu",
+         "Número de reuniões feitas",
+         "Ticket médio que subiu"],
+      c:2,
+      e:"Reunião, e-mail e hora trabalhada medem movimento. Ninguém decide nada com eles." },
+    { p:"Perguntaram um número que você não tem. O melhor?",
+      o:["Chutar um valor aproximado",
+         "Dizer que a informação não é relevante",
+         "Dizer que não tem, e quando entrega",
+         "Dizer “boa pergunta, vou verificar”"],
+      c:2,
+      e:"Não sei, o que faço e quando. “Vou verificar” sem prazo nunca volta." }
+  ]}
+};
+
+/* ================= ESTADO ================= */
+let perguntas = [], i = 0, acertos = 0, assuntos = [];
+
+function el(id){ return document.getElementById(id); }
+function enquadrar(){
+  const a = document.querySelector(".cartao");
+  if(a && a.scrollIntoView) a.scrollIntoView({ block:"start", behavior:"smooth" });
+  else window.scrollTo(0,0);
+}
+function mostrar(id){
+  document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
+  el(id).classList.remove("oculto");
+  enquadrar();
+}
+function esc(s){
+  return String(s).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+  });
+}
+function embaralhar(a){
+  for(let k = a.length - 1; k > 0; k--){
+    const j = Math.floor(Math.random() * (k + 1));
+    const t = a[k]; a[k] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* ================= O QUE O ALUNO JÁ FEZ ================= */
+function feitos(){
+  const quem = localStorage.getItem("tae_aluno_atual") || "visitante";
+  const lista = [];
+  try{
+    const n = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
+    Object.keys(n).forEach(function(k){ if(BANCO[k]) lista.push(k); });
+  }catch(e){}
+  try{
+    const p = JSON.parse(localStorage.getItem("tae_prep_" + quem) || "{}");
+    Object.keys(p).forEach(function(k){ if(BANCO["p." + k]) lista.push("p." + k); });
+  }catch(e){}
+  return lista;
+}
+
+/* Monta a revisão misturando assuntos: pega de cada um, alternando,
+   até completar. Assim nunca sai tudo do mesmo treino. */
+function montar(){
+  const codigos = embaralhar(feitos());
+  if(!codigos.length) return [];
+
+  const filas = codigos.map(function(c){
+    return embaralhar(BANCO[c].perguntas.slice()).map(function(q){
+      return { q:q, codigo:c, nome:BANCO[c].nome };
+    });
+  });
+
+  const saida = [];
+  let sobrou = true;
+  while(saida.length < QUANTAS && sobrou){
+    sobrou = false;
+    for(let k = 0; k < filas.length && saida.length < QUANTAS; k++){
+      if(filas[k].length){ saida.push(filas[k].shift()); sobrou = true; }
+    }
+  }
+  return saida;
+}
+
+/* ================= FLUXO ================= */
+function iniciar(){
+  el("ab-voltar").href = VOLTAR;
+  el("p-voltar").href = VOLTAR;
+  el("f-voltar").href = VOLTAR;
+  el("cabecalho").style.display = "none";
+  el("barra").style.display = "none";
+
+  perguntas = montar();
+
+  if(!perguntas.length){
+    el("ab-texto").textContent =
+      "A revisão usa o que você já treinou. Faça pelo menos um treino e volte aqui.";
+    el("ab-botao").classList.add("oculto");
+    return;
+  }
+
+  const quantos = feitos().length;
+  el("ab-texto").textContent =
+    perguntas.length + " perguntas sobre os " + quantos +
+    (quantos === 1 ? " treino que você já fez." : " treinos que você já fez.") +
+    " Misturadas de propósito — é assim que fixa. Leva uns 2 minutos.";
+  el("f-total").textContent = perguntas.length;
+}
+
+function comecar(){
+  el("cabecalho").style.display = "";
+  el("barra").style.display = "";
+  i = 0; acertos = 0; assuntos = [];
+  abrir();
+}
+
+function abrir(){
+  const item = perguntas[i];
+  el("passo").textContent = (i+1) + " de " + perguntas.length;
+  el("trilho").style.width = ((i+1)/perguntas.length*100) + "%";
+  el("p-origem").textContent = item.nome;
+  el("p-texto").textContent = item.q.p;
+  el("p-retorno").className = "retorno";
+  el("p-retorno").innerHTML = "";
+  el("p-proxima").classList.add("oculto");
+
+  el("p-opcoes").innerHTML = item.q.o.map(function(o,j){
+    return '<button class="op" onclick="responder(' + j + ')">' +
+           '<span class="mk">✓</span><span>' + esc(o) + '</span></button>';
+  }).join("");
+
+  mostrar("pergunta");
+}
+
+function responder(j){
+  const item = perguntas[i];
+  const bs = el("p-opcoes").querySelectorAll(".op");
+  if(bs[0].disabled) return;
+  bs.forEach(function(b){ b.disabled = true; });
+  bs[item.q.c].classList.add("certa");
+  const ok = j === item.q.c;
+  if(!ok) bs[j].classList.add("errada"); else acertos++;
+  if(assuntos.indexOf(item.nome) === -1) assuntos.push(item.nome);
+
+  const r = el("p-retorno");
+  r.className = "retorno visivel" + (ok ? "" : " erro");
+  r.innerHTML = "<b>" + (ok ? "✅ Correto." : "🛑 Errado.") + "</b> " + esc(item.q.e);
+
+  const b = el("p-proxima");
+  b.textContent = (i + 1 < perguntas.length) ? "Continuar" : "Ver resultado";
+  b.classList.remove("oculto");
+}
+
+function proxima(){
+  i++;
+  if(i < perguntas.length){ abrir(); return; }
+  terminar();
+}
+
+function terminar(){
+  el("f-acertos").textContent = acertos;
+  const pct = acertos / perguntas.length;
+
+  let t, x;
+  if(pct === 1){      t = "🤩 Tudo certo"; x = "Está fixado. Volte daqui a alguns dias para manter assim."; }
+  else if(pct >= .7){ t = "🙂 Bem lembrado"; x = "A maior parte está firme. Revise de novo esta semana."; }
+  else if(pct >= .4){ t = "😐 Meio a meio"; x = "Vale rever as aulas dos pontos que você errou."; }
+  else {              t = "😕 Esfriou"; x = "Normal — é para isso que a revisão existe. Reveja as aulas e volte aqui."; }
+  el("f-titulo").textContent = t;
+  el("f-texto").textContent = x;
+
+  el("f-revisados").innerHTML = "<b>Você revisou</b>" + assuntos.join(" · ");
+  registrar();
+  mostrar("fim");
+}
+
+/* Conta as revisões feitas. O painel lê daqui. */
+function registrar(){
+  try{
+    const quem = localStorage.getItem("tae_aluno_atual") || "visitante";
+    const chave = "tae_rev_" + quem;
+    const d = JSON.parse(localStorage.getItem(chave) || "{}");
+    d.feitas = (d.feitas || 0) + 1;
+    d.ultima = new Date().toLocaleDateString("sv-SE");
+    localStorage.setItem(chave, JSON.stringify(d));
+  }catch(e){}
+}
+
+iniciar();
+</script>
+</body>
+</html>
