@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preparação TAE</title>
+<style>
+:root{
+  --fundo:#111213;--cartao:#1b1d1f;--alto:#232629;--borda:#2c3034;
+  --amarelo:#f7d046;--amarelo2:#d9b32c;--texto:#dee2e6;--forte:#fff;
+  --fraco:#8d9499;--verde:#4ade80;--vermelho:#f87171;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.caixa{max-width:720px;margin:0 auto;padding:4px 2px 18px}
+.cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;padding:22px}
+
+.topo{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.etiqueta{font-size:11.5px;font-weight:700;letter-spacing:.09em;color:var(--amarelo);text-transform:uppercase}
+.passo{margin-left:auto;font-size:12.5px;color:var(--fraco);white-space:nowrap}
+.trilho{height:4px;background:var(--borda);border-radius:99px;overflow:hidden;margin-bottom:20px}
+.trilho i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .35s ease}
+
+h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
+.ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
+
+.fala-ex{
+  background:var(--alto);border-left:3px solid var(--fraco);
+  padding:14px 15px;border-radius:0 10px 10px 0;margin-bottom:16px;
+  font-size:14px;line-height:1.65;font-style:italic;
+}
+
+.lista{display:flex;flex-direction:column;gap:8px}
+.op{
+  display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;
+  background:var(--alto);border:1.5px solid var(--borda);border-radius:11px;
+  padding:12px 14px;cursor:pointer;font-family:inherit;font-size:14.5px;
+  line-height:1.5;color:var(--texto);transition:border-color .13s,background .13s,opacity .2s;
+}
+.op:hover:not(:disabled){border-color:var(--amarelo)}
+.op:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.op:disabled{cursor:default}
+.op .mk{
+  flex-shrink:0;width:22px;height:22px;border-radius:6px;margin-top:1px;
+  border:1.5px solid var(--borda);display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;color:transparent;
+  transition:all .13s ease;
+}
+.op.marcada{border-color:var(--amarelo);background:rgba(247,208,70,.08)}
+.op.marcada .mk{background:var(--amarelo);border-color:var(--amarelo);color:#1a1500}
+.op.certa{border-color:var(--verde);background:rgba(74,222,128,.09)}
+.op.certa .mk{background:var(--verde);border-color:var(--verde);color:#06240f}
+.op.errada{border-color:var(--vermelho);background:rgba(248,113,113,.07)}
+.op.errada .mk{background:var(--vermelho);border-color:var(--vermelho);color:#2b0a0a}
+.op.saiu{opacity:.25;text-decoration:line-through}
+
+.retorno{
+  display:none;margin-top:14px;padding:13px 15px;border-radius:0 10px 10px 0;
+  background:rgba(74,222,128,.09);border-left:3px solid var(--verde);
+  font-size:14px;line-height:1.6;
+}
+.retorno.visivel{display:block}
+.retorno b{color:var(--forte)}
+.retorno.erro{background:rgba(248,113,113,.07);border-left-color:var(--vermelho)}
+.retorno.neutro{background:var(--alto);border-left-color:var(--amarelo)}
+
+.contador{font-size:12.5px;color:var(--fraco);margin-top:10px;text-align:right}
+
+.botao{
+  display:block;width:100%;margin-top:10px;border:0;cursor:pointer;text-align:center;
+  background:var(--amarelo);color:#1a1500;font-size:15.5px;font-weight:700;
+  font-family:inherit;padding:14px;border-radius:10px;text-decoration:none;
+  transition:background .14s ease;
+}
+.botao:first-of-type{margin-top:16px}
+.botao:hover{background:var(--amarelo2)}
+.botao:disabled{opacity:.3;cursor:default}
+.botao.fantasma{background:transparent;color:var(--texto);border:1px solid var(--borda)}
+.botao.fantasma:hover{background:var(--alto)}
+.oculto{display:none}
+
+.voltar-painel{
+  display:block;text-align:center;margin-top:12px;
+  background:var(--alto);border:1px solid var(--borda);border-radius:10px;
+  color:var(--fraco);font-size:14px;font-weight:600;text-decoration:none;
+  padding:13px;transition:background .14s ease,color .14s ease;
+}
+.voltar-painel:hover{background:var(--cartao);color:var(--texto)}
+
+/* ---------- abertura ---------- */
+.abertura{text-align:center;padding:14px 0 4px}
+.abertura .selo{font-size:40px;line-height:1;margin-bottom:14px}
+.abertura h2{font-size:20px;margin-bottom:9px}
+.abertura .ajuda{margin:0 auto 4px;max-width:420px}
+.aviso-privacidade{
+  margin:16px 0 0;padding:12px 14px;border-radius:9px;
+  background:var(--alto);border-left:3px solid var(--amarelo);
+  font-size:13px;line-height:1.55;text-align:left;color:var(--fraco);
+}
+
+/* ---------- gravação ---------- */
+.gravador{text-align:center;padding:6px 0 0}
+.tempo{font-size:34px;font-weight:800;color:var(--amarelo);line-height:1;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.tempo.contando{color:var(--vermelho)}
+.tempo-rot{font-size:12.5px;color:var(--fraco);margin-bottom:14px}
+video.camera{width:100%;max-width:420px;aspect-ratio:4/3;background:#000;border-radius:12px;display:block;margin:0 auto 14px;object-fit:cover;transform:scaleX(-1)}
+video.camera.revendo{transform:none}
+audio.player{width:100%;margin-top:12px}
+
+.criterios{list-style:none;margin:14px 0 0;padding:0;text-align:left}
+.criterios li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--borda);font-size:14px;line-height:1.5}
+.criterios li:last-child{border-bottom:0}
+.criterios .n{color:var(--amarelo);font-weight:700;flex-shrink:0}
+
+/* ---------- resultado ---------- */
+.placar{text-align:center;padding:4px 0 2px}
+.estrelas{font-size:26px;letter-spacing:5px;margin-bottom:12px;color:var(--fraco)}
+.estrelas.cheias{color:var(--amarelo)}
+.placar h2{font-size:21px;margin-bottom:8px}
+.placar p{margin:0;font-size:14.5px;line-height:1.6}
+.nota-repetir{margin-top:12px !important;font-size:13px !important;color:var(--fraco) !important;line-height:1.55}
+.resumo-tipos{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.resumo-tipo{
+  flex:1;min-width:92px;text-align:center;padding:13px 10px;
+  background:var(--alto);border:1px solid var(--borda);border-radius:11px;
+}
+.resumo-tipo b{display:block;font-size:19px;font-weight:800;color:var(--amarelo);line-height:1.2}
+.resumo-tipo span{display:block;font-size:11px;color:var(--fraco);margin-top:3px}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="caixa">
+  <div class="cartao">
+
+    <div class="topo" id="cabecalho">
+      <span class="etiqueta" id="etiqueta">Preparação</span>
+      <span class="passo" id="passo">1 de 12</span>
+    </div>
+    <div class="trilho" id="barra"><i id="trilho" style="width:8%"></i></div>
+
+    <!-- ===== ABERTURA ===== -->
+    <section class="etapa" id="abertura">
+      <div class="abertura">
+        <div class="selo" id="ab-selo">💼</div>
+        <h2 id="ab-titulo">—</h2>
+        <p class="ajuda" id="ab-texto">—</p>
+      </div>
+      <div class="aviso-privacidade">
+        🔒 Alguns exercícios pedem microfone e câmera. Tudo acontece no seu aparelho:
+        nada é enviado nem guardado em lugar nenhum.
+      </div>
+      <button class="botao" onclick="comecar()">Começar preparação</button>
+      <a class="voltar-painel" id="ab-voltar" href="#" target="_top">← Voltar ao Painel</a>
+    </section>
+
+    <!-- ===== ATIVIDADE ===== -->
+    <section class="etapa oculto" id="atividade">
+      <h2 id="at-titulo">—</h2>
+      <p class="ajuda" id="at-ajuda"></p>
+      <div class="fala-ex oculto" id="at-exemplo"></div>
+      <div id="at-corpo"></div>
+      <div class="contador oculto" id="at-contador"></div>
+      <div class="retorno" id="at-retorno"></div>
+      <button class="botao oculto" id="at-acao"></button>
+      <button class="botao oculto" id="at-proxima" onclick="proxima()">Continuar</button>
+    </section>
+
+    <!-- ===== RESULTADO ===== -->
+    <section class="etapa oculto" id="fim">
+      <div class="placar">
+        <div class="estrelas" id="f-estrelas">☆☆☆☆☆</div>
+        <h2 id="f-titulo">—</h2>
+        <p id="f-texto">—</p>
+        <p class="nota-repetir">Você pode repetir a preparação quantas vezes quiser.
+        Sua nota mais alta é a que vale.</p>
+      </div>
+
+      <div class="resumo-tipos">
+        <div class="resumo-tipo"><b id="r-acertos">0</b><span>acertos</span></div>
+        <div class="resumo-tipo"><b id="r-fala">0</b><span>falas gravadas</span></div>
+        <div class="resumo-tipo"><b id="r-video">0</b><span>vídeos gravados</span></div>
+      </div>
+
+      <a class="botao" id="f-voltar" href="#" target="_top">Voltar ao Painel</a>
+      <button class="botao fantasma" onclick="location.reload()">Repetir preparação</button>
+    </section>
+
+  </div>
+</div>
+
+<script>
+/* ===================================================================
+   MOTOR DA PREPARAÇÃO
+
+   Este arquivo não sabe o conteúdo. Ele sabe executar tipos de atividade:
+
+     escolha  uma opção certa entre várias
+     marcar   vários itens de uma lista
+     cortar   remover até sobrar o essencial
+     fala     gravar pelo microfone e ouvir de volta
+     video    gravar com câmera e assistir
+     crono    tempo para pensar, depois tempo para falar
+
+   Para criar uma situação nova: acrescente uma entrada em SITUACOES
+   com suas atividades. Não é preciso mexer em mais nada.
+
+   Endereço: preparacao.html?s=entrevista
+   =================================================================== */
+
+const VOLTAR = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+
+/* ================= CONTEÚDO ================= */
+
+const SITUACOES = {
+  entrevista: {
+    selo: "💼",
+    nome: "Entrevista de emprego",
+    intro: "Doze exercícios para você chegar preparado. Tem perguntas de escolha, falas gravadas e dois exercícios com câmera. Leva cerca de 12 minutos.",
+    atividades: [
+
+      /* 1 */
+      { tipo:"escolha",
+        titulo:"“Fale um pouco sobre você.”",
+        ajuda:"É quase sempre a primeira pergunta. Qual abertura funciona melhor?",
+        opcoes:[
+          "Nasci em Belo Horizonte, estudei na federal e sempre gostei muito de tecnologia desde criança...",
+          "Trabalho com atendimento há seis anos. Hoje cuido de uma carteira de 40 clientes e reduzi o cancelamento em 15%.",
+          "Bom, é meio difícil falar de mim, né? Mas vou tentar.",
+          "Sou uma pessoa proativa, comunicativa e que gosta de desafios."
+        ],
+        certa:1,
+        porque:"Ela respondeu com fatos e um número. As outras contam história demais, pedem desculpa ou usam adjetivo que todo mundo usa." },
+
+      /* 2 */
+      { tipo:"marcar",
+        titulo:"O que NÃO deve entrar nessa resposta?",
+        ajuda:"Marque os três que atrapalham.",
+        opcoes:[
+          { t:"Onde você nasceu e estudou no ensino médio", ruim:true },
+          { t:"Quanto tempo de experiência você tem", ruim:false },
+          { t:"Que você é esforçado e dedicado", ruim:true },
+          { t:"Um resultado concreto que você entregou", ruim:false },
+          { t:"Problemas que teve no emprego anterior", ruim:true },
+          { t:"O que você faz hoje, em uma frase", ruim:false }
+        ],
+        quantos:3,
+        porque:"Infância, adjetivo genérico e mágoa do emprego antigo não ajudam você a conseguir a vaga." },
+
+      /* 3 */
+      { tipo:"escolha",
+        titulo:"“Qual é o seu maior defeito?”",
+        ajuda:"A pergunta é uma armadilha. Qual resposta se sai melhor?",
+        opcoes:[
+          "Meu defeito é que sou perfeccionista demais.",
+          "Não tenho defeitos relevantes para o trabalho.",
+          "Tenho dificuldade de dizer não e acabo acumulando tarefas. Comecei a usar uma lista de prioridades com meu gestor.",
+          "Sou muito ansioso, isso atrapalha bastante meu dia a dia."
+        ],
+        certa:2,
+        porque:"Ela nomeou um defeito real e mostrou o que faz a respeito. “Perfeccionista” todo mundo diz, e o entrevistador percebe." },
+
+      /* 4 */
+      { tipo:"cortar",
+        titulo:"Corte até sobrarem três",
+        ajuda:"Esta é a resposta para “por que quer trabalhar aqui?”. Toque no que ela deve tirar.",
+        itens:[
+          { t:"Vocês são referência no setor há dez anos", fica:true },
+          { t:"Vi no site que vocês têm plano de carreira", fica:false },
+          { t:"Meu trabalho atual é com o mesmo tipo de cliente", fica:true },
+          { t:"Estou procurando emprego há quatro meses", fica:false },
+          { t:"Quero aplicar o que aprendi num time maior", fica:true },
+          { t:"A empresa fica perto da minha casa", fica:false }
+        ],
+        restam:3,
+        porque:"Ficam os motivos ligados ao trabalho. Plano de carreira, tempo de procura e distância falam de você, não do que você entrega." },
+
+      /* 5 */
+      { tipo:"fala",
+        titulo:"Grave sua resposta",
+        ajuda:"Responda em voz alta: “fale um pouco sobre você”. Você tem até 60 segundos.",
+        segundos:60,
+        minimo:15,
+        criterios:[
+          "Comecei pelo que faço hoje, não pela infância",
+          "Falei pelo menos um número ou resultado",
+          "Não usei adjetivo solto como “dedicado” ou “proativo”",
+          "Terminei antes de ficar sem assunto"
+        ] },
+
+      /* 6 */
+      { tipo:"escolha",
+        titulo:"“Por que saiu do último emprego?”",
+        ajuda:"Nenhuma resposta é perfeita. Qual é a menos arriscada?",
+        opcoes:[
+          "O clima lá estava insuportável, a chefia não dava condição nenhuma.",
+          "Prefiro não comentar.",
+          "Cheguei ao limite do que podia crescer lá e quero assumir projetos maiores.",
+          "Fui demitido numa redução de quadro."
+        ],
+        certa:2,
+        porque:"Ela olha para frente em vez de reclamar. Se a saída foi demissão, dizer isso também funciona — desde que venha sem drama e com o que veio depois." },
+
+      /* 7 */
+      { tipo:"crono",
+        titulo:"Resposta sob pressão",
+        ajuda:"Você vai ver uma pergunta, terá 15 segundos para pensar e 45 para responder.",
+        pergunta:"Conte uma situação em que você errou no trabalho e o que fez depois.",
+        pensar:15,
+        falar:45,
+        criterios:[
+          "Contei o erro sem enrolar antes",
+          "Disse o que fiz para corrigir",
+          "Terminei com o que aprendi",
+          "Não culpei outra pessoa"
+        ] },
+
+      /* 8 */
+      { tipo:"marcar",
+        titulo:"O que o entrevistador percebe",
+        ajuda:"Marque os quatro sinais que entregam nervosismo.",
+        opcoes:[
+          { t:"Falar muito rápido, sem pausa", ruim:true },
+          { t:"Olhar para baixo ao responder", ruim:true },
+          { t:"Fazer uma pausa antes de responder", ruim:false },
+          { t:"Repetir “né” e “tipo” o tempo todo", ruim:true },
+          { t:"Pedir para repetir a pergunta", ruim:false },
+          { t:"Mexer nas mãos e no cabelo sem parar", ruim:true }
+        ],
+        quantos:4,
+        porque:"Pausa e pedir para repetir passam segurança. Pressa, olhar fugindo, vício de linguagem e mão inquieta passam o contrário." },
+
+      /* 9 */
+      { tipo:"video",
+        titulo:"Olhe para a câmera",
+        ajuda:"Responda “por que devemos te contratar?” olhando para a lente, não para a sua imagem. Até 45 segundos.",
+        segundos:45,
+        minimo:12,
+        criterios:[
+          "Olhei para a lente a maior parte do tempo",
+          "Ombros para trás, sem encolher",
+          "O rosto não ficou parado o tempo todo",
+          "Terminei a frase sem deixar a voz cair"
+        ] },
+
+      /* 10 */
+      { tipo:"escolha",
+        titulo:"“Qual sua pretensão salarial?”",
+        ajuda:"Qual resposta te deixa em melhor posição?",
+        opcoes:[
+          "O que vocês puderem pagar está bom.",
+          "Minha faixa é entre X e Y, e tenho flexibilidade dependendo do pacote todo.",
+          "Prefiro que vocês falem primeiro.",
+          "Quero no mínimo o dobro do que ganho hoje."
+        ],
+        certa:1,
+        porque:"Faixa com margem mostra que você se preparou e deixa espaço para negociar. Devolver a pergunta soa como fuga." },
+
+      /* 11 */
+      { tipo:"fala",
+        titulo:"A pergunta mais difícil",
+        ajuda:"Responda em voz alta: “por que você quer trabalhar aqui?”. Até 45 segundos.",
+        segundos:45,
+        minimo:12,
+        criterios:[
+          "Falei da empresa, não só de mim",
+          "Liguei ao que eu já sei fazer",
+          "Não falei de salário nem de benefício",
+          "Soei específico, não genérico"
+        ] },
+
+      /* 12 */
+      { tipo:"video",
+        titulo:"Sua pergunta final",
+        ajuda:"No fim, o entrevistador pergunta se você tem dúvidas. Grave a sua, olhando para a lente. Até 30 segundos.",
+        segundos:30,
+        minimo:8,
+        criterios:[
+          "Fiz uma pergunta sobre o trabalho ou o time",
+          "Não perguntei só sobre salário e benefício",
+          "Falei com calma, sem pressa de terminar",
+          "A pergunta mostrou que eu pesquisei"
+        ] }
+    ]
+  }
+};
+
+/* ================= ESTADO ================= */
+const CODIGO = new URLSearchParams(window.location.search).get("s") || "entrevista";
+const S = SITUACOES[CODIGO] || SITUACOES.entrevista;
+const ATIV = S.atividades;
+
+let i = 0;              /* atividade atual */
+let pontos = 0;         /* quantas atividades o aluno cumpriu */
+let acertos = 0, falas = 0, videos = 0;
+let marcadas = [], cortadas = [], respondida = false;
+let midia = null, gravador = null, pedacos = [], relogio = null;
+
+/* ================= AJUDA ================= */
+function el(id){ return document.getElementById(id); }
+function mostrar(id){
+  document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
+  el(id).classList.remove("oculto");
+  enquadrar();
+}
+/* Traz a tela de volta ao topo. Como a página vive numa moldura no Cademí,
+   scrollIntoView também rola a página de fora. */
+function enquadrar(){
+  const alvo = document.querySelector(".cartao");
+  if(alvo && alvo.scrollIntoView) alvo.scrollIntoView({ block:"start", behavior:"smooth" });
+  else window.scrollTo(0,0);
+}
+function esc(s){
+  return String(s).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+  });
+}
+function seg(n){
+  const m = Math.floor(n/60), s = n % 60;
+  return m + ":" + (s < 10 ? "0" : "") + s;
+}
+function retorno(texto, estado){
+  const r = el("at-retorno");
+  r.className = "retorno visivel" + (estado ? " " + estado : "");
+  r.innerHTML = texto;
+}
+function liberarProxima(){
+  el("at-acao").classList.add("oculto");
+  const b = el("at-proxima");
+  b.textContent = (i + 1 < ATIV.length) ? "Continuar" : "Ver resultado";
+  b.classList.remove("oculto");
+}
+
+/* ================= NAVEGAÇÃO ================= */
+function comecar(){
+  el("cabecalho").style.display = "";
+  el("barra").style.display = "";
+  i = 0;
+  abrir();
+}
+
+function proxima(){
+  pararMidia();
+  i++;
+  if(i < ATIV.length){ abrir(); return; }
+  terminar();
+}
+
+function abrir(){
+  respondida = false;
+  marcadas = []; cortadas = [];
+  const a = ATIV[i];
+
+  el("passo").textContent = (i+1) + " de " + ATIV.length;
+  el("trilho").style.width = ((i+1)/ATIV.length*100) + "%";
+  el("at-titulo").textContent = a.titulo;
+  el("at-ajuda").textContent = a.ajuda || "";
+  el("at-retorno").className = "retorno";
+  el("at-retorno").innerHTML = "";
+  el("at-proxima").classList.add("oculto");
+  el("at-acao").classList.add("oculto");
+  el("at-contador").classList.add("oculto");
+  el("at-exemplo").classList.add("oculto");
+  el("at-corpo").innerHTML = "";
+
+  ({ escolha:montarEscolha, marcar:montarMarcar, cortar:montarCortar,
+     fala:montarFala, video:montarVideo, crono:montarCrono }[a.tipo])(a);
+
+  mostrar("atividade");
+}
+
+/* ================= ESCOLHA ================= */
+function montarEscolha(a){
+  el("at-corpo").innerHTML = '<div class="lista">' + a.opcoes.map(function(o,j){
+    return '<button class="op" onclick="respEscolha(' + j + ')">' +
+           '<span class="mk">✓</span><span>' + esc(o) + '</span></button>';
+  }).join("") + '</div>';
+}
+
+function respEscolha(j){
+  if(respondida) return;
+  respondida = true;
+  const a = ATIV[i];
+  const bs = el("at-corpo").querySelectorAll(".op");
+  bs.forEach(function(b){ b.disabled = true; });
+  bs[a.certa].classList.add("certa");
+  const ok = j === a.certa;
+  if(!ok) bs[j].classList.add("errada"); else { pontos++; acertos++; }
+  retorno("<b>" + (ok ? "✅ Correto." : "🛑 Errado.") + "</b> " + esc(a.porque), ok ? "" : "erro");
+  liberarProxima();
+}
+
+/* ================= MARCAR ================= */
+function montarMarcar(a){
+  el("at-corpo").innerHTML = '<div class="lista">' + a.opcoes.map(function(o,j){
+    return '<button class="op" onclick="alternar(' + j + ',' + a.quantos + ')">' +
+           '<span class="mk">✓</span><span>' + esc(o.t) + '</span></button>';
+  }).join("") + '</div>';
+  el("at-contador").classList.remove("oculto");
+  el("at-contador").innerHTML = '<span id="n-marc">0</span> de ' + a.quantos + " marcadas";
+  const b = el("at-acao");
+  b.textContent = "Conferir";
+  b.disabled = true;
+  b.onclick = confMarcar;
+  b.classList.remove("oculto");
+}
+
+function alternar(j, limite){
+  if(respondida) return;
+  const b = el("at-corpo").querySelectorAll(".op")[j];
+  const p = marcadas.indexOf(j);
+  if(p >= 0){ marcadas.splice(p,1); b.classList.remove("marcada"); }
+  else { if(marcadas.length >= limite) return; marcadas.push(j); b.classList.add("marcada"); }
+  el("n-marc").textContent = marcadas.length;
+  el("at-acao").disabled = marcadas.length !== limite;
+}
+
+function confMarcar(){
+  respondida = true;
+  const a = ATIV[i];
+  const bs = el("at-corpo").querySelectorAll(".op");
+  bs.forEach(function(b){ b.disabled = true; b.classList.remove("marcada"); });
+  let certas = 0;
+  a.opcoes.forEach(function(o,j){
+    if(o.ruim){ bs[j].classList.add("certa"); if(marcadas.indexOf(j) >= 0) certas++; }
+    else if(marcadas.indexOf(j) >= 0){ bs[j].classList.add("errada"); }
+  });
+  const ok = certas === a.quantos;
+  if(ok){ pontos++; acertos++; }
+  retorno("<b>" + (ok ? "✅ Correto." : "🛑 Acertou " + certas + " de " + a.quantos + ".") +
+          "</b> " + esc(a.porque), ok ? "" : "erro");
+  liberarProxima();
+}
+
+/* ================= CORTAR ================= */
+function montarCortar(a){
+  el("at-corpo").innerHTML = '<div class="lista">' + a.itens.map(function(o,j){
+    return '<button class="op" onclick="cortar(' + j + ')">' +
+           '<span class="mk">✕</span><span>' + esc(o.t) + '</span></button>';
+  }).join("") + '</div>';
+  const faltam = a.itens.length - a.restam;
+  el("at-contador").classList.remove("oculto");
+  el("at-contador").innerHTML = 'faltam tirar <span id="n-cort">' + faltam + "</span>";
+}
+
+function cortar(j){
+  if(respondida) return;
+  const a = ATIV[i];
+  const b = el("at-corpo").querySelectorAll(".op")[j];
+  if(cortadas.indexOf(j) >= 0) return;
+  cortadas.push(j);
+  b.classList.add("saiu");
+  const faltam = (a.itens.length - a.restam) - cortadas.length;
+  el("n-cort").textContent = faltam;
+  if(faltam > 0) return;
+
+  respondida = true;
+  el("at-corpo").querySelectorAll(".op").forEach(function(x){ x.disabled = true; });
+  const ok = a.itens.every(function(o,k){ return !(o.fica && cortadas.indexOf(k) >= 0); });
+  if(ok){ pontos++; acertos++; }
+  retorno("<b>" + (ok ? "✅ Correto." : "🛑 Errado.") + "</b> " + esc(a.porque), ok ? "" : "erro");
+  liberarProxima();
+}
+
+/* ================= GRAVAÇÃO (fala e vídeo) ================= */
+function pararMidia(){
+  if(relogio){ clearInterval(relogio); relogio = null; }
+  if(gravador && gravador.state === "recording") gravador.stop();
+  if(midia){ midia.getTracks().forEach(function(t){ t.stop(); }); midia = null; }
+  gravador = null; pedacos = [];
+}
+
+function montarFala(a){
+  el("at-corpo").innerHTML =
+    '<div class="gravador">' +
+      '<div class="tempo" id="g-tempo">' + seg(a.segundos) + '</div>' +
+      '<div class="tempo-rot" id="g-rot">toque para gravar</div>' +
+      '<div id="g-player"></div>' +
+    '</div>';
+  const b = el("at-acao");
+  b.textContent = "🎙️ Gravar";
+  b.disabled = false;
+  b.onclick = function(){ gravar(a, false); };
+  b.classList.remove("oculto");
+}
+
+function montarVideo(a){
+  el("at-corpo").innerHTML =
+    '<div class="gravador">' +
+      '<video class="camera" id="g-video" playsinline muted></video>' +
+      '<div class="tempo" id="g-tempo">' + seg(a.segundos) + '</div>' +
+      '<div class="tempo-rot" id="g-rot">toque para gravar</div>' +
+    '</div>';
+  const b = el("at-acao");
+  b.textContent = "🎥 Ligar câmera e gravar";
+  b.disabled = false;
+  b.onclick = function(){ gravar(a, true); };
+  b.classList.remove("oculto");
+}
+
+function gravar(a, comVideo){
+  const b = el("at-acao");
+  b.disabled = true;
+  b.textContent = "preparando...";
+
+  navigator.mediaDevices.getUserMedia(comVideo ? { audio:true, video:{ facingMode:"user" } } : { audio:true })
+  .then(function(stream){
+    midia = stream;
+    if(comVideo){
+      const v = el("g-video");
+      v.srcObject = stream; v.muted = true; v.play();
+    }
+    pedacos = [];
+    gravador = new MediaRecorder(stream);
+    gravador.ondataavailable = function(e){ if(e.data.size) pedacos.push(e.data); };
+    gravador.onstop = function(){ fecharGravacao(a, comVideo); };
+    gravador.start();
+
+    let resta = a.segundos, usado = 0;
+    el("g-rot").textContent = "gravando — toque para parar";
+    el("g-tempo").classList.add("contando");
+    b.disabled = false;
+    b.textContent = "⏹️ Parar";
+    b.onclick = function(){ if(gravador && gravador.state === "recording") gravador.stop(); };
+
+    relogio = setInterval(function(){
+      resta--; usado++;
+      el("g-tempo").textContent = seg(Math.max(resta,0));
+      a.gravou = usado;
+      if(resta <= 0 && gravador && gravador.state === "recording") gravador.stop();
+    }, 1000);
+  })
+  .catch(function(){
+    b.disabled = false;
+    b.textContent = comVideo ? "🎥 Tentar de novo" : "🎙️ Tentar de novo";
+    retorno("<b>Não consegui acessar " + (comVideo ? "a câmera" : "o microfone") +
+            ".</b> Autorize o acesso no navegador e tente de novo. Se não der, " +
+            "você pode seguir para a próxima.", "neutro");
+    liberarProxima();
+  });
+}
+
+function fecharGravacao(a, comVideo){
+  if(relogio){ clearInterval(relogio); relogio = null; }
+  el("g-tempo").classList.remove("contando");
+  const usado = a.gravou || 0;
+  const blob = new Blob(pedacos, { type: pedacos.length ? pedacos[0].type : "audio/webm" });
+  const url = URL.createObjectURL(blob);
+
+  if(comVideo){
+    const v = el("g-video");
+    if(midia){ midia.getTracks().forEach(function(t){ t.stop(); }); midia = null; }
+    v.srcObject = null; v.src = url; v.muted = false;
+    v.controls = true; v.classList.add("revendo");
+    el("g-rot").textContent = "assista e confira os pontos abaixo";
+  }else{
+    if(midia){ midia.getTracks().forEach(function(t){ t.stop(); }); midia = null; }
+    el("g-player").innerHTML = '<audio class="player" controls src="' + url + '"></audio>';
+    el("g-rot").textContent = "ouça e confira os pontos abaixo";
+  }
+
+  const curto = usado < a.minimo;
+  if(!curto){
+    pontos++;
+    if(comVideo) videos++; else falas++;
+  }
+
+  const lista = '<ul class="criterios">' + a.criterios.map(function(c,k){
+    return '<li><span class="n">' + (k+1) + '</span><span>' + esc(c) + '</span></li>';
+  }).join("") + "</ul>";
+
+  retorno(curto
+    ? "<b>🛑 Gravação muito curta.</b> Foram " + usado + " segundos, e o mínimo é " +
+      a.minimo + ". Toque em gravar de novo." + lista
+    : "<b>✅ Gravado.</b> " + (comVideo ? "Assista" : "Ouça") +
+      " e marque mentalmente o que já está bom:" + lista,
+    curto ? "erro" : "neutro");
+
+  const b = el("at-acao");
+  b.disabled = false;
+  b.textContent = comVideo ? "🎥 Gravar de novo" : "🎙️ Gravar de novo";
+  b.onclick = function(){
+    a.gravou = 0;
+    if(curto){ abrir(); }
+    else {
+      /* Já pontuou: regravar é só para melhorar, não soma de novo. */
+      const guardado = pontos, gf = falas, gv = videos;
+      abrir();
+      pontos = guardado; falas = gf; videos = gv;
+      ATIV[i].jaPontuou = true;
+    }
+  };
+  b.classList.remove("oculto");
+  liberarProxima();
+  el("at-acao").classList.remove("oculto");
+}
+
+/* ================= CRONO ================= */
+function montarCrono(a){
+  el("at-exemplo").classList.remove("oculto");
+  el("at-exemplo").textContent = a.pergunta;
+  el("at-corpo").innerHTML =
+    '<div class="gravador">' +
+      '<div class="tempo" id="g-tempo">' + seg(a.pensar) + '</div>' +
+      '<div class="tempo-rot" id="g-rot">tempo para pensar</div>' +
+      '<div id="g-player"></div>' +
+    '</div>';
+  const b = el("at-acao");
+  b.textContent = "Estou pronto, começar";
+  b.disabled = false;
+  b.onclick = function(){ pensar(a); };
+  b.classList.remove("oculto");
+}
+
+function pensar(a){
+  const b = el("at-acao");
+  b.disabled = true;
+  b.textContent = "pensando...";
+  let resta = a.pensar;
+  el("g-rot").textContent = "pense na sua resposta";
+  relogio = setInterval(function(){
+    resta--;
+    el("g-tempo").textContent = seg(Math.max(resta,0));
+    if(resta <= 0){
+      clearInterval(relogio); relogio = null;
+      gravar({ segundos:a.falar, minimo:Math.round(a.falar/4),
+               criterios:a.criterios, gravou:0 }, false);
+    }
+  }, 1000);
+}
+
+/* ================= RESULTADO ================= */
+function terminar(){
+  pararMidia();
+  const total = ATIV.length;
+  const estrelasN = Math.max(0, Math.min(5, Math.round(pontos / total * 5)));
+
+  const caixa = el("f-estrelas");
+  caixa.textContent = "★".repeat(estrelasN) + "☆".repeat(5 - estrelasN);
+  caixa.classList.toggle("cheias", estrelasN === 5);
+
+  const MENSAGENS = [
+    { t:"😞 Não foi dessa vez",
+      x:"Mas você passou pela preparação inteira. Repita com calma — a segunda vez rende muito mais." },
+    { t:"😕 Começou",
+      x:"Você já viu o que a entrevista cobra. Repita a preparação e veja a diferença." },
+    { t:"😐 Metade do caminho",
+      x:"Dá para usar o que você acertou aqui. Repita para firmar o resto." },
+    { t:"🙂 Bom resultado",
+      x:"Você está preparado para a maior parte do que vem numa entrevista." },
+    { t:"😃 Quase perfeito",
+      x:"Faltou pouco. Você já sabe responder as perguntas difíceis sem travar." },
+    { t:"🤩 Preparado",
+      x:"Você passou por tudo. Agora é chegar na entrevista e fazer igual." }
+  ];
+  const m = MENSAGENS[estrelasN];
+  el("f-titulo").textContent = m.t;
+  el("f-texto").textContent = m.x;
+
+  el("r-acertos").textContent = acertos;
+  el("r-fala").textContent = falas;
+  el("r-video").textContent = videos;
+
+  guardarNota(estrelasN);
+  mostrar("fim");
+}
+
+/* Guarda a nota da preparação, separada dos 20 treinos.
+   O painel pode ler daqui no futuro para mostrar o que já foi preparado. */
+function guardarNota(estrelas){
+  try{
+    const quem = localStorage.getItem("tae_aluno_atual") || "visitante";
+    const chave = "tae_prep_" + quem;
+    const notas = JSON.parse(localStorage.getItem(chave) || "{}");
+    if(!notas[CODIGO] || estrelas > notas[CODIGO]){
+      notas[CODIGO] = estrelas;
+      localStorage.setItem(chave, JSON.stringify(notas));
+    }
+  }catch(e){}
+}
+
+/* ================= INÍCIO ================= */
+el("ab-selo").textContent = S.selo;
+el("ab-titulo").textContent = S.nome;
+el("ab-texto").textContent = S.intro;
+el("ab-voltar").href = VOLTAR;
+el("f-voltar").href = VOLTAR;
+el("passo").textContent = "1 de " + ATIV.length;
+el("cabecalho").style.display = "none";
+el("barra").style.display = "none";
+</script>
+</body>
+</html>
