@@ -85,6 +85,10 @@ body{
 .lp-barra i.cheia{background:var(--verde)}
 .lp-cont{flex:0 0 auto;font-size:12px;color:var(--texto-fraco);min-width:30px;text-align:right}
 
+.grupo-conq{font-size:11.5px;font-weight:700;letter-spacing:.09em;color:var(--texto-fraco);
+  text-transform:uppercase;margin:18px 0 4px;padding-top:14px;border-top:1px solid var(--borda)}
+.grupo-conq:first-child{margin-top:0;padding-top:0;border-top:0}
+
 .proxima{
   display:none;align-items:center;gap:9px;
   margin-top:15px;padding-top:14px;border-top:1px solid var(--borda);
@@ -219,7 +223,6 @@ body{
       <span id="barra-hoje-txt">0 de 20 treinos</span>
       <span id="barra-hoje-pct">0%</span>
     </div>
-    <div class="proxima" id="proxima-conquista"></div>
   </div>
 
   <div class="numeros">
@@ -229,8 +232,18 @@ body{
   </div>
 
   <div class="cartao">
-    <div class="etiqueta">Seus pilares</div>
+    <div class="etiqueta">Seus treinos (por categoria)</div>
     <div id="resumo-pilares"></div>
+  </div>
+
+  <div class="cartao" onclick="irPara('evolucao')" style="cursor:pointer">
+    <div class="etiqueta">Suas conquistas</div>
+    <div class="barra"><i id="barra-conq" style="width:0%"></i></div>
+    <div class="barra-txt">
+      <span id="barra-conq-txt">0 de 16 conquistas</span>
+      <span id="barra-conq-pct">0%</span>
+    </div>
+    <div class="proxima" id="proxima-conquista"></div>
   </div>
 </section>
 
@@ -253,11 +266,11 @@ body{
   <div class="numeros">
     <div class="numero"><b id="e-seq">0</b><span>dias seguidos</span></div>
     <div class="numero"><b id="e-feitos">0</b><span>treinos feitos</span></div>
-    <div class="numero"><b id="e-pilares">0</b><span>pilares completos</span></div>
+    <div class="numero"><b id="e-preps">0</b><span>preparações feitas</span></div>
   </div>
 
   <div class="cartao">
-    <div class="etiqueta">Conquistas</div>
+    <div class="etiqueta">Conquistas · <span id="conq-contagem">0 de 16</span></div>
     <div id="lista-conquistas"></div>
   </div>
 </section>
@@ -283,6 +296,7 @@ body{
    =================================================================== */
 const BASE_AULA = "https://aluno.falalima.com.br/area/conteudo/aula/";
 const TOTAL = 20;
+const TOTAL_PREP = 8;
 
 const PILARES = [
   { id:1, nome:"Clareza",
@@ -297,10 +311,10 @@ const PILARES = [
   { id:2, nome:"Segurança",
     resumo:"Transmitir confiança no verbal e no não verbal.",
     treinos:[
-      { n:1, nome:"Dicção e articulação", aula:9689868 },
+      { n:1, nome:"Dicção e articulação", aula:9689868, tipo:"voz" },
       { n:2, nome:"Desacelere o fim da frase", aula:null },
       { n:3, nome:"Afirme sem pedir licença", aula:null },
-      { n:4, nome:"O corpo fala antes", aula:9692828 },
+      { n:4, nome:"O corpo fala antes", aula:9692828, tipo:"camera" },
       { n:5, nome:"Sustente o silêncio", aula:null }
     ]},
   { id:3, nome:"Assertividade",
@@ -355,16 +369,47 @@ function fraseDoDia(){
 }
 
 const CONQUISTAS = [
-  { icone:"🌱", nome:"Primeiro passo", desc:"Conclua seu primeiro treino",
-    teste:p => p.feitos >= 1, faltam:p => 1 - p.feitos },
-  { icone:"⚡", nome:"Primeiro pilar", desc:"Complete um pilar inteiro",
-    teste:p => p.pilares >= 1, faltam:p => p.faltamParaPilar },
-  { icone:"🔥", nome:"Metade do caminho", desc:"Chegue a 10 treinos",
-    teste:p => p.feitos >= 10, faltam:p => 10 - p.feitos },
-  { icone:"🎯", nome:"Três pilares", desc:"Complete três pilares",
-    teste:p => p.pilares >= 3, faltam:null },
-  { icone:"🏆", nome:"Jornada completa", desc:"Conclua os 20 treinos",
-    teste:p => p.feitos >= TOTAL, faltam:p => TOTAL - p.feitos }
+  /* --- Começo: tirar o aluno do zero em cada tipo de treino --- */
+  { g:"Começo", icone:"🌱", nome:"Primeiro passo", desc:"Conclua seu primeiro treino",
+    teste:p => p.feitos >= 1, faltam:p => 1 - p.feitos, unidade:"treino" },
+  { g:"Começo", icone:"🎙️", nome:"Sua voz", desc:"Faça um treino com microfone",
+    teste:p => p.voz },
+  { g:"Começo", icone:"🎥", nome:"Sua imagem", desc:"Faça um treino com câmera",
+    teste:p => p.camera },
+  { g:"Começo", icone:"💼", nome:"Primeira preparação", desc:"Conclua uma preparação inteira",
+    teste:p => p.preps >= 1, faltam:p => 1 - p.preps, unidade:"preparação" },
+
+  /* --- Constância: o que traz o aluno de volta --- */
+  { g:"Constância", icone:"🔥", nome:"Três seguidos", desc:"Treine 3 dias sem parar",
+    teste:p => p.sequencia >= 3, faltam:p => 3 - p.sequencia, unidade:"dia" },
+  { g:"Constância", icone:"🎯", nome:"Semana cheia", desc:"Treine 7 dias sem parar",
+    teste:p => p.sequencia >= 7, faltam:p => 7 - p.sequencia, unidade:"dia" },
+  { g:"Constância", icone:"📅", nome:"Mês de treino", desc:"Treine 30 dias sem parar",
+    teste:p => p.sequencia >= 30, faltam:p => 30 - p.sequencia, unidade:"dia" },
+
+  /* --- Qualidade: faz o aluno repetir para melhorar a nota --- */
+  { g:"Qualidade", icone:"⭐", nome:"Nota cheia", desc:"Tire 5 estrelas em um treino",
+    teste:p => p.cheias >= 1, faltam:p => 1 - p.cheias, unidade:"nota cheia" },
+  { g:"Qualidade", icone:"🏅", nome:"Três notas cheias", desc:"Tire 5 estrelas em três treinos",
+    teste:p => p.cheias >= 3, faltam:p => 3 - p.cheias, unidade:"nota cheia" },
+  { g:"Qualidade", icone:"📈", nome:"Média alta", desc:"Chegue a 4,5 de média",
+    teste:p => p.media !== null && p.media >= 4.5 },
+
+  /* --- Caminho: avanço pelos 20 treinos --- */
+  { g:"Caminho", icone:"⚡", nome:"Primeira categoria", desc:"Complete uma categoria inteira",
+    teste:p => p.pilares >= 1, faltam:p => p.faltamParaPilar, unidade:"treino" },
+  { g:"Caminho", icone:"⚖️", nome:"Equilíbrio", desc:"Faça 2 treinos em cada categoria",
+    teste:p => p.comDois >= 4, faltam:p => p.faltamParaEquilibrio, unidade:"treino" },
+  { g:"Caminho", icone:"🥈", nome:"Metade do caminho", desc:"Chegue a 10 treinos",
+    teste:p => p.feitos >= 10, faltam:p => 10 - p.feitos, unidade:"treino" },
+  { g:"Caminho", icone:"🏆", nome:"Os 20 treinos", desc:"Conclua todos os treinos",
+    teste:p => p.feitos >= TOTAL, faltam:p => TOTAL - p.feitos, unidade:"treino" },
+
+  /* --- Preparação --- */
+  { g:"Preparação", icone:"🧭", nome:"Três situações", desc:"Prepare-se para 3 situações",
+    teste:p => p.preps >= 3, faltam:p => 3 - p.preps, unidade:"preparação" },
+  { g:"Preparação", icone:"🧳", nome:"Pronto para tudo", desc:"Conclua todas as preparações",
+    teste:p => p.preps >= TOTAL_PREP, faltam:p => TOTAL_PREP - p.preps, unidade:"preparação" }
 ];
 
 /* ---------- Aluno (vem do Cademí) ---------- */
@@ -611,18 +656,35 @@ function notaMedia(){
 
 function resumo(){
   let feitos = 0, pilares = 0, faltamParaPilar = 99;
+  let cheias = 0, comDois = 0, faltamParaEquilibrio = 0;
+  let voz = false, camera = false;
+
   PILARES.forEach(function(p){
     let c = 0;
-    p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
+    p.treinos.forEach(function(t){
+      if(!feito(p.id, t.n)) return;
+      c++;
+      if(nota(p.id, t.n) === 5) cheias++;
+      if(t.tipo === "voz") voz = true;
+      if(t.tipo === "camera") camera = true;
+    });
     feitos += c;
     if(c === p.treinos.length) pilares++;
     else if(c > 0 && !pilarBloqueado(p.id)){
       const f = p.treinos.length - c;
       if(f < faltamParaPilar) faltamParaPilar = f;
     }
+    if(c >= 2) comDois++;
+    else faltamParaEquilibrio += (2 - c);
   });
+
+  const prep = notasPrep();
+  const preps = Object.keys(prep).length;
+
   return { feitos:feitos, pilares:pilares, total:TOTAL,
-           sequencia:SEQUENCIA, faltamParaPilar:faltamParaPilar };
+           sequencia:SEQUENCIA, faltamParaPilar:faltamParaPilar,
+           cheias:cheias, comDois:comDois, faltamParaEquilibrio:faltamParaEquilibrio,
+           voz:voz, camera:camera, preps:preps, media:notaMedia() };
 }
 
 /* ---------- Navegação ---------- */
@@ -735,6 +797,17 @@ function montarHoje(){
 
   mostrarProximaConquista(r);
   montarResumoPilares();
+  montarConquistas(r);
+}
+
+/* Barra de conquistas no Painel, no mesmo formato do progresso. */
+function montarConquistas(r){
+  const ganhas = CONQUISTAS.filter(function(c){ return c.teste(r); }).length;
+  const pct = Math.round(ganhas / CONQUISTAS.length * 100);
+  document.getElementById("barra-conq").style.width = pct + "%";
+  document.getElementById("barra-conq-txt").textContent =
+    ganhas + " de " + CONQUISTAS.length + " conquistas";
+  document.getElementById("barra-conq-pct").textContent = pct + "%";
 }
 
 function montarResumoPilares(){
@@ -754,18 +827,31 @@ function montarResumoPilares(){
 
 function mostrarProximaConquista(r){
   const caixa = document.getElementById("proxima-conquista");
-  let alvo = null;
-  for(let i=0;i<CONQUISTAS.length;i++){
-    const c = CONQUISTAS[i];
-    if(c.teste(r)) continue;
-    if(typeof c.faltam !== "function") continue;
-    const f = c.faltam(r);
-    if(f > 0 && f <= 3){ alvo = { c:c, faltam:f }; break; }
+  let alvo = null, menor = Infinity;
+
+  /* A mais perto de ser conquistada, qualquer que seja o grupo. */
+  CONQUISTAS.forEach(function(c){
+    if(c.teste(r)) return;
+    const f = (typeof c.faltam === "function") ? c.faltam(r) : null;
+    if(f === null){ if(!alvo) alvo = { c:c, faltam:null }; return; }
+    if(f > 0 && f < menor){ menor = f; alvo = { c:c, faltam:f }; }
+  });
+
+  if(!alvo){
+    caixa.innerHTML = '<span class="ico">🏆</span><span>Você conquistou tudo.</span>';
+    caixa.classList.add("visivel");
+    return;
   }
-  if(!alvo){ caixa.classList.remove("visivel"); caixa.innerHTML = ""; return; }
-  const plural = alvo.faltam === 1 ? "treino" : "treinos";
-  caixa.innerHTML = '<span class="ico">' + alvo.c.icone + '</span>' +
-    '<span>Faltam <b>' + alvo.faltam + ' ' + plural + '</b> para ' + alvo.c.nome + '</span>';
+
+  if(alvo.faltam === null){
+    caixa.innerHTML = '<span class="ico">' + alvo.c.icone + '</span>' +
+      '<span>Próxima: <b>' + alvo.c.nome + '</b> — ' + alvo.c.desc.toLowerCase() + '</span>';
+  }else{
+    const u = alvo.c.unidade || "treino";
+    const plural = alvo.faltam === 1 ? u : (u === "preparação" ? "preparações" : u + "s");
+    caixa.innerHTML = '<span class="ico">' + alvo.c.icone + '</span>' +
+      '<span>Faltam <b>' + alvo.faltam + ' ' + plural + '</b> para ' + alvo.c.nome + '</span>';
+  }
   caixa.classList.add("visivel");
 }
 
@@ -807,11 +893,18 @@ function montarEvolucao(){
   const r = resumo();
   document.getElementById("e-seq").textContent = r.sequencia;
   document.getElementById("e-feitos").textContent = r.feitos;
-  document.getElementById("e-pilares").textContent = r.pilares;
+  document.getElementById("e-preps").textContent = r.preps;
 
+  const ganhas = CONQUISTAS.filter(function(c){ return c.teste(r); }).length;
+  document.getElementById("conq-contagem").textContent = ganhas + " de " + CONQUISTAS.length;
+
+  let grupo = "";
   document.getElementById("lista-conquistas").innerHTML = CONQUISTAS.map(function(c){
+    let cabecalho = "";
+    if(c.g !== grupo){ grupo = c.g; cabecalho = '<div class="grupo-conq">' + c.g + '</div>'; }
     const g = c.teste(r);
-    return '<div class="conquista ' + (g ? "ganha" : "pendente") + '">' +
+    return cabecalho +
+      '<div class="conquista ' + (g ? "ganha" : "pendente") + '">' +
       '<div class="medalha">' + c.icone + '</div>' +
       '<div><div class="conquista-nome">' + c.nome + '</div>' +
       '<div class="conquista-desc">' + (g ? "Conquistada" : c.desc) + '</div></div></div>';
