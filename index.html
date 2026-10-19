@@ -706,6 +706,7 @@ const SITUACOES = [
   { codigo:"resultados", icone:"📊", nome:"Apresentar resultados", desc:"Mostrar números para a chefia com clareza.", n:12 },
   { codigo:"reuniao", icone:"💻", nome:"Reunião online", desc:"Câmera, olhar, voz e objetividade na chamada.", n:12 },
   { codigo:"aumento", icone:"💰", nome:"Pedir aumento ou promoção", desc:"Pedir com firmeza e sustentar a conversa.", n:12 },
+  { codigo:"video", icone:"🎬", nome:"Gravação de vídeos", desc:"Gravar vídeos que prendem, do hook ao fechamento.", n:12 },
   { codigo:null, icone:"🗣️", nome:"Dar um feedback difícil", desc:"Ser direto sem machucar a relação." },
   { codigo:null, icone:"🎤", nome:"Falar para muita gente", desc:"Abrir, conduzir e fechar uma apresentação." },
   { codigo:null, icone:"🤝", nome:"Negociar com cliente", desc:"Defender seu preço e seus prazos." },
@@ -813,7 +814,7 @@ function montarHoje(){
 /* O card de revisão só existe depois que há algo a revisar. */
 function montarRevisao(r){
   const card = document.getElementById("card-revisao");
-  if(r.feitos + r.preps < 1){ card.classList.add("oculto"); return; }
+  if(r.feitos < 1){ card.classList.add("oculto"); return; }
   card.classList.remove("oculto");
   document.getElementById("rev-botao").href = REVISAO;
 
@@ -823,7 +824,7 @@ function montarRevisao(r){
     d = JSON.parse(localStorage.getItem("tae_rev_" + quem) || "{}");
   }catch(e){}
 
-  const quantos = r.feitos + r.preps;
+  const quantos = r.feitos;
   const base = "Perguntas misturadas sobre os " + quantos +
                (quantos === 1 ? " treino que você já fez" : " treinos que você já fez") + ".";
   document.getElementById("rev-desc").textContent =
