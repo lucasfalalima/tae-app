@@ -160,9 +160,9 @@ body{
 
 .aviso-admin{margin:4px 0 10px;padding:11px 14px;border-radius:10px;font-size:13px;line-height:1.5;
   background:rgba(247,208,70,.1);border:1px solid rgba(247,208,70,.35);color:var(--texto)}
-/* ---------- Situações ---------- */
+/* ---------- Preparação ---------- */
 .grade-sit{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px;margin-top:6px}
-.sit{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;cursor:pointer;
+.sit{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;cursor:pointer;text-decoration:none;
   background:var(--cartao);border:1px solid var(--borda);border-radius:12px;padding:14px;
   font-family:inherit;color:var(--texto);transition:border-color .14s ease,background .14s ease}
 .sit:hover{border-color:var(--amarelo);background:var(--cartao-alto)}
@@ -171,8 +171,6 @@ body{
 .sit b{display:block;color:#fff;font-size:15px;margin-bottom:3px}
 .sit span{display:block;font-size:12.5px;color:var(--texto-fraco);line-height:1.45}
 .sit em{display:inline-block;margin-top:7px;font-style:normal;font-size:11.5px;font-weight:700;color:var(--amarelo)}
-.sit-aberta{grid-column:1/-1;background:var(--cartao-alto);border:1px solid var(--borda);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.55}
-.sit-aberta ol{margin:8px 0 0;padding-left:20px}
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -186,16 +184,16 @@ body{
     Painel
   </button>
   <button class="aba" data-tela="jornada" onclick="irPara('jornada')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 5h11l3 3.5-3 3.5H6"/><path d="M6 15h8l2.5 3"/></svg>
-    Jornada
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12.409 13.017A5 5 0 0 1 22 15c0 3.866-4 7-9 7-4.077 0-8.153-.82-10.371-2.462-.426-.316-.631-.832-.62-1.362C2.118 12.723 2.627 2 10 2a3 3 0 0 1 3 3 2 2 0 0 1-2 2c-1.105 0-1.64-.444-2-1"/><path d="M15 14a5 5 0 0 0-7.584 2"/><path d="M9.964 6.825C8.019 7.977 9.5 13 8 15"/></svg>
+    Treinos
   </button>
   <button class="aba" data-tela="evolucao" onclick="irPara('evolucao')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
     Evolução
   </button>
   <button class="aba" data-tela="situacoes" onclick="irPara('situacoes')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
-    Situações
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>
+    Preparação
   </button>
 </nav>
 
@@ -236,10 +234,10 @@ body{
   </div>
 </section>
 
-<!-- ========== JORNADA ========== -->
+<!-- ========== TREINOS ========== -->
 <section class="tela" id="tela-jornada">
   <div class="topo">
-    <h1>Sua jornada</h1>
+    <h1>Seus treinos</h1>
     <p>Quatro pilares, vinte treinos. Comece por onde quiser.</p>
   </div>
   <div id="lista-pilares"></div>
@@ -264,12 +262,12 @@ body{
   </div>
 </section>
 
-<!-- ===== SITUAÇÕES (modo avulso) =====
+<!-- ===== PREPARAÇÃO (modo avulso) =====
      Cada situação junta treinos de vários pilares para um momento real.
      Para editar: lista SITUACOES no código. -->
 <section class="tela" id="tela-situacoes">
   <div class="topo">
-    <h1>Situações</h1>
+    <h1>Preparação</h1>
     <p>Tem um momento importante chegando? Escolha a situação e treine para ela.</p>
   </div>
   <div class="grade-sit" id="lista-situacoes"></div>
@@ -628,55 +626,41 @@ function resumo(){
 }
 
 /* ---------- Navegação ---------- */
-/* ---------- Situações ----------
-   treinos = números da Jornada (1 a 20) que compõem a situação. */
+/* ---------- Preparação ----------
+   treinos = números da lista de treinos (1 a 20) que compõem a situação. */
+const PREP = "https://tae-app-seven.vercel.app/preparacao.html?s=";
+
 const SITUACOES = [
-  { icone:"💼", nome:"Entrevista de emprego", desc:"Responder bem, sem travar, e passar segurança.", treinos:[5, 9, 6, 8, 12] },
-  { icone:"📊", nome:"Apresentar resultados", desc:"Mostrar números para a chefia com clareza.", treinos:[1, 2, 7, 16, 19] },
-  { icone:"💻", nome:"Reunião online", desc:"Câmera, olhar, voz e objetividade na chamada.", treinos:[9, 6, 1, 10, 5] },
-  { icone:"💰", nome:"Pedir aumento ou promoção", desc:"Pedir com firmeza e sustentar a conversa.", treinos:[12, 8, 14, 10, 7] },
-  { icone:"🗣️", nome:"Dar um feedback difícil", desc:"Ser direto sem machucar a relação.", treinos:[3, 13, 4, 7, 10] },
-  { icone:"🎤", nome:"Falar para muita gente", desc:"Abrir, conduzir e fechar uma apresentação.", treinos:[16, 17, 18, 19, 20] },
-  { icone:"🤝", nome:"Negociar com cliente", desc:"Defender seu preço e seus prazos.", treinos:[14, 11, 4, 8, 10] },
-  { icone:"🙋", nome:"Se apresentar a alguém novo", desc:"Causar boa impressão nos primeiros segundos.", treinos:[1, 9, 6, 16, 5] }
+  { codigo:"entrevista", icone:"💼", nome:"Entrevista de emprego", desc:"Responder bem, sem travar, e passar segurança.", n:12 },
+  { codigo:null, icone:"📊", nome:"Apresentar resultados", desc:"Mostrar números para a chefia com clareza." },
+  { codigo:null, icone:"💻", nome:"Reunião online", desc:"Câmera, olhar, voz e objetividade na chamada." },
+  { codigo:null, icone:"💰", nome:"Pedir aumento ou promoção", desc:"Pedir com firmeza e sustentar a conversa." },
+  { codigo:null, icone:"🗣️", nome:"Dar um feedback difícil", desc:"Ser direto sem machucar a relação." },
+  { codigo:null, icone:"🎤", nome:"Falar para muita gente", desc:"Abrir, conduzir e fechar uma apresentação." },
+  { codigo:null, icone:"🤝", nome:"Negociar com cliente", desc:"Defender seu preço e seus prazos." },
+  { codigo:null, icone:"🙋", nome:"Se apresentar a alguém novo", desc:"Causar boa impressão nos primeiros segundos." }
 ];
 
-function nomeTreinoGlobal(num){
-  let total = 0;
-  for(let i = 0; i < PILARES.length; i++){
-    const p = PILARES[i];
-    if(num <= total + p.treinos.length){
-      const t = p.treinos[num - total - 1];
-      return { pilar:p, t:t };
-    }
-    total += p.treinos.length;
-  }
-  return null;
+/* Estrelas já tiradas em cada preparação, gravadas por preparacao.html. */
+function notasPrep(){
+  try{
+    const quem = ALUNO.id || "visitante";
+    return JSON.parse(localStorage.getItem("tae_prep_" + quem) || "{}");
+  }catch(e){ return {}; }
 }
 
 function montarSituacoes(){
-  const el = document.getElementById("lista-situacoes");
-  el.innerHTML = SITUACOES.map(function(s, i){
-    return '<button class="sit" onclick="abrirSituacao(' + i + ')"><span class="sit-icone">' + s.icone + '</span>' +
-      '<span><b>' + s.nome + '</b><span>' + s.desc + '</span><em>' + s.treinos.length + ' treinos</em></span></button>';
+  const notas = notasPrep();
+  document.getElementById("lista-situacoes").innerHTML = SITUACOES.map(function(s){
+    const v = s.codigo ? notas[s.codigo] : undefined;
+    const marca = v !== undefined
+      ? '<em>' + "★".repeat(v) + "☆".repeat(5 - v) + '</em>'
+      : (s.codigo ? '<em>' + s.n + ' atividades</em>' : '<em style="color:var(--texto-fraco)">em breve</em>');
+    const corpo = '<span class="sit-icone">' + s.icone + '</span>' +
+      '<span><b>' + s.nome + '</b><span>' + s.desc + '</span>' + marca + '</span>';
+    if(!s.codigo) return '<div class="sit" style="opacity:.45">' + corpo + '</div>';
+    return '<a class="sit" href="' + PREP + s.codigo + '" target="_top">' + corpo + '</a>';
   }).join("");
-}
-
-function abrirSituacao(i){
-  montarSituacoes();
-  const s = SITUACOES[i];
-  const itens = s.treinos.map(function(num){
-    const x = nomeTreinoGlobal(num);
-    if(!x) return "";
-    const ok = feito(x.pilar.id, x.t.n);
-    const nome = "Treino " + num + ": " + x.t.nome + (ok ? " ✓" : "");
-    return "<li>" + (x.t.aula ? '<a href="' + BASE_AULA + x.t.aula + '" target="_top" style="color:inherit">' + nome + "</a>" : nome) + "</li>";
-  }).join("");
-  const caixa = document.createElement("div");
-  caixa.className = "sit-aberta";
-  caixa.innerHTML = "<b>" + s.icone + " " + s.nome + "</b><br>Faça estes treinos, nesta ordem:<ol>" + itens + "</ol>";
-  const cards = document.querySelectorAll("#lista-situacoes .sit");
-  cards[i].after(caixa);
 }
 
 function irPara(tela){
@@ -712,10 +696,10 @@ function montarHoje(){
   const comecou = r.feitos > 0;
 
   if(!sug){
-    rotulo.textContent = "Jornada completa";
+    rotulo.textContent = "Treinos concluídos";
     document.getElementById("sug-nome").textContent = "Os 20 treinos estão concluídos";
     document.getElementById("sug-desc").textContent = "Repetir um treino vale tanto quanto fazer pela primeira vez.";
-    botao.textContent = "Ver jornada";
+    botao.textContent = "Ver treinos";
     botao.removeAttribute("target");
     botao.href = "#";
     botao.onclick = function(e){ e.preventDefault(); irPara("jornada"); };
@@ -785,7 +769,7 @@ function mostrarProximaConquista(r){
   caixa.classList.add("visivel");
 }
 
-/* ---------- Jornada ---------- */
+/* ---------- Treinos ---------- */
 function montarPilares(){
   document.getElementById("lista-pilares").innerHTML = PILARES.map(function(p){
     const bloq = pilarBloqueado(p.id);
