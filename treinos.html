@@ -25,6 +25,10 @@ body{margin:0;background:var(--fundo);color:var(--texto);
 
 h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
 .ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
+.instrucao{
+  margin:-8px 0 16px;font-size:12.5px;font-weight:600;
+  color:var(--amarelo);letter-spacing:.01em;
+}
 
 .fala{
   background:var(--alto);border-left:3px solid var(--fraco);
@@ -150,6 +154,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <section class="etapa oculto" id="p1">
       <h2>Isso é um Objetivo Único?</h2>
       <p class="ajuda">Objetivo Único é uma coisa só que você quer que o outro faça depois que você falar.</p>
+      <p class="instrucao">Escolha apenas uma em cada frase.</p>
       <div id="l1"></div>
       <div class="retorno" id="r1"></div>
       <button class="botao oculto" id="b1" onclick="ir(2)">Continuar</button>
@@ -159,6 +164,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <section class="etapa oculto" id="p2">
       <h2>O que essa pessoa queria?</h2>
       <p class="ajuda">Ela falou bastante. Mas o que ela queria mesmo?</p>
+      <p class="instrucao">Escolha apenas uma em cada fala.</p>
       <div id="l2"></div>
       <div class="retorno" id="r2"></div>
       <button class="botao oculto" id="b2" onclick="ir(3)">Continuar</button>
@@ -168,6 +174,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <section class="etapa oculto" id="p3">
       <h2>Qual serve de âncora?</h2>
       <p class="ajuda">Âncora é uma palavra só. Toque nas que são uma palavra.</p>
+      <p class="instrucao">Marque todas que servem.</p>
       <div class="lista" id="l3"></div>
       <div class="contador"><span id="n3">0</span> marcadas</div>
       <div class="retorno" id="r3"></div>
@@ -178,6 +185,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <section class="etapa oculto" id="p4">
       <h2>O Rafael quer mais uma semana de prazo</h2>
       <p class="ajuda">Marque as 3 informações que ajudam ele a conseguir isso.</p>
+      <p class="instrucao">Escolha 3 opções.</p>
       <div class="fala">
         "Gente, deixa eu falar rapidinho. A gente começou esse projeto em março,
         lembra que o Paulo ainda estava no time? Aí teve a mudança de fornecedor,
@@ -194,6 +202,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <section class="etapa oculto" id="p5">
       <h2>Tire o que não precisa</h2>
       <p class="ajuda">A Ana vai pedir mais verba. Toque no que ela pode tirar da fala, até sobrarem 3.</p>
+      <p class="instrucao">Toque para tirar da fala.</p>
       <div class="lista" id="l5"></div>
       <div class="contador">faltam tirar <span id="n5">3</span></div>
       <div class="retorno" id="r5"></div>
