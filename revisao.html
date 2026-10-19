@@ -160,8 +160,9 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
    As perguntas são diferentes das do treino de propósito: repetir a
    mesma pergunta ensina a resposta decorada, não a técnica.
 
-   O banco é por código de treino ("1.1") ou de preparação ("p.entrevista").
-   A revisão só sorteia perguntas do que o aluno já concluiu.
+   O banco é por código de treino ("1.1"). Só entram os treinos que o
+   aluno já concluiu. As preparações ficam de fora: elas já são feitas
+   de novo quando o aluno tem um compromisso chegando.
    =================================================================== */
 
 const VOLTAR = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
@@ -198,7 +199,28 @@ const BANCO = {
          "Excesso de texto para lembrar",
          "Falar rápido demais"],
       c:2,
-      e:"Quem decora perde uma palavra e não tem a próxima. Quem ancora perde a palavra e continua." }
+      e:"Quem decora perde uma palavra e não tem a próxima. Quem ancora perde a palavra e continua." },
+    { p:"O chefe pergunta como está o projeto. Qual resposta tem Objetivo Único?",
+      o:["Olha, teve uns perrengues, mas a gente está tocando",
+         "Entrego quinta. Preciso do aval do financeiro até amanhã",
+         "Está indo bem, acho que vai dar certo",
+         "Posso te explicar tudo o que aconteceu desde o começo"],
+      c:1,
+      e:"Ela diz onde chegou e o que precisa. As outras ocupam o tempo sem entregar nada acionável." },
+    { p:"Você tem cinco informações boas para uma fala curta. O que fazer?",
+      o:["Falar as cinco rápido, para caber",
+         "Escolher três e deixar as outras de fora",
+         "Falar três e mencionar as outras no fim",
+         "Perguntar se a pessoa quer ouvir tudo"],
+      c:1,
+      e:"Cada informação a mais disputa atenção com as que importam. Você não está somando, está dividindo." },
+    { p:"Qual é o teste para saber se o seu objetivo é único?",
+      o:["Se cabe numa frase curta",
+         "Se tem um “e” no meio",
+         "Se você consegue decorar",
+         "Se o outro vai concordar"],
+      c:1,
+      e:"“Avisar do atraso e explicar e pedir prazo” são três objetivos. Quem fala com três não cumpre nenhum." }
   ]},
 
   /* ---------- Treino 6 · Dicção ---------- */
@@ -223,7 +245,28 @@ const BANCO = {
          "Média, com pausa entre as ideias",
          "Varia conforme a sua personalidade"],
       c:2,
-      e:"A pausa é o que separa uma ideia da outra. Sem ela, tudo vira um bloco só." }
+      e:"A pausa é o que separa uma ideia da outra. Sem ela, tudo vira um bloco só." },
+    { p:"Qual destas frases tem o erro de dicção mais comum?",
+      o:["Vou fazê isso hoje à tarde",
+         "Vou fazer isso hoje à tarde",
+         "Faço isso hoje à tarde",
+         "Isso fica para hoje à tarde"],
+      c:0,
+      e:"O R que some no fim do verbo. Ninguém corrige você, e pesa numa entrevista." },
+    { p:"O que fazer quando dá vontade de falar “éééé”?",
+      o:["Falar mais rápido, para não dar brecha",
+         "Ficar em silêncio pelo tempo que precisar",
+         "Trocar por “então” ou “tipo”",
+         "Pedir desculpa e recomeçar a frase"],
+      c:1,
+      e:"O silêncio incomoda quem fala, nunca quem ouve. Trocar por outra muleta não resolve nada." },
+    { p:"Na frase “os projetos novos estão prontos”, onde mora o erro mais comum?",
+      o:["No começo, em “os”",
+         "No S final das palavras do plural",
+         "Na palavra “estão”",
+         "Não há erro possível aí"],
+      c:1,
+      e:"“Os projeto novo estão pronto.” O plural some na fala e ninguém avisa." }
   ]},
 
   /* ---------- Treino 9 · O corpo fala ---------- */
@@ -248,107 +291,28 @@ const BANCO = {
          "Os dois são iguais, é questão de gosto",
          "Gesto não influencia em nada"],
       c:0,
-      e:"O gesto serve a ideia. Quando ele vira ruído de fundo, atrapalha o que você diz." }
-  ]},
-
-  /* ---------- Preparação · Entrevista ---------- */
-  "p.entrevista": { nome:"Entrevista de emprego", perguntas:[
-    { p:"“Fale sobre você.” Por onde começar?",
-      o:["Por onde você nasceu e estudou",
-         "Pelo que você faz hoje, com um resultado",
-         "Pelos seus adjetivos: proativo, dedicado",
-         "Perguntando o que exatamente eles querem saber"],
+      e:"O gesto serve a ideia. Quando ele vira ruído de fundo, atrapalha o que você diz." },
+    { p:"Onde deve ficar a câmera do celular ao gravar?",
+      o:["Apoiada na mesa, apontando para cima",
+         "Na altura dos olhos",
+         "Um pouco acima da cabeça",
+         "Tanto faz, o importante é a luz"],
       c:1,
-      e:"Fato e número no começo. Adjetivo todo mundo usa, e história de vida gasta o tempo em que prestam atenção." },
-    { p:"Falar do defeito: qual estrutura funciona?",
-      o:["Dizer um defeito que na verdade é qualidade",
-         "Dizer que você não tem defeito relevante",
-         "Nomear um defeito real e dizer o que faz a respeito",
-         "Dizer um defeito grave, para parecer honesto"],
-      c:2,
-      e:"Defeito sem ação soa como desabafo; “perfeccionista” soa como fuga. Defeito mais o que você faz soa como maturidade." },
-    { p:"Perguntaram sua pretensão salarial. O que fazer?",
-      o:["Devolver a pergunta para eles",
-         "Dizer que aceita o que puderem pagar",
-         "Dar uma faixa, com referência de mercado",
-         "Pedir o dobro, para negociar depois"],
-      c:2,
-      e:"Faixa mostra preparo e deixa espaço. Devolver a pergunta entrega a decisão ao outro lado." }
-  ]},
-
-  /* ---------- Preparação · Reunião online ---------- */
-  "p.reuniao": { nome:"Reunião online", perguntas:[
-    { p:"Alguém te interrompeu no meio da frase. O melhor caminho?",
-      o:["Falar por cima até a pessoa parar",
-         "Ficar quieto e deixar passar",
-         "Esperar a pessoa terminar e retomar seu ponto",
-         "Escrever no chat o que ia dizer"],
-      c:2,
-      e:"Retomar com calma mantém a fala e a relação. Ceder sempre ensina que te interromper não custa nada." },
-    { p:"Qual destes é um sinal de que você não foi ouvido?",
-      o:["Alguém faz uma pergunta sobre o que você disse",
-         "Alguém repete sua ideia como se fosse nova",
-         "Alguém anota enquanto você fala",
-         "Pedem para você detalhar"],
+      e:"De baixo para cima distorce o rosto e passa superioridade sem querer. Na altura dos olhos é como a pessoa te veria de pé." },
+    { p:"Você vai falar numa reunião. O que acontece antes da primeira palavra?",
+      o:["Nada, a avaliação começa quando você fala",
+         "As pessoas já formaram uma impressão pela sua postura",
+         "Só importa se você estiver de pé",
+         "Depende de quem está na sala"],
       c:1,
-      e:"Ideia reciclada é o sinal mais claro de que entrou como ruído, não como contribuição." },
-    { p:"Como encerrar sua participação?",
-      o:["Com “é isso, não sei se ficou claro”",
-         "Com “alguma dúvida?”",
-         "Com o que você entrega e o que precisa",
-         "Deixando a frase no ar"],
+      e:"O corpo chega antes. Quem ouve decide se acredita antes de você abrir a boca." },
+    { p:"Qual expressão passa mais segurança numa chamada de vídeo?",
+      o:["Rosto neutro o tempo todo",
+         "Sorriso constante",
+         "Expressão que acompanha o que está sendo dito",
+         "Olhar fixo, sem piscar"],
       c:2,
-      e:"Fechar com entrega e pedido deixa a sala sabendo o que fazer." }
-  ]},
-
-  /* ---------- Preparação · Pedir aumento ---------- */
-  "p.aumento": { nome:"Pedir aumento", perguntas:[
-    { p:"Qual destes NÃO é argumento para um aumento?",
-      o:["Assumi a carteira de dois colegas",
-         "Estou há três anos sem aumento",
-         "Reduzi o cancelamento em 15%",
-         "Passei a treinar os novos do time"],
-      c:1,
-      e:"Tempo de casa fala de você. O que convence é o que você entrega a mais." },
-    { p:"“Não tenho orçamento agora.” O que fazer?",
-      o:["Agradecer e encerrar o assunto",
-         "Perguntar quando seria possível revisitar",
-         "Dizer que vai procurar outro lugar",
-         "Insistir que você merece"],
-      c:1,
-      e:"Sem data, o assunto morre. Com data, o não vira adiamento." },
-    { p:"A resposta foi não, sem prazo. E agora?",
-      o:["Nunca mais tocar no assunto",
-         "Perguntar o que precisaria mudar para ser sim",
-         "Reduzir o ritmo de trabalho",
-         "Pedir demissão"],
-      c:1,
-      e:"Essa pergunta transforma um não em critério. Sem ela, você sai sem saber o que fazer diferente." }
-  ]},
-
-  /* ---------- Preparação · Apresentar resultados ---------- */
-  "p.resultados": { nome:"Apresentar resultados", perguntas:[
-    { p:"Por onde começar uma apresentação de resultados?",
-      o:["Pelo contexto do período",
-         "Pelo resultado principal",
-         "Agradecendo a oportunidade",
-         "Pedindo que acompanhem os slides"],
-      c:1,
-      e:"Resultado primeiro, explicação depois. Contexto na frente gasta o tempo de maior atenção." },
-    { p:"Qual destes mede esforço, e não resultado?",
-      o:["Receita acima da meta",
-         "Cancelamento que caiu",
-         "Número de reuniões feitas",
-         "Ticket médio que subiu"],
-      c:2,
-      e:"Reunião, e-mail e hora trabalhada medem movimento. Ninguém decide nada com eles." },
-    { p:"Perguntaram um número que você não tem. O melhor?",
-      o:["Chutar um valor aproximado",
-         "Dizer que a informação não é relevante",
-         "Dizer que não tem, e quando entrega",
-         "Dizer “boa pergunta, vou verificar”"],
-      c:2,
-      e:"Não sei, o que faço e quando. “Vou verificar” sem prazo nunca volta." }
+      e:"Rosto parado parece desinteresse; sorriso constante parece tensão. A expressão que acompanha a fala é a que convence." }
   ]}
 };
 
@@ -386,10 +350,6 @@ function feitos(){
   try{
     const n = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
     Object.keys(n).forEach(function(k){ if(BANCO[k]) lista.push(k); });
-  }catch(e){}
-  try{
-    const p = JSON.parse(localStorage.getItem("tae_prep_" + quem) || "{}");
-    Object.keys(p).forEach(function(k){ if(BANCO["p." + k]) lista.push("p." + k); });
   }catch(e){}
   return lista;
 }
