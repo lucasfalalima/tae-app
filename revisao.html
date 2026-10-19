@@ -25,6 +25,10 @@ body{margin:0;background:var(--fundo);color:var(--texto);
 
 h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
 .ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
+.instrucao{
+  margin:7px 0 14px;font-size:12.5px;font-weight:600;
+  color:var(--amarelo);letter-spacing:.01em;
+}
 .origem{
   display:inline-block;margin-bottom:12px;padding:4px 10px;border-radius:99px;
   background:var(--alto);border:1px solid var(--borda);
@@ -130,6 +134,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <section class="etapa oculto" id="pergunta">
       <div class="origem" id="p-origem">—</div>
       <h2 id="p-texto">—</h2>
+      <p class="instrucao">Escolha apenas uma.</p>
       <div class="lista" id="p-opcoes"></div>
       <div class="retorno" id="p-retorno"></div>
       <button class="botao oculto" id="p-proxima" onclick="proxima()">Continuar</button>
