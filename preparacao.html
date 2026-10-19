@@ -81,6 +81,13 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 .botao.fantasma:hover{background:var(--alto)}
 .oculto{display:none}
 
+.sair{
+  display:block;text-align:center;margin-top:16px;
+  color:var(--fraco);font-size:13px;font-weight:600;text-decoration:none;
+  padding:8px;transition:color .14s ease;
+}
+.sair:hover{color:var(--texto)}
+
 .voltar-painel{
   display:block;text-align:center;margin-top:12px;
   background:var(--alto);border:1px solid var(--borda);border-radius:10px;
@@ -167,6 +174,7 @@ audio.player{width:100%;margin-top:12px}
       <div class="retorno" id="at-retorno"></div>
       <button class="botao oculto" id="at-acao"></button>
       <button class="botao oculto" id="at-proxima" onclick="proxima()">Continuar</button>
+      <a class="sair" id="at-voltar" href="#" target="_top">← Voltar ao Painel</a>
     </section>
 
     <!-- ===== RESULTADO ===== -->
@@ -788,6 +796,7 @@ el("ab-titulo").textContent = S.nome;
 el("ab-texto").textContent = S.intro;
 el("ab-voltar").href = VOLTAR;
 el("f-voltar").href = VOLTAR;
+el("at-voltar").href = VOLTAR;
 el("passo").textContent = "1 de " + ATIV.length;
 el("cabecalho").style.display = "none";
 el("barra").style.display = "none";
