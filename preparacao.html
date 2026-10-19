@@ -870,6 +870,165 @@ const SITUACOES = {
           "Não enrolei no começo"
         ] }
     ]
+  },
+
+  video: {
+    selo: "🎬",
+    nome: "Gravação de vídeos",
+    intro: "Doze exercícios para você gravar vídeos que prendem. Tem perguntas de escolha, falas gravadas e três exercícios com câmera. Leva cerca de 13 minutos.",
+    atividades: [
+
+      { tipo:"escolha",
+        titulo:"Os três primeiros segundos",
+        ajuda:"É onde a pessoa decide se fica. Qual abertura segura?",
+        opcoes:[
+          "Oi pessoal, tudo bem com vocês? Aqui é o João e hoje eu vou falar sobre...",
+          "Antes de começar, se inscreve no canal e ativa o sininho.",
+          "Você está perdendo cliente por causa de uma frase que você diz no telefone.",
+          "Então gente, esse assunto é muito importante e eu preciso falar dele."
+        ],
+        certa:2,
+        porque:"Ela começa dentro do assunto e põe algo em jogo. Cumprimento, pedido de inscrição e anúncio de importância gastam o único tempo em que a pessoa ainda ia ficar." },
+
+      { tipo:"marcar",
+        titulo:"O que faz a pessoa sair",
+        ajuda:"Marque as três coisas que esvaziam um vídeo logo no começo.",
+        opcoes:[
+          { t:"Demorar a dizer sobre o que é o vídeo", ruim:true },
+          { t:"Começar já falando, sem apresentação", ruim:false },
+          { t:"Pedir curtida antes de entregar algo", ruim:true },
+          { t:"Dizer logo o que a pessoa vai levar", ruim:false },
+          { t:"Dois segundos parados antes de falar", ruim:true },
+          { t:"Cortar a primeira respiração na edição", ruim:false }
+        ],
+        quantos:3,
+        porque:"Quem ouve só continua se tiver motivo. Enrolação, pedido antes da entrega e silêncio inicial são os três motivos mais comuns para sair." },
+
+      { tipo:"video",
+        titulo:"Grave só o seu hook",
+        ajuda:"Dez segundos. Comece dentro do assunto, sem cumprimento e sem introdução.",
+        segundos:15,
+        minimo:5,
+        criterios:[
+          "Comecei falando, sem pausa antes",
+          "Disse o assunto na primeira frase",
+          "Não cumprimentei nem me apresentei",
+          "Deixei algo em aberto, para a pessoa querer o resto"
+        ] },
+
+      { tipo:"cortar",
+        titulo:"Corte até sobrarem três",
+        ajuda:"Este é o roteiro de um vídeo de 60 segundos. Toque no que pode sair.",
+        itens:[
+          { t:"O problema que a pessoa vive", fica:true },
+          { t:"Sua formação e seu tempo de experiência", fica:false },
+          { t:"O que fazer, em um passo claro", fica:true },
+          { t:"A história de como você descobriu isso", fica:false },
+          { t:"O que muda quando ela faz isso", fica:true },
+          { t:"Um aviso de que tem mais no perfil", fica:false }
+        ],
+        restam:3,
+        porque:"Problema, solução e resultado sustentam o vídeo. Currículo e história de origem tomam o tempo de quem ainda não decidiu ficar." },
+
+      { tipo:"escolha",
+        titulo:"Energia na câmera",
+        ajuda:"Como a sua entrega deve mudar quando tem uma lente na frente?",
+        opcoes:[
+          "Igual à conversa normal, para parecer natural",
+          "Um pouco acima do natural, porque a câmera achata a expressão",
+          "Bem exagerada, como num palco",
+          "Mais contida, para parecer profissional"
+        ],
+        certa:1,
+        porque:"A lente tira parte da sua presença. O que parece um pouco demais na gravação costuma sair certo na tela — e o que parece natural sai apagado." },
+
+      { tipo:"escolha",
+        titulo:"Para onde olhar",
+        ajuda:"Você está gravando sozinho no celular.",
+        opcoes:[
+          "Para a sua imagem na tela, para conferir o enquadramento",
+          "Para a lente, o tempo todo",
+          "Para o lado, como se conversasse com alguém",
+          "Alternando entre lente e tela"
+        ],
+        certa:1,
+        porque:"Olhar a própria imagem faz a pessoa do outro lado sentir que você olha para baixo. A lente é o olho de quem assiste." },
+
+      { tipo:"fala",
+        titulo:"Explique em quarenta e cinco segundos",
+        ajuda:"Escolha algo que você sabe bem e explique em voz alta, como se fosse um vídeo. Até 45 segundos.",
+        segundos:45,
+        minimo:12,
+        criterios:[
+          "Entrei direto no assunto",
+          "Falei de uma coisa só",
+          "Dei um exemplo concreto",
+          "Terminei com um ponto, não no vazio"
+        ] },
+
+      { tipo:"marcar",
+        titulo:"Melhorar sem comprar nada",
+        ajuda:"Marque as três que mudam o resultado sem equipamento.",
+        opcoes:[
+          { t:"Gravar de frente para uma janela", ruim:false },
+          { t:"Gravar com a janela atrás de você", ruim:true },
+          { t:"Celular na altura dos olhos", ruim:false },
+          { t:"Celular apoiado no chão, apontando para cima", ruim:true },
+          { t:"Gravar num cômodo com cortina ou sofá", ruim:false },
+          { t:"Gravar num corredor vazio de parede nua", ruim:true }
+        ],
+        quantos:3,
+        porque:"Luz de frente, câmera na altura dos olhos e um cômodo que absorve o som resolvem mais que microfone caro. As três erradas são o que mais estraga vídeo de celular." },
+
+      { tipo:"crono",
+        titulo:"Vídeo sem roteiro",
+        ajuda:"Você vai ver um tema, terá 15 segundos para pensar e 45 para gravar.",
+        pergunta:"Um erro que você via as pessoas cometerem na sua área — e o que fazer no lugar.",
+        pensar:15,
+        falar:45,
+        criterios:[
+          "Comecei pelo erro, não pela introdução",
+          "Falei de um erro só",
+          "Disse o que fazer no lugar",
+          "Não travei no meio"
+        ] },
+
+      { tipo:"escolha",
+        titulo:"Como fechar o vídeo",
+        ajuda:"Você entregou o conteúdo. Último segundo.",
+        opcoes:[
+          "Curte, comenta, compartilha, salva e me segue.",
+          "Bom, era isso, até o próximo.",
+          "Testa isso na sua próxima ligação e me conta o que aconteceu.",
+          "Deixar a frase no ar e cortar"
+        ],
+        certa:2,
+        porque:"Uma ação só, ligada ao que acabou de ser dito. Cinco pedidos viram nenhum, e um fim sem nada desperdiça quem assistiu até o final." },
+
+      { tipo:"video",
+        titulo:"O vídeo inteiro",
+        ajuda:"Agora junte tudo: hook, uma ideia e um fechamento. Até 45 segundos, olhando para a lente.",
+        segundos:45,
+        minimo:15,
+        criterios:[
+          "Os três primeiros segundos seguraram",
+          "Falei de uma ideia só",
+          "Mantive a energia até o fim",
+          "Fechei com uma ação, não com despedida"
+        ] },
+
+      { tipo:"escolha",
+        titulo:"O erro mais comum de quem começa",
+        ajuda:"Entre estes, qual mais atrapalha quem está gravando os primeiros vídeos?",
+        opcoes:[
+          "Não ter equipamento bom",
+          "Tentar colocar tudo o que sabe num vídeo só",
+          "Não usar legenda",
+          "Gravar poucas vezes por semana"
+        ],
+        certa:1,
+        porque:"Vídeo com cinco ideias não entrega nenhuma. Equipamento, legenda e frequência importam — mas nenhum salva um vídeo sem foco." }
+    ]
   }
 };
 
