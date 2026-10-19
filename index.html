@@ -159,6 +159,7 @@ body{
 .aba.ativa{color:var(--amarelo);background:var(--cartao-alto)}
 .aba:focus-visible{outline:2px solid var(--amarelo);outline-offset:-2px}
 
+.oculto{display:none}
 .tela{display:none}
 .tela.ativa{display:block}
 
@@ -214,6 +215,13 @@ body{
     <h2 class="sugestao-titulo" id="sug-nome">—</h2>
     <p class="sugestao-desc" id="sug-desc">—</p>
     <a class="botao" id="sug-botao" href="#" target="_top">Começar</a>
+  </div>
+
+  <div class="cartao oculto" id="card-revisao">
+    <div class="etiqueta">Revisão</div>
+    <h2 class="sugestao-titulo">Pratique o que já fez</h2>
+    <p class="sugestao-desc" id="rev-desc">—</p>
+    <a class="botao" id="rev-botao" href="#" target="_top">Revisar</a>
   </div>
 
   <div class="cartao">
@@ -691,6 +699,7 @@ function resumo(){
 /* ---------- Preparação ----------
    treinos = números da lista de treinos (1 a 20) que compõem a situação. */
 const PREP = "https://tae-app-seven.vercel.app/preparacao.html?s=";
+const REVISAO = "https://tae-app-seven.vercel.app/revisao.html";
 
 const SITUACOES = [
   { codigo:"entrevista", icone:"💼", nome:"Entrevista de emprego", desc:"Responder bem, sem travar, e passar segurança.", n:12 },
@@ -798,6 +807,28 @@ function montarHoje(){
   mostrarProximaConquista(r);
   montarResumoPilares();
   montarConquistas(r);
+  montarRevisao(r);
+}
+
+/* O card de revisão só existe depois que há algo a revisar. */
+function montarRevisao(r){
+  const card = document.getElementById("card-revisao");
+  if(r.feitos + r.preps < 1){ card.classList.add("oculto"); return; }
+  card.classList.remove("oculto");
+  document.getElementById("rev-botao").href = REVISAO;
+
+  let d = {};
+  try{
+    const quem = ALUNO.id || "visitante";
+    d = JSON.parse(localStorage.getItem("tae_rev_" + quem) || "{}");
+  }catch(e){}
+
+  const quantos = r.feitos + r.preps;
+  const base = "Perguntas misturadas sobre os " + quantos +
+               (quantos === 1 ? " treino que você já fez" : " treinos que você já fez") + ".";
+  document.getElementById("rev-desc").textContent =
+    d.feitas ? (base + " Você já revisou " + d.feitas +
+                (d.feitas === 1 ? " vez." : " vezes.")) : base;
 }
 
 /* Barra de conquistas no Painel, no mesmo formato do progresso. */
