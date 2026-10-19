@@ -393,6 +393,483 @@ const SITUACOES = {
           "A pergunta mostrou que eu pesquisei"
         ] }
     ]
+  },
+
+  reuniao: {
+    selo: "💻",
+    nome: "Reunião online",
+    intro: "Doze exercícios para você ser ouvido na chamada. Tem perguntas de escolha, falas gravadas e dois exercícios com câmera. Leva cerca de 12 minutos.",
+    atividades: [
+
+      { tipo:"escolha",
+        titulo:"Você entrou na chamada",
+        ajuda:"O que fazer nos primeiros segundos?",
+        opcoes:[
+          "Deixar a câmera desligada até alguém pedir",
+          "Ligar a câmera, cumprimentar e ficar quieto até a sua vez",
+          "Avisar logo que está com pouco tempo",
+          "Entrar em silêncio, sem dizer nada"
+        ],
+        certa:1,
+        porque:"Câmera ligada e um cumprimento curto já te colocam na sala. Entrar mudo faz você virar um quadrado preto que ninguém chama." },
+
+      { tipo:"marcar",
+        titulo:"O que estraga sua imagem na câmera",
+        ajuda:"Marque os três.",
+        opcoes:[
+          { t:"Luz vindo de trás de você", ruim:true },
+          { t:"Câmera na altura dos olhos", ruim:false },
+          { t:"Rosto no canto inferior da tela", ruim:true },
+          { t:"Fundo simples, sem bagunça", ruim:false },
+          { t:"Olhar fixo na sua própria imagem", ruim:true },
+          { t:"Ombros aparecendo no quadro", ruim:false }
+        ],
+        quantos:3,
+        porque:"Luz atrás vira silhueta, rosto baixo parece desinteresse, e olhar a própria imagem dá a impressão de que você olha para o lado." },
+
+      { tipo:"escolha",
+        titulo:"Pediram sua opinião de surpresa",
+        ajuda:"Você estava acompanhando, mas não esperava ser chamado.",
+        opcoes:[
+          "Desculpa, eu estava anotando aqui, você pode repetir?",
+          "Não tenho nada a acrescentar, acho que já falaram tudo.",
+          "Vou pegar o ponto do prazo: acho que uma semana a mais resolve.",
+          "Deixa eu pensar... é... então... acho que depende, né?"
+        ],
+        certa:2,
+        porque:"Ela escolheu um ponto e deu uma posição. Pedir para repetir quando você acompanhou soa como distração, e “depende” não é resposta." },
+
+      { tipo:"video",
+        titulo:"Sua abertura na reunião",
+        ajuda:"Grave como você começaria a falar numa reunião, olhando para a lente. Até 30 segundos.",
+        segundos:30,
+        minimo:8,
+        criterios:[
+          "Entreguei o assunto na primeira frase",
+          "Olhei para a lente, não para a minha imagem",
+          "Não comecei pedindo licença",
+          "Terminei a frase sem deixar a voz cair"
+        ] },
+
+      { tipo:"cortar",
+        titulo:"Corte até sobrarem três",
+        ajuda:"Este é o seu update na reunião semanal. Toque no que pode sair.",
+        itens:[
+          { t:"A entrega da campanha saiu na sexta", fica:true },
+          { t:"Tivemos problema com o servidor na terça", fica:false },
+          { t:"O número de cadastros subiu 12%", fica:true },
+          { t:"Fulano estava de férias essa semana", fica:false },
+          { t:"Preciso de aprovação para seguir", fica:true },
+          { t:"A reunião anterior atrasou meu dia", fica:false }
+        ],
+        restam:3,
+        porque:"Ficam o que foi entregue, o número e o que você precisa. O resto é bastidor — ninguém pede, e tira o tempo do que importa." },
+
+      { tipo:"escolha",
+        titulo:"Alguém te interrompeu",
+        ajuda:"Você estava no meio de uma frase.",
+        opcoes:[
+          "Ficar quieto e deixar a pessoa seguir",
+          "Falar por cima até ela parar",
+          "Esperar a pessoa terminar e dizer: “só fechando o que eu ia falar...”",
+          "Escrever no chat o que você ia dizer"
+        ],
+        certa:2,
+        porque:"Retomar com calma mantém a sua fala e a relação. Falar por cima vira ruído, e ceder sempre ensina que te interromper não custa nada." },
+
+      { tipo:"fala",
+        titulo:"Seu update da semana",
+        ajuda:"Fale em voz alta o que você entregou nesta semana. Até 45 segundos.",
+        segundos:45,
+        minimo:12,
+        criterios:[
+          "Comecei pelo que entreguei, não pelo que aconteceu",
+          "Falei pelo menos um número",
+          "Disse o que preciso de alguém, se precisava",
+          "Não contei o bastidor do problema"
+        ] },
+
+      { tipo:"marcar",
+        titulo:"Sinais de que você não está sendo ouvido",
+        ajuda:"Marque os três.",
+        opcoes:[
+          { t:"Ninguém responde depois que você fala", ruim:true },
+          { t:"Alguém repete sua ideia como se fosse nova", ruim:true },
+          { t:"Fazem uma pergunta sobre o que você disse", ruim:false },
+          { t:"A conversa muda de assunto na sequência", ruim:true },
+          { t:"Alguém anota enquanto você fala", ruim:false },
+          { t:"Pedem para você detalhar um ponto", ruim:false }
+        ],
+        quantos:3,
+        porque:"Silêncio, ideia reciclada e troca de assunto dizem que não entrou. Pergunta e anotação dizem o contrário." },
+
+      { tipo:"crono",
+        titulo:"Pergunta sem aviso",
+        ajuda:"Você vai ver a pergunta, terá 15 segundos para pensar e 45 para responder.",
+        pergunta:"O que está travando o seu trabalho hoje?",
+        pensar:15,
+        falar:45,
+        criterios:[
+          "Nomeei o que trava logo na primeira frase",
+          "Disse o efeito disso, não só o problema",
+          "Propus algo ou pedi algo",
+          "Não reclamei de pessoa nenhuma"
+        ] },
+
+      { tipo:"escolha",
+        titulo:"A internet falhou no meio da sua fala",
+        ajuda:"Você voltou e ninguém sabe o que ouviu.",
+        opcoes:[
+          "Recomeçar tudo do zero",
+          "Perguntar: “vocês me ouviram até onde?” e seguir dali",
+          "Pedir desculpas longamente pela queda",
+          "Mandar tudo escrito no chat e não falar mais"
+        ],
+        certa:1,
+        porque:"Uma pergunta curta resolve em cinco segundos. Recomeçar cansa a sala e pedir desculpa demais chama atenção para a falha." },
+
+      { tipo:"video",
+        titulo:"Discordar na chamada",
+        ajuda:"Grave você discordando de uma ideia, olhando para a lente. Até 30 segundos.",
+        segundos:30,
+        minimo:8,
+        criterios:[
+          "Reconheci o ponto do outro antes de discordar",
+          "Disse o motivo, não só que discordo",
+          "Mantive o tom calmo",
+          "Ofereci uma alternativa"
+        ] },
+
+      { tipo:"escolha",
+        titulo:"Como encerrar sua participação",
+        ajuda:"Você terminou o que tinha a dizer.",
+        opcoes:[
+          "É isso, acho... não sei se ficou claro.",
+          "Bom, por mim é isso.",
+          "Resumindo: entrego quinta e preciso do aval de vocês até amanhã.",
+          "Deixar a frase no ar e esperar alguém falar"
+        ],
+        certa:2,
+        porque:"Fechar com o que você entrega e o que precisa deixa a sala sabendo o que fazer. As outras devolvem a decisão para o silêncio." }
+    ]
+  },
+
+  aumento: {
+    selo: "💰",
+    nome: "Pedir aumento ou promoção",
+    intro: "Doze exercícios para você pedir com firmeza e sustentar a conversa. Tem perguntas de escolha, falas gravadas e dois exercícios com câmera. Leva cerca de 12 minutos.",
+    atividades: [
+
+      { tipo:"escolha",
+        titulo:"Como abrir a conversa",
+        ajuda:"Você conseguiu a reunião. Primeira frase.",
+        opcoes:[
+          "Desculpa tomar seu tempo, é rapidinho...",
+          "Queria conversar sobre a minha remuneração. Separei alguns pontos.",
+          "Não sei se é o momento, mas queria falar de salário.",
+          "Tenho uma proposta de outra empresa."
+        ],
+        certa:1,
+        porque:"Direto e preparado. Pedir desculpa já começa de baixo, e usar proposta externa como abertura transforma conversa em ameaça." },
+
+      { tipo:"marcar",
+        titulo:"O que NÃO é argumento",
+        ajuda:"Marque os três que não ajudam.",
+        opcoes:[
+          { t:"Estou há três anos sem aumento", ruim:true },
+          { t:"Assumi a carteira de dois colegas que saíram", ruim:false },
+          { t:"Minhas contas aumentaram muito", ruim:true },
+          { t:"Reduzi o retrabalho da equipe em 30%", ruim:false },
+          { t:"Fulano ganha mais que eu", ruim:true },
+          { t:"Passei a treinar os novos do time", ruim:false }
+        ],
+        quantos:3,
+        porque:"Tempo de casa, conta pessoal e comparação com colega falam de você. O que convence é o que você entrega a mais." },
+
+      { tipo:"cortar",
+        titulo:"Corte até sobrarem três",
+        ajuda:"Estes são seus argumentos. Toque no que pode sair.",
+        itens:[
+          { t:"Assumi a carteira de dois colegas", fica:true },
+          { t:"Nunca faltei nem cheguei atrasado", fica:false },
+          { t:"Reduzi o cancelamento em 15%", fica:true },
+          { t:"Sou o mais antigo da equipe", fica:false },
+          { t:"Treinei os três últimos contratados", fica:true },
+          { t:"Todo mundo gosta de trabalhar comigo", fica:false }
+        ],
+        restam:3,
+        porque:"Ficam resultado, responsabilidade nova e impacto no time. Pontualidade e simpatia são o mínimo esperado, não argumento." },
+
+      { tipo:"fala",
+        titulo:"Grave seu pedido",
+        ajuda:"Fale em voz alta como você faria o pedido. Até 45 segundos.",
+        segundos:45,
+        minimo:12,
+        criterios:[
+          "Disse o que quero logo no começo",
+          "Usei pelo menos um número",
+          "Não pedi desculpa por estar pedindo",
+          "Terminei com uma pergunta ou um próximo passo"
+        ] },
+
+      { tipo:"escolha",
+        titulo:"“Não tenho orçamento agora.”",
+        ajuda:"É a resposta mais comum. O que fazer?",
+        opcoes:[
+          "Tudo bem, desculpa ter perguntado.",
+          "Entendo. Quando seria possível revisitar? Posso trazer os números de novo em três meses.",
+          "Então vou ter que procurar outro lugar.",
+          "Mas eu mereço, você sabe disso."
+        ],
+        certa:1,
+        porque:"Ela aceitou o momento e marcou o próximo. Recuar sem data encerra o assunto, e ameaçar queima a relação." },
+
+      { tipo:"escolha",
+        titulo:"“Você acha mesmo que merece?”",
+        ajuda:"A pergunta é dura e pode ser teste.",
+        opcoes:[
+          "Acho, mas se você discorda eu entendo.",
+          "Mereço sim, trabalho muito.",
+          "Acho. Assumi duas carteiras a mais e o cancelamento caiu 15%. Posso te mostrar os números.",
+          "Prefiro não responder isso."
+        ],
+        certa:2,
+        porque:"Responder com fato transforma opinião em evidência. “Trabalho muito” é o que todo mundo diz." },
+
+      { tipo:"crono",
+        titulo:"A pergunta mais difícil",
+        ajuda:"15 segundos para pensar, 45 para responder.",
+        pergunta:"Por que você, e não outra pessoa da equipe?",
+        pensar:15,
+        falar:45,
+        criterios:[
+          "Falei do que eu entrego, sem atacar ninguém",
+          "Usei um exemplo concreto",
+          "Não me comparei a um colega pelo nome",
+          "Soei firme, sem parecer arrogante"
+        ] },
+
+      { tipo:"marcar",
+        titulo:"Erros de postura no pedido",
+        ajuda:"Marque os três.",
+        opcoes:[
+          { t:"Falar olhando para baixo", ruim:true },
+          { t:"Fazer pausa depois de dizer o valor", ruim:false },
+          { t:"Rir no meio da frase do pedido", ruim:true },
+          { t:"Manter o tom de voz firme no fim", ruim:false },
+          { t:"Terminar o pedido com “né?”", ruim:true },
+          { t:"Esperar em silêncio pela resposta", ruim:false }
+        ],
+        quantos:3,
+        porque:"Olhar baixo, riso nervoso e “né” enfraquecem o que você acabou de dizer. Pausa e silêncio fazem o contrário." },
+
+      { tipo:"video",
+        titulo:"O pedido, na câmera",
+        ajuda:"Grave você fazendo o pedido olhando para a lente. Até 40 segundos.",
+        segundos:40,
+        minimo:10,
+        criterios:[
+          "Olhei para a lente ao dizer o valor",
+          "Ombros para trás, sem encolher",
+          "Não sorri nervoso no meio",
+          "Fiquei em silêncio depois de pedir"
+        ] },
+
+      { tipo:"escolha",
+        titulo:"“Quanto você quer?”",
+        ajuda:"Chegou a hora do número.",
+        opcoes:[
+          "O que vocês acharem justo.",
+          "Quero 30% a mais.",
+          "Pesquisei a faixa do mercado para a função e fica entre X e Y. Me sinto confortável nessa faixa.",
+          "Prefiro que você proponha."
+        ],
+        certa:2,
+        porque:"Faixa com referência de mercado mostra preparo e deixa espaço. Devolver a pergunta entrega a decisão." },
+
+      { tipo:"escolha",
+        titulo:"A resposta foi não",
+        ajuda:"Definitivo, sem data.",
+        opcoes:[
+          "Agradecer e nunca mais tocar no assunto",
+          "Perguntar o que precisaria mudar para a resposta ser sim",
+          "Reduzir o seu ritmo de trabalho",
+          "Mandar o currículo para todo mundo no mesmo dia"
+        ],
+        certa:1,
+        porque:"Essa pergunta transforma um não em critério. Sem ela, você sai sem saber o que fazer diferente." },
+
+      { tipo:"fala",
+        titulo:"Feche a conversa",
+        ajuda:"Fale em voz alta como você encerraria, qualquer que tenha sido a resposta. Até 30 segundos.",
+        segundos:30,
+        minimo:8,
+        criterios:[
+          "Agradeci sem me diminuir",
+          "Deixei um próximo passo combinado",
+          "Não demonstrei mágoa",
+          "Terminei com firmeza"
+        ] }
+    ]
+  },
+
+  resultados: {
+    selo: "📊",
+    nome: "Apresentar resultados",
+    intro: "Doze exercícios para apresentar números com clareza. Tem perguntas de escolha, falas gravadas e dois exercícios com câmera. Leva cerca de 12 minutos.",
+    atividades: [
+
+      { tipo:"escolha",
+        titulo:"Como começar",
+        ajuda:"Você tem dez minutos com a diretoria.",
+        opcoes:[
+          "Primeiro deixa eu contextualizar como foi o trimestre...",
+          "Fechamos o trimestre 8% acima da meta. Vou mostrar o que puxou isso.",
+          "Bom, os números estão todos no slide, podem acompanhar.",
+          "Antes de começar, queria agradecer a oportunidade."
+        ],
+        certa:1,
+        porque:"O resultado vem primeiro, a explicação depois. Contexto na frente gasta o tempo em que todo mundo ainda presta atenção." },
+
+      { tipo:"cortar",
+        titulo:"Corte até sobrarem três",
+        ajuda:"Você tem seis números. Toque nos que podem sair.",
+        itens:[
+          { t:"Receita 8% acima da meta", fica:true },
+          { t:"Número de reuniões feitas no período", fica:false },
+          { t:"Cancelamento caiu de 12% para 7%", fica:true },
+          { t:"Quantidade de e-mails respondidos", fica:false },
+          { t:"Ticket médio subiu R$ 40", fica:true },
+          { t:"Horas trabalhadas pela equipe", fica:false }
+        ],
+        restam:3,
+        porque:"Ficam os números que mostram resultado. Reunião, e-mail e hora medem esforço — e ninguém decide nada com eles." },
+
+      { tipo:"marcar",
+        titulo:"O que tira sua credibilidade",
+        ajuda:"Marque os três.",
+        opcoes:[
+          { t:"Dizer “acho que foi uns 8%”", ruim:true },
+          { t:"Mostrar de onde veio o número", ruim:false },
+          { t:"Arredondar para o número que te favorece", ruim:true },
+          { t:"Admitir um dado que ainda está sendo apurado", ruim:false },
+          { t:"Esconder o indicador que piorou", ruim:true },
+          { t:"Comparar com o mesmo período do ano passado", ruim:false }
+        ],
+        quantos:3,
+        porque:"Imprecisão, arredondamento conveniente e dado escondido destroem a confiança — e alguém sempre descobre depois." },
+
+      { tipo:"escolha",
+        titulo:"O resultado foi ruim",
+        ajuda:"Caiu 15% e você precisa apresentar.",
+        opcoes:[
+          "Começar pelos pontos positivos e deixar a queda para o fim",
+          "Caímos 15%. Foram dois motivos, e já mudamos um deles.",
+          "O mercado inteiro caiu, não foi só a gente.",
+          "Deixar o número no slide e não comentar"
+        ],
+        certa:1,
+        porque:"Número, causa e ação, nessa ordem. Esconder atrasa a pergunta que vai vir de qualquer jeito, e culpar o mercado soa como fuga." },
+
+      { tipo:"fala",
+        titulo:"Apresente um número",
+        ajuda:"Escolha um resultado do seu trabalho e apresente em voz alta. Até 45 segundos.",
+        segundos:45,
+        minimo:12,
+        criterios:[
+          "Disse o número logo na primeira frase",
+          "Expliquei o que causou",
+          "Comparei com alguma coisa (meta, mês anterior)",
+          "Terminei com o que vem agora"
+        ] },
+
+      { tipo:"escolha",
+        titulo:"Perguntaram algo que você não sabe",
+        ajuda:"Um número específico que você não trouxe.",
+        opcoes:[
+          "Acho que foi por volta de 20%, mas não tenho certeza.",
+          "Não tenho esse número aqui. Levanto hoje e te mando até amanhã.",
+          "Essa informação não é relevante para o que estamos vendo.",
+          "Boa pergunta, vou verificar."
+        ],
+        certa:1,
+        porque:"Não sei, o que faço e quando entrego. Chutar é o pior caminho, e “vou verificar” sem prazo nunca volta." },
+
+      { tipo:"marcar",
+        titulo:"O tempo está acabando",
+        ajuda:"Faltam dois minutos e você tem metade. Marque as três saídas boas.",
+        opcoes:[
+          { t:"Pular para a conclusão e o pedido", ruim:false },
+          { t:"Falar mais rápido para caber tudo", ruim:true },
+          { t:"Dizer o que ficou de fora e oferecer enviar depois", ruim:false },
+          { t:"Pedir mais cinco minutos sem perguntar", ruim:true },
+          { t:"Perguntar o que eles mais querem ver", ruim:false },
+          { t:"Pular slides em silêncio até o fim", ruim:true }
+        ],
+        quantos:3,
+        porque:"As boas respeitam o tempo de quem ouve. Acelerar, estourar e pular mudo passam descontrole." },
+
+      { tipo:"crono",
+        titulo:"A pergunta que sempre vem",
+        ajuda:"15 segundos para pensar, 45 para responder.",
+        pergunta:"Por que esse número caiu em relação ao trimestre passado?",
+        pensar:15,
+        falar:45,
+        criterios:[
+          "Dei a causa principal primeiro",
+          "Não listei cinco motivos",
+          "Disse o que já está sendo feito",
+          "Não culpei outra área"
+        ] },
+
+      { tipo:"video",
+        titulo:"Apresentando na câmera",
+        ajuda:"Grave a abertura da sua apresentação, olhando para a lente. Até 45 segundos.",
+        segundos:45,
+        minimo:12,
+        criterios:[
+          "Comecei pelo resultado, não pelo contexto",
+          "Olhei para a lente, não para a tela",
+          "Falei em ritmo calmo",
+          "O rosto acompanhou o que eu dizia"
+        ] },
+
+      { tipo:"escolha",
+        titulo:"O slide e você",
+        ajuda:"Qual a relação certa entre o que está na tela e o que você fala?",
+        opcoes:[
+          "Ler o slide em voz alta para garantir que todos acompanhem",
+          "Colocar tudo no slide e falar pouco",
+          "Slide com o número grande, e você explicando o que ele significa",
+          "Slide cheio de texto para servir de material depois"
+        ],
+        certa:2,
+        porque:"O slide mostra, você explica. Quando os dois dizem a mesma coisa, um dos dois está sobrando — e é você." },
+
+      { tipo:"escolha",
+        titulo:"Como fechar",
+        ajuda:"Último minuto.",
+        opcoes:[
+          "Era isso, obrigado pela atenção.",
+          "Alguma dúvida?",
+          "Resumo: batemos a meta, o cancelamento caiu, e preciso do aval para contratar mais um.",
+          "Qualquer coisa me chamem."
+        ],
+        certa:2,
+        porque:"Fechamento com resultado e pedido deixa a sala sabendo o que decidir. Agradecer não é fechar." },
+
+      { tipo:"fala",
+        titulo:"Tudo em trinta segundos",
+        ajuda:"Imagine que o diretor te para no corredor. Resuma sua apresentação. Até 30 segundos.",
+        segundos:30,
+        minimo:8,
+        criterios:[
+          "Coube em três ideias",
+          "Falei o número principal",
+          "Disse o que preciso",
+          "Não enrolei no começo"
+        ] }
+    ]
   }
 };
 
