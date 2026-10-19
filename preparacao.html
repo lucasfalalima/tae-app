@@ -25,6 +25,10 @@ body{margin:0;background:var(--fundo);color:var(--texto);
 
 h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
 .ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
+.instrucao{
+  margin:-8px 0 16px;font-size:12.5px;font-weight:600;
+  color:var(--amarelo);letter-spacing:.01em;
+}
 
 .fala-ex{
   background:var(--alto);border-left:3px solid var(--fraco);
@@ -168,6 +172,7 @@ audio.player{width:100%;margin-top:12px}
     <section class="etapa oculto" id="atividade">
       <h2 id="at-titulo">—</h2>
       <p class="ajuda" id="at-ajuda"></p>
+      <p class="instrucao oculto" id="at-instrucao"></p>
       <div class="fala-ex oculto" id="at-exemplo"></div>
       <div id="at-corpo"></div>
       <div class="contador oculto" id="at-contador"></div>
@@ -1108,6 +1113,7 @@ function abrir(){
   el("at-acao").classList.add("oculto");
   el("at-contador").classList.add("oculto");
   el("at-exemplo").classList.add("oculto");
+  el("at-instrucao").classList.add("oculto");
   el("at-corpo").innerHTML = "";
 
   ({ escolha:montarEscolha, marcar:montarMarcar, cortar:montarCortar,
@@ -1117,7 +1123,14 @@ function abrir(){
 }
 
 /* ================= ESCOLHA ================= */
+function instrucao(texto){
+  const e = el("at-instrucao");
+  e.textContent = texto;
+  e.classList.remove("oculto");
+}
+
 function montarEscolha(a){
+  instrucao("Escolha apenas uma.");
   el("at-corpo").innerHTML = '<div class="lista">' + a.opcoes.map(function(o,j){
     return '<button class="op" onclick="respEscolha(' + j + ')">' +
            '<span class="mk">✓</span><span>' + esc(o) + '</span></button>';
@@ -1139,6 +1152,7 @@ function respEscolha(j){
 
 /* ================= MARCAR ================= */
 function montarMarcar(a){
+  instrucao("Escolha " + a.quantos + " opções.");
   el("at-corpo").innerHTML = '<div class="lista">' + a.opcoes.map(function(o,j){
     return '<button class="op" onclick="alternar(' + j + ',' + a.quantos + ')">' +
            '<span class="mk">✓</span><span>' + esc(o.t) + '</span></button>';
@@ -1181,6 +1195,7 @@ function confMarcar(){
 
 /* ================= CORTAR ================= */
 function montarCortar(a){
+  instrucao("Toque para tirar da fala.");
   el("at-corpo").innerHTML = '<div class="lista">' + a.itens.map(function(o,j){
     return '<button class="op" onclick="cortar(' + j + ')">' +
            '<span class="mk">✕</span><span>' + esc(o.t) + '</span></button>';
