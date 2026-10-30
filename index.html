@@ -584,6 +584,11 @@ function adotarVisitante(){
     localStorage.setItem("tae_dias_" + quem, JSON.stringify(j.dias));
     localStorage.removeItem("tae_notas_visitante");
     localStorage.removeItem("tae_dias_visitante");
+    const pv = JSON.parse(localStorage.getItem("tae_prep_visitante") || "{}");
+    const pa = JSON.parse(localStorage.getItem("tae_prep_" + quem) || "{}");
+    Object.keys(pv).forEach(function(c){ if(!(pa[c] >= pv[c])) pa[c] = pv[c]; });
+    localStorage.setItem("tae_prep_" + quem, JSON.stringify(pa));
+    localStorage.removeItem("tae_prep_visitante");
     return true;
   }catch(e){ return false; }
 }
@@ -611,6 +616,12 @@ function sincronizar(forcar){
     try{
       local.notas = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
       local.dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]");
+      /* Preparações feitas antes de irem para o Cademí: entram como "p-codigo". */
+      const lp = JSON.parse(localStorage.getItem("tae_prep_" + quem) || "{}");
+      Object.keys(lp).forEach(function(c){
+        const k = "p-" + c;
+        if(!(local.notas[k] >= lp[c])) local.notas[k] = lp[c];
+      });
     }catch(e){}
     const juntas = juntarProgresso(servidor, local);
     try{
@@ -632,7 +643,9 @@ function sincronizar(forcar){
     const envios = novos.length ? novos : [""];
     envios.forEach(function(k){
       fila = fila.then(function(nota){
-        return salvarCademi(quem, nota, juntas, k, k && servidor.notas[k] === undefined);
+        /* Pontos no ranking só para treino; preparação vai sem código. */
+        const t = ehTreino(k) ? k : "";
+        return salvarCademi(quem, nota, juntas, t, t && servidor.notas[k] === undefined);
       });
     });
     fila.catch(function(){});
@@ -672,9 +685,13 @@ function calcularQE(){
   return soma;
 }
 
+/* Código de treino ("1.1" a "4.5"). As preparações ficam na mesma nota
+   com "p-" na frente (ex.: p-entrevista=4) e não entram nas contas dos treinos. */
+function ehTreino(k){ return /^\d\.\d$/.test(k); }
+
 /* Média das estrelas dos treinos já feitos. Null quando não há nenhum. */
 function notaMedia(){
-  const valores = Object.keys(NOTAS).map(function(k){ return NOTAS[k]; });
+  const valores = Object.keys(NOTAS).filter(ehTreino).map(function(k){ return NOTAS[k]; });
   if(!valores.length) return null;
   const soma = valores.reduce(function(a,b){ return a + b; }, 0);
   return soma / valores.length;
@@ -731,11 +748,18 @@ const SITUACOES = [
   { codigo:null, icone:"🙋", nome:"Se apresentar a alguém novo", desc:"Causar boa impressão nos primeiros segundos." }
 ];
 
-/* Estrelas já tiradas em cada preparação, gravadas por preparacao.html. */
+/* Estrelas já tiradas em cada preparação: do aparelho e do Cademí. */
 function notasPrep(){
   try{
     const quem = ALUNO.id || "visitante";
-    return JSON.parse(localStorage.getItem("tae_prep_" + quem) || "{}");
+    const r = JSON.parse(localStorage.getItem("tae_prep_" + quem) || "{}");
+    /* Junta com o que veio do Cademí (chaves "p-codigo"). */
+    Object.keys(NOTAS).forEach(function(k){
+      if(k.indexOf("p-") !== 0) return;
+      const c = k.slice(2);
+      if(!(r[c] >= NOTAS[k])) r[c] = NOTAS[k];
+    });
+    return r;
   }catch(e){ return {}; }
 }
 

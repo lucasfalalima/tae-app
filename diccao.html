@@ -378,11 +378,9 @@ function guardarNota(estrelas){
 
   if(quem === "visitante") return;
 
-  /* Usa o progresso do Cademí guardado há pouco pelo painel; se estiver
-     velho, busca de novo antes de gravar, para não apagar nada. */
-  const cache = lerCache(quem);
-  const obter = cache ? Promise.resolve(cache) : buscarCademi(quem);
-  obter.then(function(servidor){
+  /* Lê o progresso do Cademí na hora, junta com o deste aparelho e grava.
+     Assim um treino feito em outro aparelho nunca é apagado. */
+  buscarCademi(quem).then(function(servidor){
     const juntas = juntarProgresso(servidor, local);
     return salvarCademi(quem, servidor.nota, juntas, CODIGO, servidor.notas[CODIGO] === undefined);
   }).catch(function(){ /* sem internet: o painel reenvia depois */ });
