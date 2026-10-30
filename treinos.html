@@ -261,21 +261,6 @@ const TREINOS = {
         fim:"{n} de {total} certas. Nas duas, o pedido veio no fim." },
 
       { tipo:"marcar",
-        titulo:"Qual serve de âncora?",
-        ajuda:"Âncora é uma palavra só. Toque nas que são uma palavra.",
-        instrucao:"Marque todas que servem.",
-        opcoes:[
-          { t:"prazo", ok:true },
-          { t:"a demora que teve na aprovação", ok:false },
-          { t:"verba", ok:true },
-          { t:"precisamos de mais gente no time", ok:false },
-          { t:"fornecedor", ok:true },
-          { t:"explicar tudo que houve em março", ok:false }
-        ],
-        certo:"Âncora é uma palavra. Frase você esquece no meio.",
-        errado:"As de uma palavra são âncoras. As outras já são a fala pronta." },
-
-      { tipo:"marcar",
         titulo:"O Rafael quer mais uma semana de prazo",
         ajuda:"Marque as 3 informações que ajudam ele a conseguir isso.",
         instrucao:"Escolha 3 opções.",
@@ -306,7 +291,22 @@ const TREINOS = {
           { t:"O time todo concorda comigo", fica:false }
         ],
         certo:"Sobrou o problema, o número e o que acontece se não resolver.",
-        errado:"Fica o problema, o número e o que acontece se não resolver." }
+        errado:"Fica o problema, o número e o que acontece se não resolver." },
+
+      { tipo:"marcar",
+        titulo:"Qual serve de âncora?",
+        ajuda:"Âncora é uma palavra só. Toque nas que são uma palavra.",
+        instrucao:"Marque todas que servem.",
+        opcoes:[
+          { t:"prazo", ok:true },
+          { t:"a demora que teve na aprovação", ok:false },
+          { t:"verba", ok:true },
+          { t:"precisamos de mais gente no time", ok:false },
+          { t:"fornecedor", ok:true },
+          { t:"explicar tudo que houve em março", ok:false }
+        ],
+        certo:"Âncora é uma palavra. Frase você esquece no meio.",
+        errado:"As de uma palavra são âncoras. As outras já são a fala pronta." }
     ],
     mensagens:[
       { t:"😞 Não foi dessa vez",
