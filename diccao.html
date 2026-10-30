@@ -269,6 +269,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
  </div>
 </div>
 
+<script src="qe.js?v=1"></script>
 <script>
 /* ================= PROGRESSO NO CADEMÍ =================
    O progresso fica numa nota interna do aluno no Cademí.
@@ -1096,7 +1097,9 @@ function final(){
   if(fala && fala.total < 20) dica = "Na fala livre quase nada foi captado. Fale um pouco mais alto e use os 30 segundos inteiros.";
   document.getElementById("f-dica").innerHTML = dica;
 
-  guardarNota(estrelas);
+  /* Grava a nota e mostra quanto o QE subiu (qe.js). */
+  if(window.TAE_QE) TAE_QE.comGanho(function(){ guardarNota(estrelas); });
+  else guardarNota(estrelas);
 }
 
 /* ---------- início ---------- */
