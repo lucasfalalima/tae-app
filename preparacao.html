@@ -205,7 +205,6 @@ audio.player{width:100%;margin-top:12px}
   </div>
 </div>
 
-<script src="qe.js?v=1"></script>
 <script>
 /* ===================================================================
    MOTOR DA PREPARAÇÃO
@@ -1424,9 +1423,7 @@ function terminar(){
   el("r-fala").textContent = falas;
   el("r-video").textContent = videos;
 
-  /* Grava a nota e mostra quanto o QE subiu (qe.js). */
-  if(window.TAE_QE) TAE_QE.comGanho(function(){ guardarNota(estrelasN); });
-  else guardarNota(estrelasN);
+  guardarNota(estrelasN);
   mostrar("fim");
 }
 
