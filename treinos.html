@@ -169,7 +169,6 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
   </div>
 </div>
 
-<script src="qe.js?v=1"></script>
 <script>
 /* =====================================================================
    TREINOS DE ESCOLHA — motor único
@@ -671,9 +670,7 @@ function terminar(){
   caixa.textContent = "★".repeat(estrelas) + "☆".repeat(5 - estrelas);
   caixa.classList.toggle("cheias", estrelas === 5);
 
-  /* Grava a nota e mostra quanto o QE subiu. */
-  if(window.TAE_QE) TAE_QE.comGanho(function(){ guardarNota(estrelas); });
-  else guardarNota(estrelas);
+  guardarNota(estrelas);
 
   const msg = TREINO.mensagens[estrelas];
   el("f-titulo").textContent = msg.t;
