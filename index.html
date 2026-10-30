@@ -71,6 +71,11 @@ body{
 .barra i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .45s ease}
 .barra-txt{display:flex;justify-content:space-between;font-size:12.5px;color:var(--texto-fraco)}
 
+.qe-linha{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  margin-top:12px;padding-top:11px;border-top:1px solid var(--borda);
+  font-size:13.5px;color:var(--texto-fraco)}
+.qe-num{white-space:nowrap}
+.qe-linha b{font-size:17px;font-weight:800;color:var(--amarelo)}
 .linha-pilar{
   display:flex;align-items:center;gap:12px;
   padding:11px 0;border-bottom:1px solid var(--borda);
@@ -224,6 +229,7 @@ body{
       <span id="barra-hoje-txt">0 de 20 treinos</span>
       <span id="barra-hoje-pct">0%</span>
     </div>
+    <div class="qe-linha"><span>Seu Quociente de Expressividade (QE)</span><span class="qe-num"><b id="qe-valor">0</b> de 100</span></div>
   </div>
 
   <div class="numeros">
@@ -654,6 +660,17 @@ function estrelas(pilarId, n){
   return '<span class="' + classe + '">' + "★".repeat(v) + "☆".repeat(5 - v) + '</span>';
 }
 
+/* Quociente de Expressividade (QE): soma das estrelas dos 20 treinos.
+   20 treinos x 5 estrelas = 0 a 100. Vale sempre a maior nota de cada
+   treino, então o QE nunca cai. */
+function calcularQE(){
+  let soma = 0;
+  PILARES.forEach(function(p){
+    p.treinos.forEach(function(t){ soma += nota(p.id, t.n) || 0; });
+  });
+  return soma;
+}
+
 /* Média das estrelas dos treinos já feitos. Null quando não há nenhum. */
 function notaMedia(){
   const valores = Object.keys(NOTAS).map(function(k){ return NOTAS[k]; });
@@ -796,6 +813,7 @@ function montarHoje(){
   document.getElementById("barra-hoje").style.width = pct + "%";
   document.getElementById("barra-hoje-txt").textContent = r.feitos + " de " + r.total + " treinos";
   document.getElementById("barra-hoje-pct").textContent = pct + "%";
+  document.getElementById("qe-valor").textContent = calcularQE();
 
   const media = notaMedia();
   const caixaMedia = document.getElementById("n-media");

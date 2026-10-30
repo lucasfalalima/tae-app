@@ -133,81 +133,24 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
   <div class="cartao">
 
     <div class="topo" id="cabecalho">
-      <span class="etiqueta">Treino 1 · Organização de ideias</span>
+      <span class="etiqueta" id="etiqueta">Treino</span>
       <span class="passo" id="passo">1 de 5</span>
     </div>
     <div class="trilho" id="barra"><i id="trilho" style="width:20%"></i></div>
 
     <!-- ===== ABERTURA ===== -->
-    <section class="etapa" id="p0">
+    <section class="etapa" id="abertura">
       <div class="abertura">
-        <div class="selo-abertura">🎯</div>
-        <h2>Treino 1 · Organização de ideias</h2>
-        <p class="ajuda">Assista à aula acima antes de começar. O treino tem 5 partes
-        e leva cerca de 3 minutos.</p>
+        <div class="selo-abertura" id="ab-selo">🎯</div>
+        <h2 id="ab-titulo">Treino</h2>
+        <p class="ajuda" id="ab-texto"></p>
       </div>
-      <button class="botao" onclick="comecar()">Começar treino</button>
+      <button class="botao" id="b-comecar" onclick="comecar()">Começar treino</button>
       <a class="voltar-painel" id="b-voltar-abertura" href="#" target="_top">← Voltar ao Painel</a>
     </section>
 
-    <!-- ===== 1 ===== -->
-    <section class="etapa oculto" id="p1">
-      <h2>Isso é um Objetivo Único?</h2>
-      <p class="ajuda">Objetivo Único é uma coisa só que você quer que o outro faça depois que você falar.</p>
-      <p class="instrucao">Escolha apenas uma em cada frase.</p>
-      <div id="l1"></div>
-      <div class="retorno" id="r1"></div>
-      <button class="botao oculto" id="b1" onclick="ir(2)">Continuar</button>
-    </section>
-
-    <!-- ===== 2 ===== -->
-    <section class="etapa oculto" id="p2">
-      <h2>O que essa pessoa queria?</h2>
-      <p class="ajuda">Ela falou bastante. Mas o que ela queria mesmo?</p>
-      <p class="instrucao">Escolha apenas uma em cada fala.</p>
-      <div id="l2"></div>
-      <div class="retorno" id="r2"></div>
-      <button class="botao oculto" id="b2" onclick="ir(3)">Continuar</button>
-    </section>
-
-    <!-- ===== 3 ===== -->
-    <section class="etapa oculto" id="p3">
-      <h2>Qual serve de âncora?</h2>
-      <p class="ajuda">Âncora é uma palavra só. Toque nas que são uma palavra.</p>
-      <p class="instrucao">Marque todas que servem.</p>
-      <div class="lista" id="l3"></div>
-      <div class="contador"><span id="n3">0</span> marcadas</div>
-      <div class="retorno" id="r3"></div>
-      <button class="botao" id="b3" onclick="conferir3()">Conferir</button>
-    </section>
-
-    <!-- ===== 4 ===== -->
-    <section class="etapa oculto" id="p4">
-      <h2>O Rafael quer mais uma semana de prazo</h2>
-      <p class="ajuda">Marque as 3 informações que ajudam ele a conseguir isso.</p>
-      <p class="instrucao">Escolha 3 opções.</p>
-      <div class="fala">
-        "Gente, deixa eu falar rapidinho. A gente começou esse projeto em março,
-        lembra que o Paulo ainda estava no time? Aí teve a mudança de fornecedor,
-        que foi um perrengue, o financeiro demorou pra aprovar... Enfim, a
-        entrega tá marcada pra sexta mas não vai dar. Preciso de mais uma semana."
-      </div>
-      <div class="lista" id="l4"></div>
-      <div class="contador"><span id="n4">0</span> de 3 marcadas</div>
-      <div class="retorno" id="r4"></div>
-      <button class="botao" id="b4" onclick="conferir4()" disabled>Conferir</button>
-    </section>
-
-    <!-- ===== 5 ===== -->
-    <section class="etapa oculto" id="p5">
-      <h2>Tire o que não precisa</h2>
-      <p class="ajuda">A Ana vai pedir mais verba. Toque no que ela pode tirar da fala, até sobrarem 3.</p>
-      <p class="instrucao">Toque para tirar da fala.</p>
-      <div class="lista" id="l5"></div>
-      <div class="contador">faltam tirar <span id="n5">3</span></div>
-      <div class="retorno" id="r5"></div>
-      <button class="botao oculto" id="b5" onclick="terminar()">Ver resultado</button>
-    </section>
+    <!-- ===== PARTE ATUAL (montada pelo motor) ===== -->
+    <section class="etapa oculto" id="parte"></section>
 
     <!-- ===== FIM ===== -->
     <section class="etapa oculto" id="fim">
@@ -227,8 +170,170 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 </div>
 
 <script>
-/* Qual treino é este. Vem da URL: treinos.html?t=1.1 */
+/* =====================================================================
+   TREINOS DE ESCOLHA — motor único
+   ---------------------------------------------------------------------
+   Este arquivo tem duas metades:
+     1. CONTEÚDO  — a lista TREINOS. É aqui que se cria um treino novo.
+     2. MECÂNICA  — o motor que monta as telas, confere e dá a nota.
+   Treino novo = uma entrada nova em TREINOS. Não precisa mexer no motor.
+
+   Qual treino abrir vem da URL:  treinos.html?t=1.2
+   O código é "pilar.treino" (o mesmo que fica salvo no progresso).
+   Sem ?t= abre o 1.1, para as aulas antigas continuarem funcionando.
+   ===================================================================== */
+
+/* Painel do TAE no Cademí (botão "Voltar ao Painel"). */
+const PAINEL = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+
+/* =====================================================================
+   1 · CONTEÚDO
+   ---------------------------------------------------------------------
+   Cada treino:
+     numero    número corrido de 1 a 20 (aparece como "Treino 1")
+     nome      nome do treino
+     selo      emoji da tela de abertura
+     minutos   duração aproximada, aparece na abertura
+     partes    lista de exercícios (normalmente 5; cada um vale 1 estrela)
+     mensagens 6 mensagens finais, da nota 0 à nota 5 ({t: título, x: texto})
+
+   Tipos de parte (campo "tipo"):
+
+   "binario"  Uma frase por linha, duas respostas (ex.: "É" / "Não é").
+              botoes: [texto do sim, texto do não]
+              itens:  [{ t:frase, ok:true/false, p:explicação }]
+              minimo: acertos para ganhar a estrela
+              fim:    resumo no final. {n} = acertos, {total} = itens
+
+   "escolha"  Uma fala e várias opções, só uma certa. Pode ter várias falas.
+              itens:  [{ fala, ops:[...], certa:índice começando em 0, p }]
+              minimo e fim: como no binário
+
+   "marcar"   Lista de opções, o aluno marca as certas e confere.
+              opcoes: [{ t, ok:true/false }]
+              exatamente: (opcional) obriga a marcar esse número
+              fala:   (opcional) texto em destaque acima das opções
+              certo / errado: retorno. {n} = certas marcadas
+
+   "cortar"   Lista de frases, o aluno tira as que sobram.
+              opcoes: [{ t, fica:true/false }]
+              cortar: quantas o aluno precisa tirar
+              certo / errado: retorno
+
+   Em todos: titulo, ajuda (texto cinza) e instrucao (texto amarelo).
+   ===================================================================== */
+
+const TREINOS = {
+
+  /* ---------------- Treino 1 · Organização de ideias ---------------- */
+  "1.1": {
+    numero:1, nome:"Organização de ideias", selo:"🎯", minutos:3,
+    partes:[
+      { tipo:"binario",
+        titulo:"Isso é um Objetivo Único?",
+        ajuda:"Objetivo Único é uma coisa só que você quer que o outro faça depois que você falar.",
+        instrucao:"Escolha apenas uma em cada frase.",
+        botoes:["É Objetivo Único", "Não é"],
+        itens:[
+          { t:"Quero que ele aprove o orçamento", ok:true,  p:"Diz o que você quer que aconteça." },
+          { t:"Quero falar sobre o projeto",      ok:false, p:"Isso é assunto. Falar sobre algo não é querer algo." },
+          { t:"Quero avisar do atraso e pedir ajuda", ok:false, p:"Tem um \"e\". São duas coisas." },
+          { t:"Quero que a equipe entregue até quinta", ok:true, p:"Dá pra saber se deu certo ou não." }
+        ],
+        minimo:3,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"escolha",
+        titulo:"O que essa pessoa queria?",
+        ajuda:"Ela falou bastante. Mas o que ela queria mesmo?",
+        instrucao:"Escolha apenas uma em cada fala.",
+        itens:[
+          { fala:"\"Oi! Então, eu vi que a planilha do mês passado tinha uns números diferentes. Não sei se foi erro de digitação ou se mudou alguma coisa. Enfim, você consegue dar uma olhada?\"",
+            ops:["Reclamar da planilha", "Que a pessoa olhe a planilha", "Avisar que teve erro"],
+            certa:1,
+            p:"O resto foi enrolação. Ela queria que a pessoa fosse olhar." },
+          { fala:"\"Pessoal, esse mês foi puxado. Teve muita demanda, a equipe ficou sobrecarregada, o Carlos até ficou doente. Eu acho que a gente precisa mudar como divide as tarefas.\"",
+            ops:["Elogiar a equipe", "Falar que o Carlos adoeceu", "Mudar a divisão de tarefas"],
+            certa:2,
+            p:"O pedido veio no fim, quase escondido." }
+        ],
+        minimo:2,
+        fim:"{n} de {total} certas. Nas duas, o pedido veio no fim." },
+
+      { tipo:"marcar",
+        titulo:"Qual serve de âncora?",
+        ajuda:"Âncora é uma palavra só. Toque nas que são uma palavra.",
+        instrucao:"Marque todas que servem.",
+        opcoes:[
+          { t:"prazo", ok:true },
+          { t:"a demora que teve na aprovação", ok:false },
+          { t:"verba", ok:true },
+          { t:"precisamos de mais gente no time", ok:false },
+          { t:"fornecedor", ok:true },
+          { t:"explicar tudo que houve em março", ok:false }
+        ],
+        certo:"Âncora é uma palavra. Frase você esquece no meio.",
+        errado:"As de uma palavra são âncoras. As outras já são a fala pronta." },
+
+      { tipo:"marcar",
+        titulo:"O Rafael quer mais uma semana de prazo",
+        ajuda:"Marque as 3 informações que ajudam ele a conseguir isso.",
+        instrucao:"Escolha 3 opções.",
+        fala:"\"Gente, deixa eu falar rapidinho. A gente começou esse projeto em março, lembra que o Paulo ainda estava no time? Aí teve a mudança de fornecedor, que foi um perrengue, o financeiro demorou pra aprovar... Enfim, a entrega tá marcada pra sexta mas não vai dar. Preciso de mais uma semana.\"",
+        exatamente:3,
+        opcoes:[
+          { t:"O projeto começou em março", ok:false },
+          { t:"A entrega de sexta não vai sair", ok:true },
+          { t:"O Paulo estava no time", ok:false },
+          { t:"Teve troca de fornecedor", ok:true },
+          { t:"O financeiro demorou a aprovar", ok:true },
+          { t:"A troca de fornecedor foi um perrengue", ok:false }
+        ],
+        certo:"O resto não ajuda ele a conseguir o prazo.",
+        errado:"Acertou {n} de 3. A pergunta é: isso ajuda ele a conseguir o prazo?" },
+
+      { tipo:"cortar",
+        titulo:"Tire o que não precisa",
+        ajuda:"A Ana vai pedir mais verba. Toque no que ela pode tirar da fala, até sobrarem 3.",
+        instrucao:"Toque para tirar da fala.",
+        cortar:3,
+        opcoes:[
+          { t:"A verba não cobre o fim do ano", fica:true },
+          { t:"Venho pensando nisso faz tempo", fica:false },
+          { t:"Precisamos de 30% a mais", fica:true },
+          { t:"Sei que não é hora de pedir", fica:false },
+          { t:"Sem isso, 2 projetos param", fica:true },
+          { t:"O time todo concorda comigo", fica:false }
+        ],
+        certo:"Sobrou o problema, o número e o que acontece se não resolver.",
+        errado:"Fica o problema, o número e o que acontece se não resolver." }
+    ],
+    mensagens:[
+      { t:"😞 Não foi dessa vez",
+        x:"Mas você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
+      { t:"😕 Você acertou uma",
+        x:"Uma já mostra que tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
+      { t:"😐 Metade do caminho",
+        x:"Você está pegando a lógica. Falta repetir até virar automático." },
+      { t:"🙂 Bom resultado",
+        x:"Você já sabe escolher um objetivo e separar o que importa. Dá pra usar isso hoje." },
+      { t:"😃 Quase perfeito",
+        x:"Faltou um detalhe, e você já domina o essencial: um objetivo, poucas informações, palavras curtas." },
+      { t:"🤩 Acertou tudo",
+        x:"Agora a parte que vale de verdade: use na sua próxima conversa." }
+    ]
+  }
+
+  /* Próximo treino: copie o bloco acima, troque o código ("1.2") e o conteúdo. */
+};
+
+/* =====================================================================
+   2 · MECÂNICA
+   Daqui para baixo não precisa mexer para criar treino novo.
+   ===================================================================== */
+
 const CODIGO = new URLSearchParams(window.location.search).get("t") || "1.1";
+const TREINO = TREINOS[CODIGO];
 
 /* ================= PROGRESSO NO CADEMÍ =================
    O progresso fica numa nota interna do aluno no Cademí.
@@ -348,214 +453,178 @@ function guardarNota(estrelas){
   }).catch(function(){ /* sem internet: o painel reenvia depois */ });
 }
 
-/* Endereço do próximo treino. Troque pelo link da próxima aula no Cademí. */
-const PROXIMO = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
-
-/* ================= CONTEÚDO ================= */
-
-const OBJETIVOS = [
-  { t:"Quero que ele aprove o orçamento", ok:true,  p:"Diz o que você quer que aconteça." },
-  { t:"Quero falar sobre o projeto",      ok:false, p:"Isso é assunto. Falar sobre algo não é querer algo." },
-  { t:"Quero avisar do atraso e pedir ajuda", ok:false, p:"Tem um \"e\". São duas coisas." },
-  { t:"Quero que a equipe entregue até quinta", ok:true, p:"Dá pra saber se deu certo ou não." }
-];
-
-const FALAS = [
-  { fala:"\"Oi! Então, eu vi que a planilha do mês passado tinha uns números diferentes. Não sei se foi erro de digitação ou se mudou alguma coisa. Enfim, você consegue dar uma olhada?\"",
-    ops:["Reclamar da planilha","Que a pessoa olhe a planilha","Avisar que teve erro"],
-    certa:1,
-    p:"O resto foi enrolação. Ela queria que a pessoa fosse olhar." },
-  { fala:"\"Pessoal, esse mês foi puxado. Teve muita demanda, a equipe ficou sobrecarregada, o Carlos até ficou doente. Eu acho que a gente precisa mudar como divide as tarefas.\"",
-    ops:["Elogiar a equipe","Falar que o Carlos adoeceu","Mudar a divisão de tarefas"],
-    certa:2,
-    p:"O pedido veio no fim, quase escondido." }
-];
-
-const ANCORAS = [
-  { t:"prazo", ok:true },
-  { t:"a demora que teve na aprovação", ok:false },
-  { t:"verba", ok:true },
-  { t:"precisamos de mais gente no time", ok:false },
-  { t:"fornecedor", ok:true },
-  { t:"explicar tudo que houve em março", ok:false }
-];
-
-const INFOS = [
-  { t:"O projeto começou em março", ok:false },
-  { t:"A entrega de sexta não vai sair", ok:true },
-  { t:"O Paulo estava no time", ok:false },
-  { t:"Teve troca de fornecedor", ok:true },
-  { t:"O financeiro demorou a aprovar", ok:true },
-  { t:"A troca de fornecedor foi um perrengue", ok:false }
-];
-
-const ANA = [
-  { t:"A verba não cobre o fim do ano", fica:true },
-  { t:"Venho pensando nisso faz tempo", fica:false },
-  { t:"Precisamos de 30% a mais", fica:true },
-  { t:"Sei que não é hora de pedir", fica:false },
-  { t:"Sem isso, 2 projetos param", fica:true },
-  { t:"O time todo concorda comigo", fica:false }
-];
-
 /* ================= ESTADO ================= */
-let pontos = 0, ok1 = 0, ok2 = 0;
-let m3 = [], m4 = [], cortes = [];
+let atual = 0;          /* índice da parte na tela */
+let pontos = 0;         /* partes acertadas */
+let marcadas = [];      /* índices marcados ou cortados na parte atual */
+let acertos = 0;        /* acertos dentro da parte atual (binário e escolha) */
 
-/* ================= 1 ================= */
-function montar1(){
-  document.getElementById("l1").innerHTML = OBJETIVOS.map(function(o,i){
-    return '<div class="item"><div class="frase">' + o.t + '</div><div class="dupla">' +
-      '<button class="op" onclick="r1(' + i + ',1)">É Objetivo Único</button>' +
-      '<button class="op" onclick="r1(' + i + ',0)">Não é</button></div></div>';
-  }).join("");
+function el(id){ return document.getElementById(id); }
+function preencher(txt, vars){
+  return String(txt || "").replace(/\{(\w+)\}/g, function(_, k){ return vars[k] !== undefined ? vars[k] : ""; });
 }
-function r1(i, escolha){
-  const g = document.querySelectorAll("#l1 .item")[i].querySelectorAll(".op");
-  if(g[0].disabled) return;
-  g.forEach(function(b){ b.disabled = true; });
-  const certo = OBJETIVOS[i].ok ? 0 : 1;
-  g[certo].classList.add("certa");
-  const escolheu = escolha ? 0 : 1;
-  const acertou1 = escolheu === certo;
-  if(!acertou1) g[escolheu].classList.add("errada"); else ok1++;
-  nota("#l1", i, OBJETIVOS[i].p, acertou1);
-  if(todasFeitas("#l1", OBJETIVOS.length * 2)){
-    if(ok1 >= 3) pontos++;
-    fecha("r1", "b1", ok1 + " de " + OBJETIVOS.length + " certas.");
+function botaoOp(onclick, marca, texto){
+  return '<button class="op" onclick="' + onclick + '"><span class="mk">' + marca + '</span><span>' + texto + '</span></button>';
+}
+
+/* ================= MONTAGEM DE CADA TIPO ================= */
+const TIPOS = {
+
+  binario:{
+    montar:function(p){
+      return '<div id="lista">' + p.itens.map(function(o,i){
+        return '<div class="item"><div class="frase">' + o.t + '</div><div class="dupla">' +
+          '<button class="op" onclick="responderBinario(' + i + ',1)">' + p.botoes[0] + '</button>' +
+          '<button class="op" onclick="responderBinario(' + i + ',0)">' + p.botoes[1] + '</button></div></div>';
+      }).join("") + '</div>' + retornoEBotao(true);
+    }
+  },
+
+  escolha:{
+    montar:function(p){
+      return '<div id="lista">' + p.itens.map(function(f,i){
+        return '<div class="item" style="margin-bottom:22px"><div class="fala">' + f.fala + '</div><div class="lista">' +
+          f.ops.map(function(o,j){ return botaoOp("responderEscolha(" + i + "," + j + ")", "✓", o); }).join("") +
+          '</div></div>';
+      }).join("") + '</div>' + retornoEBotao(true);
+    }
+  },
+
+  marcar:{
+    montar:function(p){
+      const cont = p.exatamente
+        ? '<span id="contagem">0</span> de ' + p.exatamente + ' marcadas'
+        : '<span id="contagem">0</span> marcadas';
+      return (p.fala ? '<div class="fala">' + p.fala + '</div>' : '') +
+        '<div class="lista" id="lista">' +
+        p.opcoes.map(function(o,i){ return botaoOp("alternar(" + i + ")", "✓", o.t); }).join("") +
+        '</div><div class="contador">' + cont + '</div>' +
+        '<div class="retorno" id="retorno"></div>' +
+        '<button class="botao" id="b-seguir" onclick="conferirMarcar()"' + (p.exatamente ? ' disabled' : '') + '>Conferir</button>';
+    }
+  },
+
+  cortar:{
+    montar:function(p){
+      return '<div class="lista" id="lista">' +
+        p.opcoes.map(function(o,i){ return botaoOp("cortar(" + i + ")", "✕", o.t); }).join("") +
+        '</div><div class="contador">faltam tirar <span id="contagem">' + p.cortar + '</span></div>' +
+        retornoEBotao(true);
+    }
   }
-}
+};
 
-/* ================= 2 ================= */
-function montar2(){
-  document.getElementById("l2").innerHTML = FALAS.map(function(f,i){
-    return '<div class="item" style="margin-bottom:22px"><div class="fala">' + f.fala + '</div><div class="lista">' +
-      f.ops.map(function(o,j){
-        return '<button class="op" onclick="r2(' + i + ',' + j + ')"><span class="mk">✓</span><span>' + o + '</span></button>';
-      }).join("") + '</div></div>';
-  }).join("");
+/* Caixa de retorno + botão de seguir (escondido até a parte terminar). */
+function retornoEBotao(escondido){
+  return '<div class="retorno" id="retorno"></div>' +
+    '<button class="botao' + (escondido ? ' oculto' : '') + '" id="b-seguir" onclick="seguir()">' + rotuloSeguir() + '</button>';
 }
-function r2(i, j){
-  const g = document.querySelectorAll("#l2 .item")[i].querySelectorAll(".op");
-  if(g[0].disabled) return;
-  g.forEach(function(b){ b.disabled = true; });
-  g[FALAS[i].certa].classList.add("certa");
-  const acertou2 = j === FALAS[i].certa;
-  if(!acertou2) g[j].classList.add("errada"); else ok2++;
-  nota("#l2", i, FALAS[i].p, acertou2);
-  if(todasFeitas("#l2", FALAS.length * 3)){
-    if(ok2 === FALAS.length) pontos++;
-    fecha("r2", "b2", ok2 + " de " + FALAS.length + " certas. Nas duas, o pedido veio no fim.");
-  }
-}
+function rotuloSeguir(){ return atual === TREINO.partes.length - 1 ? "Ver resultado" : "Continuar"; }
+function parte(){ return TREINO.partes[atual]; }
 
-/* ================= 3 ================= */
-function montar3(){
-  document.getElementById("l3").innerHTML = ANCORAS.map(function(a,i){
-    return '<button class="op" onclick="m(3,' + i + ')"><span class="mk">✓</span><span>' + a.t + '</span></button>';
-  }).join("");
-}
-function conferir3(){
-  const bs = document.querySelectorAll("#l3 .op");
-  bs.forEach(function(b){ b.disabled = true; b.classList.remove("marcada"); });
-  let certo = true;
-  ANCORAS.forEach(function(a,i){
-    const marcou = m3.indexOf(i) >= 0;
-    if(a.ok){ bs[i].classList.add("certa"); if(!marcou) certo = false; }
-    else if(marcou){ bs[i].classList.add("errada"); certo = false; }
-  });
-  if(certo) pontos++;
-  const r = document.getElementById("r3");
-  r.className = "retorno visivel " + (certo ? "ok" : "erro");
-  r.innerHTML = certo
-    ? "<b>✅ Correto.</b> Âncora é uma palavra. Frase você esquece no meio."
-    : "<b>🛑 Errado.</b> As de uma palavra são âncoras. As outras já são a fala pronta.";
-  r.classList.add("visivel");
-  const b = document.getElementById("b3");
-  b.textContent = "Continuar";
-  b.onclick = function(){ ir(4); };
-}
+/* ================= RESPOSTAS ================= */
 
-/* ================= 4 ================= */
-function montar4(){
-  document.getElementById("l4").innerHTML = INFOS.map(function(o,i){
-    return '<button class="op" onclick="m(4,' + i + ')"><span class="mk">✓</span><span>' + o.t + '</span></button>';
-  }).join("");
-}
-function conferir4(){
-  const bs = document.querySelectorAll("#l4 .op");
-  bs.forEach(function(b){ b.disabled = true; b.classList.remove("marcada"); });
-  let certas = 0;
-  INFOS.forEach(function(o,i){
-    if(o.ok){ bs[i].classList.add("certa"); if(m4.indexOf(i) >= 0) certas++; }
-    else if(m4.indexOf(i) >= 0){ bs[i].classList.add("errada"); }
-  });
-  if(certas === 3) pontos++;
-  const r = document.getElementById("r4");
-  r.className = "retorno visivel " + (certas === 3 ? "ok" : "erro");
-  r.innerHTML = certas === 3
-    ? "<b>✅ Correto.</b> O resto não ajuda ele a conseguir o prazo."
-    : "<b>🛑 Errado.</b> Acertou " + certas + " de 3. A pergunta é: isso ajuda ele a conseguir o prazo?";
-  r.classList.add("visivel");
-  const b = document.getElementById("b4");
-  b.textContent = "Continuar"; b.disabled = false;
-  b.onclick = function(){ ir(5); };
-}
-
-/* ================= 5 ================= */
-function montar5(){
-  document.getElementById("l5").innerHTML = ANA.map(function(o,i){
-    return '<button class="op" onclick="cortar(' + i + ')"><span class="mk">✕</span><span>' + o.t + '</span></button>';
-  }).join("");
-}
-function cortar(i){
-  const b = document.querySelectorAll("#l5 .op")[i];
-  if(b.disabled || cortes.indexOf(i) >= 0) return;
-  cortes.push(i);
-  b.classList.add("saiu");
-  document.getElementById("n5").textContent = 3 - cortes.length;
-  if(cortes.length === 3){
-    document.querySelectorAll("#l5 .op").forEach(function(x){ x.disabled = true; });
-    let certo = ANA.every(function(o,j){ return !(o.fica && cortes.indexOf(j) >= 0); });
-    if(certo) pontos++;
-    const r = document.getElementById("r5");
-    r.className = "retorno visivel " + (certo ? "ok" : "erro");
-    r.innerHTML = certo
-      ? "<b>✅ Correto.</b> Sobrou o problema, o número e o que acontece se não resolver."
-      : "<b>🛑 Errado.</b> Fica o problema, o número e o que acontece se não resolver.";
-    r.classList.add("visivel");
-    document.getElementById("b5").classList.remove("oculto");
-  }
-}
-
-/* ================= AUXILIARES ================= */
-function m(etapa, i){
-  const lista = etapa === 3 ? m3 : m4;
-  const b = document.querySelectorAll("#l" + etapa + " .op")[i];
-  if(b.disabled) return;
-  const pos = lista.indexOf(i);
-  if(pos >= 0){ lista.splice(pos,1); b.classList.remove("marcada"); }
-  else {
-    if(etapa === 4 && lista.length >= 3) return;
-    lista.push(i); b.classList.add("marcada");
-  }
-  document.getElementById("n" + etapa).textContent = lista.length;
-  if(etapa === 4) document.getElementById("b4").disabled = lista.length !== 3;
-}
-function nota(sel, i, txt, acertou){
+/* Retorno embaixo de cada item (binário e escolha). */
+function notaItem(i, txt, acertou){
   const d = document.createElement("div");
   d.className = "nota" + (acertou ? " nota-ok" : " nota-erro");
   d.innerHTML = '<b>' + (acertou ? "✅ Correto" : "🛑 Errado") + '</b> ' + txt;
-  document.querySelectorAll(sel + " .item")[i].appendChild(d);
+  document.querySelectorAll("#lista > .item")[i].appendChild(d);
 }
-function todasFeitas(sel, total){
-  return document.querySelectorAll(sel + " .op:disabled").length === total;
+
+/* Binário e escolha: quando todos os itens foram respondidos, fecha a parte. */
+function talvezFechar(){
+  const p = parte();
+  const respondidos = document.querySelectorAll("#lista > .item .nota").length;
+  if(respondidos < p.itens.length) return;
+  if(acertos >= p.minimo) pontos++;
+  mostrarRetorno(null, preencher(p.fim, { n:acertos, total:p.itens.length }));
+  el("b-seguir").classList.remove("oculto");
 }
-function fecha(idR, idB, txt){
-  const r = document.getElementById(idR);
-  r.innerHTML = "<b>" + txt + "</b>";
-  r.classList.add("visivel");
-  document.getElementById(idB).classList.remove("oculto");
+
+function responderBinario(i, disseSim){
+  const g = document.querySelectorAll("#lista > .item")[i].querySelectorAll(".op");
+  if(g[0].disabled) return;
+  g.forEach(function(b){ b.disabled = true; });
+  const item = parte().itens[i];
+  const certo = item.ok ? 0 : 1;
+  const escolheu = disseSim ? 0 : 1;
+  g[certo].classList.add("certa");
+  const acertou = escolheu === certo;
+  if(acertou) acertos++; else g[escolheu].classList.add("errada");
+  notaItem(i, item.p, acertou);
+  talvezFechar();
+}
+
+function responderEscolha(i, j){
+  const g = document.querySelectorAll("#lista > .item")[i].querySelectorAll(".op");
+  if(g[0].disabled) return;
+  g.forEach(function(b){ b.disabled = true; });
+  const item = parte().itens[i];
+  g[item.certa].classList.add("certa");
+  const acertou = j === item.certa;
+  if(acertou) acertos++; else g[j].classList.add("errada");
+  notaItem(i, item.p, acertou);
+  talvezFechar();
+}
+
+function alternar(i){
+  const p = parte();
+  const b = document.querySelectorAll("#lista .op")[i];
+  if(b.disabled) return;
+  const pos = marcadas.indexOf(i);
+  if(pos >= 0){ marcadas.splice(pos,1); b.classList.remove("marcada"); }
+  else{
+    if(p.exatamente && marcadas.length >= p.exatamente) return;
+    marcadas.push(i); b.classList.add("marcada");
+  }
+  el("contagem").textContent = marcadas.length;
+  if(p.exatamente) el("b-seguir").disabled = marcadas.length !== p.exatamente;
+}
+
+function conferirMarcar(){
+  const p = parte();
+  const bs = document.querySelectorAll("#lista .op");
+  bs.forEach(function(b){ b.disabled = true; b.classList.remove("marcada"); });
+  let certo = true, n = 0;
+  p.opcoes.forEach(function(o,i){
+    const marcou = marcadas.indexOf(i) >= 0;
+    if(o.ok){ bs[i].classList.add("certa"); if(marcou) n++; else certo = false; }
+    else if(marcou){ bs[i].classList.add("errada"); certo = false; }
+  });
+  if(certo) pontos++;
+  mostrarRetorno(certo, preencher(certo ? p.certo : p.errado, { n:n }));
+  const b = el("b-seguir");
+  b.textContent = rotuloSeguir();
+  b.disabled = false;
+  b.onclick = seguir;
+}
+
+function cortar(i){
+  const p = parte();
+  const b = document.querySelectorAll("#lista .op")[i];
+  if(b.disabled || marcadas.indexOf(i) >= 0) return;
+  marcadas.push(i);
+  b.classList.add("saiu");
+  el("contagem").textContent = p.cortar - marcadas.length;
+  if(marcadas.length < p.cortar) return;
+  document.querySelectorAll("#lista .op").forEach(function(x){ x.disabled = true; });
+  const certo = p.opcoes.every(function(o,j){ return !(o.fica && marcadas.indexOf(j) >= 0); });
+  if(certo) pontos++;
+  mostrarRetorno(certo, certo ? p.certo : p.errado);
+  el("b-seguir").classList.remove("oculto");
+}
+
+/* certo = true/false mostra ✅/🛑; null mostra só o resumo em negrito. */
+function mostrarRetorno(certo, txt){
+  const r = el("retorno");
+  if(certo === null){
+    r.className = "retorno visivel";
+    r.innerHTML = "<b>" + txt + "</b>";
+    return;
+  }
+  r.className = "retorno visivel " + (certo ? "ok" : "erro");
+  r.innerHTML = (certo ? "<b>✅ Correto.</b> " : "<b>🛑 Errado.</b> ") + txt;
 }
 
 /* ================= NAVEGAÇÃO ================= */
@@ -568,48 +637,51 @@ function enquadrar(){
   else window.scrollTo(0,0);
 }
 
-function ir(n){
+function mostrarSecao(id){
   document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
-  document.getElementById("p" + n).classList.remove("oculto");
-  document.getElementById("passo").textContent = n + " de 5";
-  document.getElementById("trilho").style.width = (n/5*100) + "%";
+  el(id).classList.remove("oculto");
+}
+
+function ir(i){
+  atual = i; marcadas = []; acertos = 0;
+  const p = parte(), total = TREINO.partes.length;
+  el("parte").innerHTML =
+    '<h2>' + p.titulo + '</h2>' +
+    (p.ajuda ? '<p class="ajuda">' + p.ajuda + '</p>' : '') +
+    (p.instrucao ? '<p class="instrucao">' + p.instrucao + '</p>' : '') +
+    TIPOS[p.tipo].montar(p);
+  mostrarSecao("parte");
+  el("passo").textContent = (i + 1) + " de " + total;
+  el("trilho").style.width = ((i + 1) / total * 100) + "%";
   enquadrar();
 }
 
-function terminar(){
-  document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
-  document.getElementById("fim").classList.remove("oculto");
-  document.getElementById("passo").textContent = "concluído";
-  document.getElementById("trilho").style.width = "100%";
-  const caixaEstrelas = document.getElementById("f-estrelas");
-  caixaEstrelas.textContent = "★".repeat(pontos) + "☆".repeat(5 - pontos);
-  caixaEstrelas.classList.toggle("cheias", pontos === 5);
-  guardarNota(pontos);
+function seguir(){
+  if(atual < TREINO.partes.length - 1) ir(atual + 1);
+  else terminar();
+}
 
-  const MENSAGENS = [
-    { t:"😞 Não foi dessa vez",
-      x:"Mas você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
-    { t:"😕 Você acertou uma",
-      x:"Uma já mostra que tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
-    { t:"😐 Metade do caminho",
-      x:"Você está pegando a lógica. Falta repetir até virar automático." },
-    { t:"🙂 Bom resultado",
-      x:"Você já sabe escolher um objetivo e separar o que importa. Dá pra usar isso hoje." },
-    { t:"😃 Quase perfeito",
-      x:"Faltou um detalhe, e você já domina o essencial: um objetivo, poucas informações, palavras curtas." },
-    { t:"🤩 Acertou tudo",
-      x:"Agora a parte que vale de verdade: use na sua próxima conversa." }
-  ];
-  const msg = MENSAGENS[pontos];
-  document.getElementById("f-titulo").textContent = msg.t;
-  document.getElementById("f-texto").textContent = msg.x;
+function terminar(){
+  mostrarSecao("fim");
+  el("passo").textContent = "concluído";
+  el("trilho").style.width = "100%";
+  const estrelas = Math.round(pontos / TREINO.partes.length * 5);
+  const caixa = el("f-estrelas");
+  caixa.textContent = "★".repeat(estrelas) + "☆".repeat(5 - estrelas);
+  caixa.classList.toggle("cheias", estrelas === 5);
+
+  guardarNota(estrelas);
+
+  const msg = TREINO.mensagens[estrelas];
+  el("f-titulo").textContent = msg.t;
+  el("f-texto").textContent = msg.x;
   enquadrar();
 }
 
 function comecar(){
-  document.getElementById("cabecalho").style.display = "";
-  document.getElementById("barra").style.display = "";
-  ir(1);
+  el("cabecalho").style.display = "";
+  el("barra").style.display = "";
+  ir(0);
   /* O cabeçalho e a barra acabaram de aparecer e mudaram a altura.
      Enquadra de novo depois que o navegador refez o desenho. */
   requestAnimationFrame(function(){ requestAnimationFrame(enquadrar); });
@@ -617,11 +689,26 @@ function comecar(){
 
 function repetir(){ window.location.reload(); }
 
-document.getElementById("b-proximo").href = PROXIMO;
-document.getElementById("b-voltar-abertura").href = PROXIMO;
-document.getElementById("cabecalho").style.display = "none";
-document.getElementById("barra").style.display = "none";
-montar1(); montar2(); montar3(); montar4(); montar5();
+/* ================= INÍCIO ================= */
+el("b-proximo").href = PAINEL;
+el("b-voltar-abertura").href = PAINEL;
+el("cabecalho").style.display = "none";
+el("barra").style.display = "none";
+
+if(!TREINO){
+  el("ab-selo").textContent = "🚧";
+  el("ab-titulo").textContent = "Treino não encontrado";
+  el("ab-texto").textContent = "Este treino ainda não está disponível. Volte ao Painel e escolha outro.";
+  el("b-comecar").classList.add("oculto");
+}else{
+  const titulo = "Treino " + TREINO.numero + " · " + TREINO.nome;
+  document.title = titulo + " · TAE";
+  el("etiqueta").textContent = titulo;
+  el("ab-selo").textContent = TREINO.selo || "🎯";
+  el("ab-titulo").textContent = titulo;
+  el("ab-texto").textContent = "Assista à aula acima antes de começar. O treino tem " +
+    TREINO.partes.length + " partes e leva cerca de " + (TREINO.minutos || 3) + " minutos.";
+}
 </script>
 </body>
 </html>
