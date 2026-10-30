@@ -244,7 +244,6 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
  </div>
 </div>
 
-<script src="qe.js?v=1"></script>
 <script>
 /* ================= PROGRESSO NO CADEMÍ =================
    O progresso fica numa nota interna do aluno no Cademí.
@@ -818,9 +817,7 @@ function final(){
     ? "<b>Postura, olhar e gestos trabalhando a seu favor.</b> Seu corpo agora fala antes, e fala bem."
     : DICAS[EXERCICIOS[falhou].foco.length > 1 ? (resultados[falhou].postura < META.tudoPostura ? "postura" : resultados[falhou].olhar < META.tudoOlhar ? "olhar" : "gestos") : EXERCICIOS[falhou].foco[0]];
   mostrar("e-fim");
-  /* Grava a nota e mostra quanto o QE subiu (qe.js). */
-  if(window.TAE_QE) TAE_QE.comGanho(function(){ guardarNota(estrelas); });
-  else guardarNota(estrelas);
+  guardarNota(estrelas);
 }
 function refazer(){ resultados.length = 0; abrirExercicio(0); }
 
