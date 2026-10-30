@@ -71,6 +71,17 @@ body{
 .barra i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .45s ease}
 .barra-txt{display:flex;justify-content:space-between;font-size:12.5px;color:var(--texto-fraco)}
 
+/* ---------- QE ---------- */
+.qe-topo{display:flex;align-items:flex-end;gap:14px;margin:2px 0 4px}
+.qe-numero{font-size:56px;font-weight:800;line-height:.95;color:var(--amarelo);
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.qe-de{font-size:15px;font-weight:700;color:var(--texto-fraco);margin-left:2px}
+.qe-lado{padding-bottom:5px}
+.qe-subiu{display:inline-block;font-size:13px;font-weight:800;color:var(--verde);
+  background:rgba(74,222,128,.1);border-radius:99px;padding:3px 9px;margin-bottom:4px}
+.qe-subiu[hidden]{display:none}
+.qe-legenda{font-size:12.5px;color:var(--texto-fraco);line-height:1.45}
+.qe-pilares{margin-top:16px;border-top:1px solid var(--borda);padding-top:12px}
 .linha-pilar{
   display:flex;align-items:center;gap:12px;
   padding:11px 0;border-bottom:1px solid var(--borda);
@@ -218,23 +229,21 @@ body{
   </div>
 
   <div class="cartao">
-    <div class="etiqueta">Seu progresso</div>
-    <div class="barra"><i id="barra-hoje" style="width:0%"></i></div>
-    <div class="barra-txt">
-      <span id="barra-hoje-txt">0 de 20 treinos</span>
-      <span id="barra-hoje-pct">0%</span>
+    <div class="etiqueta">Seu QE · Quociente de Expressividade</div>
+    <div class="qe-topo">
+      <div class="qe-numero"><span id="qe-numero">0</span><span class="qe-de">/100</span></div>
+      <div class="qe-lado">
+        <span class="qe-subiu" id="qe-subiu" hidden>+0</span>
+        <div class="qe-legenda" id="qe-legenda">Sobe a cada treino. Nunca cai.</div>
+      </div>
     </div>
+    <div class="qe-pilares" id="resumo-pilares"></div>
   </div>
 
   <div class="numeros">
     <div class="numero"><b id="n-media">—</b><span>nota média</span></div>
     <div class="numero"><b id="n-seq">0</b><span>dias seguidos</span></div>
     <div class="numero"><b id="n-feitos">0</b><span>treinos feitos</span></div>
-  </div>
-
-  <div class="cartao">
-    <div class="etiqueta">Seus treinos (por categoria)</div>
-    <div id="resumo-pilares"></div>
   </div>
 
   <div class="cartao" onclick="irPara('evolucao')" style="cursor:pointer">
@@ -296,6 +305,7 @@ body{
 
 </div>
 
+<script src="qe.js?v=1"></script>
 <script>
 /* ===================================================================
    Preencha "aula" com o número da aula no Cademí quando ela existir.
@@ -745,6 +755,52 @@ function irPara(tela){
   if(tela === "situacoes") montarSituacoes();
 }
 
+/* ---------- QE (Quociente de Expressividade) ----------
+   A conta fica em qe.js, a mesma usada na tela de resultado dos treinos. */
+function calcularQE(){
+  if(!window.TAE_QE) return null;
+  let dias = [];
+  try{ dias = JSON.parse(localStorage.getItem("tae_dias_" + (ALUNO.id || "visitante")) || "[]"); }catch(e){}
+  return TAE_QE.calcular(NOTAS, notasPrep(), dias);
+}
+
+let qeNaTela = null;
+function montarQE(){
+  const qe = calcularQE();
+  const caixa = document.getElementById("qe-numero");
+  if(!qe){ caixa.textContent = "—"; return; }
+  const chave = "tae_qe_visto_" + (ALUNO.id || "visitante");
+  let visto = null;
+  try{ const v = localStorage.getItem(chave); visto = v === null ? null : parseInt(v, 10); }catch(e){}
+
+  /* O número sobe na frente do aluno: do último QE que ele viu até o atual. */
+  const de = qeNaTela !== null ? qeNaTela : (visto !== null && visto < qe.total ? visto : qe.total);
+  animarQE(caixa, de, qe.total);
+  qeNaTela = qe.total;
+
+  const subiu = document.getElementById("qe-subiu");
+  const ganho = visto !== null ? qe.total - visto : 0;
+  if(ganho > 0){
+    subiu.textContent = "+" + ganho + " desde a última visita";
+    subiu.hidden = false;
+  }
+  document.getElementById("qe-legenda").textContent = qe.total === 0
+    ? "Faça seu primeiro treino e veja ele subir."
+    : "Sobe a cada treino. Nunca cai.";
+  try{ localStorage.setItem(chave, String(qe.total)); }catch(e){}
+}
+
+function animarQE(el, de, ate){
+  if(de === ate || !window.requestAnimationFrame){ el.textContent = ate; return; }
+  const ini = performance.now(), dur = 1100;
+  function passo(t){
+    const k = Math.min(1, (t - ini) / dur);
+    el.textContent = Math.round(de + (ate - de) * (1 - Math.pow(1 - k, 3)));
+    if(k < 1) requestAnimationFrame(passo);
+  }
+  requestAnimationFrame(passo);
+}
+
 /* ---------- Início ---------- */
 function montarHoje(){
   const hora = new Date().getHours();
@@ -792,10 +848,7 @@ function montarHoje(){
     }
   }
 
-  const pct = Math.round(r.feitos / r.total * 100);
-  document.getElementById("barra-hoje").style.width = pct + "%";
-  document.getElementById("barra-hoje-txt").textContent = r.feitos + " de " + r.total + " treinos";
-  document.getElementById("barra-hoje-pct").textContent = pct + "%";
+  montarQE();
 
   const media = notaMedia();
   const caixaMedia = document.getElementById("n-media");
@@ -842,12 +895,15 @@ function montarConquistas(r){
   document.getElementById("barra-conq-pct").textContent = pct + "%";
 }
 
+/* Barra de cada pilar = estrelas conquistadas nele (mesma base do QE).
+   Mostra onde o aluno está forte e onde ainda nem começou. */
 function montarResumoPilares(){
-  document.getElementById("resumo-pilares").innerHTML = PILARES.map(function(p){
+  const qe = calcularQE();
+  document.getElementById("resumo-pilares").innerHTML = PILARES.map(function(p, i){
     const bloq = pilarBloqueado(p.id);
     let c = 0;
     p.treinos.forEach(function(t){ if(feito(p.id,t.n)) c++; });
-    const pct = Math.round(c / p.treinos.length * 100);
+    const pct = qe ? qe.pilares[i] : Math.round(c / p.treinos.length * 100);
     const cheia = c === p.treinos.length ? " cheia" : "";
     const cont = bloq ? "🔒" : c + "/" + p.treinos.length;
     return '<div class="linha-pilar" onclick="irPara(&#39;jornada&#39;)">' +
