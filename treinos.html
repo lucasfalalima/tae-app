@@ -235,87 +235,83 @@ const PAINEL = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmY
 const TREINOS = {
 
   /* ---------------- Treino 1 · Organização de ideias ---------------- */
+  /* Uma história só (o Rafael pedindo mais prazo) nos exercícios 1 a 4.
+     O 5 é uma situação nova, para o aluno aplicar sozinho. */
   "1.1": {
     numero:1, nome:"Organização de ideias", selo:"🎯", minutos:3,
     partes:[
       { tipo:"binario",
-        titulo:"Isso é um Objetivo Único?",
-        ajuda:"Objetivo Único é uma coisa só que você quer que o outro faça depois que você falar.",
-        instrucao:"Escolha apenas uma em cada frase.",
-        botoes:["É Objetivo Único", "Não é"],
+        titulo:"Isso é um objetivo do Rafael?",
+        ajuda:"Objetivo é o que você quer que a pessoa faça depois que você falar.",
+        instrucao:"Escolha uma em cada frase.",
+        botoes:["É objetivo", "Não é"],
         itens:[
-          { t:"Quero que ele aprove o orçamento", ok:true,  p:"Diz o que você quer que aconteça." },
-          { t:"Quero falar sobre o projeto",      ok:false, p:"Isso é assunto. Falar sobre algo não é querer algo." },
-          { t:"Quero avisar do atraso e pedir ajuda", ok:false, p:"Tem um \"e\". São duas coisas." },
-          { t:"Quero que a equipe entregue até quinta", ok:true, p:"Dá pra saber se deu certo ou não." }
+          { t:"Falar sobre o projeto", ok:false, p:"Isso é assunto. Objetivo é o que o chefe faz depois." },
+          { t:"Que o chefe aprove mais uma semana de prazo", ok:true, p:"Diz o que o chefe precisa fazer." },
+          { t:"Explicar o atraso e pedir mais gente pro time", ok:false, p:"Tem um \"e\". São duas coisas." },
+          { t:"Desabafar sobre o fornecedor", ok:false, p:"Desabafar não pede nada do chefe." }
         ],
         minimo:3,
         fim:"{n} de {total} certas." },
 
       { tipo:"escolha",
-        titulo:"O que essa pessoa queria?",
-        ajuda:"Ela falou bastante. Mas o que ela queria mesmo?",
-        instrucao:"Escolha apenas uma em cada fala.",
+        titulo:"O que o Rafael quer?",
+        ajuda:"Ele falou bastante. Mas o que ele queria mesmo?",
+        instrucao:"Escolha uma opção.",
         itens:[
-          { fala:"\"Oi! Então, eu vi que a planilha do mês passado tinha uns números diferentes. Não sei se foi erro de digitação ou se mudou alguma coisa. Enfim, você consegue dar uma olhada?\"",
-            ops:["Reclamar da planilha", "Que a pessoa olhe a planilha", "Avisar que teve erro"],
-            certa:1,
-            p:"O resto foi enrolação. Ela queria que a pessoa fosse olhar." },
-          { fala:"\"Pessoal, esse mês foi puxado. Teve muita demanda, a equipe ficou sobrecarregada, o Carlos até ficou doente. Eu acho que a gente precisa mudar como divide as tarefas.\"",
-            ops:["Elogiar a equipe", "Falar que o Carlos adoeceu", "Mudar a divisão de tarefas"],
+          { fala:"\"Então, deixa eu te falar. A gente começou esse projeto em março, lembra que o Paulo ainda tava no time? Aí teve a mudança de fornecedor, que foi um perrengue, e o financeiro demorou… enfim, acho que sexta não vai dar.\"",
+            ops:["Contar a história do projeto", "Reclamar do financeiro", "Conseguir mais uma semana de prazo"],
             certa:2,
-            p:"O pedido se perdeu no meio de tanta explicação." }
+            p:"O pedido estava perdido no meio de tanta explicação." }
+        ],
+        minimo:1,
+        fim:"{n} de {total} certa." },
+
+      { tipo:"marcar",
+        titulo:"As âncoras do Rafael",
+        ajuda:"Âncora é uma palavra só. Ele lembra dela e a frase sai sozinha.",
+        instrucao:"Marque todas que servem de âncora.",
+        opcoes:[
+          { t:"fornecedor", ok:true },
+          { t:"a troca de fornecedor que deu um perrengue", ok:false },
+          { t:"financeiro", ok:true },
+          { t:"o financeiro que demorou pra aprovar o pagamento", ok:false },
+          { t:"sexta", ok:true },
+          { t:"a entrega que estava marcada pra sexta", ok:false }
+        ],
+        certo:"Três palavras. O Rafael lembra delas e a frase sai sozinha.",
+        errado:"As âncoras são as de uma palavra só. As outras já são frases inteiras, e frase você esquece no meio." },
+
+      { tipo:"escolha",
+        titulo:"Qual fala o Rafael deve usar?",
+        ajuda:"As duas contam a mesma situação.",
+        instrucao:"Escolha uma versão.",
+        itens:[
+          { fala:"O Rafael vai falar com o chefe.",
+            ops:["\"Então, deixa eu te falar. A gente começou esse projeto em março, lembra que o Paulo ainda tava no time? Aí teve a mudança de fornecedor, que foi um perrengue, e o financeiro demorou… enfim, acho que sexta não vai dar.\"",
+                 "\"O fornecedor atrasou e o financeiro demorou pra aprovar o pagamento. Por isso, a entrega de sexta não vai sair. Preciso de mais uma semana.\""],
+            certa:1,
+            p:"Na segunda, cada âncora vira uma frase, e o objetivo fica claro." }
+        ],
+        minimo:1,
+        fim:"{n} de {total} certa." },
+
+      { tipo:"escolha",
+        titulo:"Agora é a Ana",
+        ajuda:"A Ana precisa de mais verba para o projeto dela até o fim do ano.",
+        instrucao:"Responda as duas perguntas.",
+        itens:[
+          { fala:"Qual é o objetivo da Ana?",
+            ops:["Falar sobre o orçamento", "Que a diretoria aprove mais verba", "Explicar os gastos e pedir mais prazo"],
+            certa:1,
+            p:"É o que a diretoria precisa fazer depois que ela falar." },
+          { fala:"Quais seriam as âncoras da Ana?",
+            ops:["verba · fim do ano · projetos", "a verba que não cobre o fim do ano", "dinheiro, dinheiro, dinheiro"],
+            certa:0,
+            p:"Uma palavra pra cada ideia. Nem frase inteira, nem palavra repetida." }
         ],
         minimo:2,
-        fim:"{n} de {total} certas. Nas duas, o pedido se perdia no meio da fala." },
-
-      { tipo:"marcar",
-        titulo:"O Rafael quer mais uma semana de prazo",
-        ajuda:"Marque as 3 informações que ajudam ele a conseguir isso.",
-        instrucao:"Escolha 3 opções.",
-        fala:"\"Gente, deixa eu falar rapidinho. A gente começou esse projeto em março, lembra que o Paulo ainda estava no time? Aí teve a mudança de fornecedor, que foi um perrengue, o financeiro demorou pra aprovar... Enfim, a entrega tá marcada pra sexta mas não vai dar. Preciso de mais uma semana.\"",
-        exatamente:3,
-        opcoes:[
-          { t:"O projeto começou em março", ok:false },
-          { t:"A entrega de sexta não vai sair", ok:true },
-          { t:"O Paulo estava no time", ok:false },
-          { t:"Teve troca de fornecedor", ok:true },
-          { t:"O financeiro demorou a aprovar", ok:true },
-          { t:"A troca de fornecedor foi um perrengue", ok:false }
-        ],
-        certo:"O resto não ajuda ele a conseguir o prazo.",
-        errado:"Acertou {n} de 3. A pergunta é: isso ajuda ele a conseguir o prazo?" },
-
-      { tipo:"cortar",
-        titulo:"Tire o que não precisa",
-        ajuda:"A Ana vai pedir mais verba. Toque no que ela pode tirar da fala, até sobrarem 3.",
-        instrucao:"Toque para tirar da fala.",
-        cortar:3,
-        opcoes:[
-          { t:"A verba não cobre o fim do ano", fica:true },
-          { t:"Venho pensando nisso faz tempo", fica:false },
-          { t:"Precisamos de 30% a mais", fica:true },
-          { t:"Sei que não é hora de pedir", fica:false },
-          { t:"Sem isso, 2 projetos param", fica:true },
-          { t:"O time todo concorda comigo", fica:false }
-        ],
-        certo:"Sobrou o problema, o número e o que acontece se não resolver.",
-        errado:"Fica o problema, o número e o que acontece se não resolver." },
-
-      { tipo:"marcar",
-        titulo:"Qual serve de âncora?",
-        ajuda:"Âncora é uma palavra só. Toque nas que são uma palavra.",
-        instrucao:"Marque todas que servem.",
-        opcoes:[
-          { t:"prazo", ok:true },
-          { t:"a demora que teve na aprovação", ok:false },
-          { t:"verba", ok:true },
-          { t:"precisamos de mais gente no time", ok:false },
-          { t:"fornecedor", ok:true },
-          { t:"explicar tudo que houve em março", ok:false }
-        ],
-        certo:"Âncora é uma palavra. Frase você esquece no meio.",
-        errado:"As de uma palavra são âncoras. As outras já são a fala pronta." }
+        fim:"{n} de {total} certas." }
     ],
     mensagens:[
       { t:"😞 Não foi dessa vez",
@@ -325,11 +321,11 @@ const TREINOS = {
       { t:"😐 Metade do caminho",
         x:"Você está pegando a lógica. Falta repetir até virar automático." },
       { t:"🙂 Bom resultado",
-        x:"Você já sabe escolher um objetivo e separar o que importa. Dá pra usar isso hoje." },
+        x:"Você já sabe achar o objetivo e transformar ideias em âncoras. Dá pra usar isso hoje." },
       { t:"😃 Quase perfeito",
-        x:"Faltou um detalhe, e você já domina o essencial: um objetivo, poucas informações, palavras curtas." },
+        x:"Faltou um detalhe. O essencial você já domina: um objetivo só e uma palavra pra cada ideia." },
       { t:"🤩 Acertou tudo",
-        x:"Agora a parte que vale de verdade: use na sua próxima conversa." }
+        x:"Agora a parte que vale de verdade: antes da sua próxima conversa importante, escolha o objetivo e três âncoras." }
     ]
   },
 
