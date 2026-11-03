@@ -220,6 +220,11 @@ const PAINEL = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmY
               cortar: quantas o aluno precisa tirar
               certo / errado: retorno
 
+   "relogio"  Uma pergunta por vez, com tempo para escolher a resposta.
+              itens:  [{ pergunta, ops:[...], certa }]
+              tempo:  segundos por pergunta. Tempo esgotado conta como erro.
+              minimo e fim: como no binário
+
    "ordenar"  Frases embaralhadas: o aluno toca na ordem certa.
               itens:  [{ contexto, frases:[na ordem CERTA], rotulos:[opcional], p }]
               minimo e fim: como no binário (conta itens com a ordem toda certa)
@@ -328,9 +333,9 @@ const TREINOS = {
     ]
   },
 
-  /* ---------------- Treino 2 · Sequência lógica ---------------- */
+  /* ---------------- Treino 2 · Comunicação lógica ---------------- */
   "1.2": {
-    numero:2, nome:"Sequência lógica", selo:"🧭", minutos:3,
+    numero:2, nome:"Comunicação lógica", selo:"🧭", minutos:3,
     partes:[
       { tipo:"escolha",
         titulo:"Isso é Fato, Motivo ou Objetivo?",
@@ -438,9 +443,313 @@ const TREINOS = {
       { t:"🤩 Acertou tudo",
         x:"Agora a parte que vale de verdade: no próximo pedido que você fizer, use FMO." }
     ]
+  },
+
+  /* ---------------- Treino 3 · Especificidade na fala ---------------- */
+  "1.3": {
+    numero:3, nome:"Especificidade na fala", selo:"🔎", minutos:3,
+    partes:[
+      { tipo:"binario",
+        titulo:"Vaga ou exata?",
+        ajuda:"Exata é a frase que diz quando, quanto ou o quê, sem deixar dúvida.",
+        instrucao:"Escolha uma em cada frase.",
+        botoes:["Exata", "Vaga"],
+        itens:[
+          { t:"\"O relatório fica pronto logo.\"", ok:false, p:"Logo quando? Troque por um dia." },
+          { t:"\"Atendemos 52 chamados ontem.\"", ok:true, p:"Tem número. Ninguém precisa perguntar quanto." },
+          { t:"\"A reunião teve bastante gente.\"", ok:false, p:"Bastante quanto? Um número resolve." },
+          { t:"\"Entrego a proposta quinta até as 10h.\"", ok:true, p:"Tem dia e hora. Quem ouve sabe o que esperar." }
+        ],
+        minimo:3,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"escolha",
+        titulo:"Qual a melhor troca?",
+        ajuda:"Tempo vira data. Quantidade vira número.",
+        instrucao:"Escolha uma opção em cada frase.",
+        itens:[
+          { fala:"\"O sistema volta em breve.\"",
+            ops:["\"O sistema volta logo.\"", "\"O sistema volta assim que possível.\"", "\"O sistema volta até as 15h.\""],
+            certa:2,
+            p:"\"Em breve\" e \"logo\" são a mesma coisa. Só a hora resolve." },
+          { fala:"\"Muitos clientes reclamaram.\"",
+            ops:["\"Clientes demais reclamaram.\"", "\"23 clientes reclamaram esta semana.\"", "\"A maioria dos clientes reclamou.\""],
+            certa:1,
+            p:"Só o número diz o tamanho do problema." }
+        ],
+        minimo:2,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"escolha",
+        titulo:"A Palavra Única",
+        ajuda:"Em vez de duas palavras fracas, uma palavra forte.",
+        instrucao:"Escolha a melhor troca em cada uma.",
+        itens:[
+          { fala:"\"muito cansado\"", ops:["exausto", "bem cansado", "cansadão"], certa:0,
+            p:"Uma palavra só, e mais forte." },
+          { fala:"\"muito importante\"", ops:["super importante", "essencial", "importante demais"], certa:1,
+            p:"\"Essencial\" diz mais que qualquer \"muito\"." },
+          { fala:"\"meio atrasado\"", ops:["um pouco atrasado", "dois dias atrasado", "bem atrasado"], certa:1,
+            p:"Às vezes a palavra certa é um número." }
+        ],
+        minimo:2,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"marcar",
+        titulo:"Marque as que passam segurança",
+        ajuda:"Quem fala exato parece que tem o controle.",
+        instrucao:"Marque todas que servem.",
+        opcoes:[
+          { t:"Fechamos 8 contratos em outubro", ok:true },
+          { t:"Tá tudo caminhando bem", ok:false },
+          { t:"Te confirmo amanhã até as 9h", ok:true },
+          { t:"Acho que dá pra entregar logo", ok:false },
+          { t:"O custo caiu 15%", ok:true },
+          { t:"Melhorou bastante", ok:false }
+        ],
+        certo:"As três têm data ou número. Quem ouve sabe exatamente o que esperar.",
+        errado:"As seguras são as que têm data ou número. As outras deixam quem ouve na dúvida." },
+
+      { tipo:"escolha",
+        titulo:"Qual notícia parece de quem tem o controle?",
+        ajuda:"A Carla vai contar ao time como foi o trimestre.",
+        instrucao:"Escolha uma versão.",
+        itens:[
+          { fala:"Como foi o trimestre?",
+            ops:["\"Foi um trimestre bem positivo. A gente cresceu bastante e o time tá de parabéns.\"",
+                 "\"Crescemos 18% no trimestre. Foram 40 clientes novos. O time bateu a meta três semanas antes.\""],
+            certa:1,
+            p:"Na segunda, cada frase tem um número. A primeira dá parabéns, mas não diz pelo quê." }
+        ],
+        minimo:1,
+        fim:"{n} de {total} certa." }
+    ],
+    mensagens:[
+      { t:"😞 Não foi dessa vez",
+        x:"Você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
+      { t:"😕 Você acertou uma",
+        x:"Já tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
+      { t:"😐 Metade do caminho",
+        x:"Você já percebe a palavra vaga. Falta trocar no automático." },
+      { t:"🙂 Bom resultado",
+        x:"Você já sabe trocar tempo por data e quantidade por número. Dá pra usar isso hoje." },
+      { t:"😃 Quase perfeito",
+        x:"Faltou um detalhe. O essencial você já domina: data, número e a palavra certa." },
+      { t:"🤩 Acertou tudo",
+        x:"Agora a parte que vale de verdade: na sua próxima mensagem de trabalho, troque um \"logo\" por uma data." }
+    ]
+  },
+
+  /* ---------------- Treino 4 · Fale a língua de quem ouve ---------------- */
+  "1.4": {
+    numero:4, nome:"Fale a língua de quem ouve", selo:"👂", minutos:3,
+    partes:[
+      { tipo:"escolha",
+        titulo:"Pra quem é essa fala?",
+        ajuda:"Cada pessoa quer saber uma coisa diferente.",
+        instrucao:"Escolha uma opção em cada fala.",
+        itens:[
+          { fala:"\"A impressora 3 tá sem driver depois do update, já abri chamado no Jira.\"",
+            ops:["Chefe", "Cliente", "Colega da área"], certa:2,
+            p:"Tem termo técnico. Só quem é da área entende." },
+          { fala:"\"Sua entrega atrasa dois dias. O novo prazo é quinta, e o frete fica por nossa conta.\"",
+            ops:["Chefe", "Cliente", "Colega da área"], certa:1,
+            p:"Diz quando chega e o que muda pra ele. É o que o cliente quer saber." },
+          { fala:"\"O atraso vai custar uns R$ 8 mil em multa. Resolvo até quinta e te passo um plano amanhã.\"",
+            ops:["Chefe", "Cliente", "Colega da área"], certa:0,
+            p:"Impacto e prazo. É o que o chefe quer saber." }
+        ],
+        minimo:2,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"escolha",
+        titulo:"O que dizer primeiro?",
+        ajuda:"Antes de falar, pergunte: o que essa pessoa quer saber?",
+        instrucao:"Escolha uma opção em cada caso.",
+        itens:[
+          { fala:"A fornecedora principal faliu. O que você diz primeiro para o chefe?",
+            ops:["A história da empresa e por que ela faliu",
+                 "Quanto isso afeta as entregas e em quanto tempo vocês trocam de fornecedor",
+                 "Os detalhes do contrato que vocês tinham com ela"],
+            certa:1,
+            p:"Chefe quer impacto e prazo. O resto, se ele quiser, pergunta." },
+          { fala:"A entrega de um cliente atrasou. O que você diz primeiro para o cliente?",
+            ops:["Por que o caminhão quebrou no caminho",
+                 "Quem foi o responsável pelo atraso",
+                 "Quando a entrega chega e o que muda pra ele"],
+            certa:2,
+            p:"Cliente quer saber quando chega e o que fazer. O porquê é problema seu." }
+        ],
+        minimo:2,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"marcar",
+        titulo:"Ache o jargão",
+        ajuda:"Esta fala é para um cliente.",
+        instrucao:"Marque as palavras que o cliente provavelmente não entende.",
+        fala:"\"Seu pedido travou no ERP por um bug no SKU, mas o time de backoffice já fez o reprocessamento.\"",
+        opcoes:[
+          { t:"ERP", ok:true },
+          { t:"pedido", ok:false },
+          { t:"SKU", ok:true },
+          { t:"time", ok:false },
+          { t:"backoffice", ok:true },
+          { t:"reprocessamento", ok:true }
+        ],
+        certo:"Se você precisaria explicar a palavra, troque por uma que não precisa.",
+        errado:"ERP, SKU, backoffice e reprocessamento são palavras de quem é da área. O cliente não precisa delas." },
+
+      { tipo:"cortar",
+        titulo:"Tire o que o cliente não precisa",
+        ajuda:"O Marcos vai avisar um cliente que a entrega atrasou. Tire 3 frases.",
+        instrucao:"Toque para tirar da fala.",
+        cortar:3,
+        opcoes:[
+          { t:"Sua entrega chega na quinta, e não na terça", fica:true },
+          { t:"O caminhão quebrou na Via Dutra", fica:false },
+          { t:"O frete dessa vez é por nossa conta", fica:true },
+          { t:"Nosso sistema de rota tava desatualizado", fica:false },
+          { t:"Se precisar antes, é só me ligar", fica:true },
+          { t:"Isso nunca tinha acontecido em cinco anos", fica:false }
+        ],
+        certo:"Ficou o que muda a vida do cliente: quando chega, quanto custa e o que fazer.",
+        errado:"Fica o que muda a vida do cliente: quando chega, quanto custa e o que fazer. O resto era explicação pra você." },
+
+      { tipo:"escolha",
+        titulo:"Qual versão a cliente entende?",
+        ajuda:"O banco mudou a forma de pagamento. A Patrícia vai avisar uma cliente.",
+        instrucao:"Escolha uma versão.",
+        itens:[
+          { fala:"Como avisar a cliente?",
+            ops:["\"Migramos o gateway e agora o boleto é emitido via API, então o vencimento segue o novo ciclo de faturamento.\"",
+                 "\"A partir de agora, o seu boleto chega por e-mail no dia 5. O vencimento passa a ser dia 10.\""],
+            certa:1,
+            p:"A segunda responde o que a cliente quer saber: quando chega e quando vence." }
+        ],
+        minimo:1,
+        fim:"{n} de {total} certa." }
+    ],
+    mensagens:[
+      { t:"😞 Não foi dessa vez",
+        x:"Você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
+      { t:"😕 Você acertou uma",
+        x:"Já tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
+      { t:"😐 Metade do caminho",
+        x:"Você já pensa em quem ouve. Falta virar automático." },
+      { t:"🙂 Bom resultado",
+        x:"Você já sabe ajustar a fala pra quem ouve. Dá pra usar isso hoje." },
+      { t:"😃 Quase perfeito",
+        x:"Faltou um detalhe. O essencial você já domina: o que ele sabe, o que ele quer e que palavra ele usa." },
+      { t:"🤩 Acertou tudo",
+        x:"Agora a parte que vale de verdade: na próxima explicação que você der, faça as três perguntas antes." }
+    ]
+  },
+
+  /* ---------------- Treino 5 · Respostas rápidas ---------------- */
+  "1.5": {
+    numero:5, nome:"Respostas rápidas", selo:"⚡", minutos:3,
+    partes:[
+      { tipo:"escolha",
+        titulo:"Cadê a resposta?",
+        ajuda:"O chefe perguntou: \"A campanha deu resultado?\". A Renata respondeu com cinco frases.",
+        instrucao:"Toque na frase que de fato responde.",
+        itens:[
+          { fala:"\"A campanha deu resultado?\"",
+            ops:["\"Então, a gente mudou bastante coisa no meio do caminho.\"",
+                 "\"O público respondeu diferente do que a gente esperava.\"",
+                 "\"No fim, vendemos 30% a mais que a campanha anterior.\"",
+                 "\"Teve um problema com o vídeo na primeira semana.\"",
+                 "\"Mas o time se dedicou muito.\""],
+            certa:2,
+            p:"A resposta estava na terceira frase. Quem perguntou teve que esperar duas frases pra ouvir." }
+        ],
+        minimo:1,
+        fim:"{n} de {total} certa." },
+
+      { tipo:"binario",
+        titulo:"Começou pela posição?",
+        ajuda:"Posição é a resposta em si: um sim, um não ou um número.",
+        instrucao:"Escolha uma em cada resposta.",
+        botoes:["Sim", "Não"],
+        itens:[
+          { t:"\"Dá pra entregar sexta?\" — \"Dá. Só preciso do material até quarta.\"", ok:true, p:"A primeira palavra já responde." },
+          { t:"\"O cliente aprovou?\" — \"Olha, a reunião foi longa, ele fez várias perguntas…\"", ok:false, p:"Até agora, ninguém sabe se ele aprovou." },
+          { t:"\"Quanto vai custar?\" — \"Uns R$ 12 mil, contando a instalação.\"", ok:true, p:"O número vem primeiro. O detalhe, depois." },
+          { t:"\"Você consegue assumir esse projeto?\" — \"Depende, porque eu já tenho duas entregas e o time tá reduzido…\"", ok:false, p:"Explicação antes da resposta parece desculpa." }
+        ],
+        minimo:3,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"ordenar",
+        titulo:"Monte a resposta",
+        ajuda:"Posição, um motivo e o próximo passo.",
+        instrucao:"Toque nas frases na ordem. Toque de novo para desfazer.",
+        itens:[
+          { contexto:"\"A gente vai bater a meta do trimestre?\"",
+            frases:["Não, vamos ficar uns 5% abaixo.",
+                    "Perdemos o maior cliente em agosto.",
+                    "Já estou negociando dois contratos pra cobrir em dezembro."],
+            rotulos:["Posição", "Motivo", "Próximo passo"],
+            p:"A resposta vem primeiro. O próximo passo mostra que você está no controle." },
+          { contexto:"\"O sistema novo tá funcionando?\"",
+            frases:["Ainda não, falta a parte de relatórios.",
+                    "O fornecedor pediu mais uma semana.",
+                    "Te mando a data final na sexta."],
+            rotulos:["Posição", "Motivo", "Próximo passo"],
+            p:"Mesmo sem boa notícia, a resposta fica clara e segura." }
+        ],
+        minimo:2,
+        fim:"{n} de {total} na ordem certa." },
+
+      { tipo:"relogio",
+        titulo:"Contra o relógio",
+        ajuda:"Você tem 10 segundos pra escolher a melhor resposta.",
+        instrucao:"Se o tempo acabar, conta como erro.",
+        tempo:10,
+        itens:[
+          { pergunta:"\"Você terminou o relatório?\"",
+            ops:["\"Falta a última parte. Te mando até as 5.\"", "\"Então, tive umas reuniões hoje…\"", "\"Tô quase, tô quase.\""],
+            certa:0 },
+          { pergunta:"\"Por que as vendas caíram?\"",
+            ops:["\"São vários fatores, o mercado tá difícil…\"", "\"Por causa do concorrente novo, que baixou o preço em 20%.\"", "\"Ainda estamos analisando tudo.\""],
+            certa:1 },
+          { pergunta:"\"Posso contar com você no sábado?\"",
+            ops:["\"Vou ver como fica minha agenda…\"", "\"Acho que sim, mas depende.\"", "\"Pode. Chego às 9.\""],
+            certa:2 }
+        ],
+        minimo:2,
+        fim:"{n} de {total} certas. Na hora, a resposta curta é a que parece mais segura." },
+
+      { tipo:"escolha",
+        titulo:"E quando não sabe?",
+        ajuda:"O cliente pergunta: \"Qual vai ser o preço do ano que vem?\". Você ainda não sabe.",
+        instrucao:"Escolha a melhor resposta.",
+        itens:[
+          { fala:"\"Qual vai ser o preço do ano que vem?\"",
+            ops:["\"Vou ver isso aí.\"", "\"Acho que deve subir um pouco, mas depende de muita coisa.\"", "\"Ainda não está fechado. Te mando até sexta.\""],
+            certa:2,
+            p:"Não saber não é problema. Enrolar é. Posição e próximo passo resolvem." }
+        ],
+        minimo:1,
+        fim:"{n} de {total} certa." }
+    ],
+    mensagens:[
+      { t:"😞 Não foi dessa vez",
+        x:"Você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
+      { t:"😕 Você acertou uma",
+        x:"Já tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
+      { t:"😐 Metade do caminho",
+        x:"Você já reconhece a resposta direta. Falta virar reflexo." },
+      { t:"🙂 Bom resultado",
+        x:"Você já responde com a posição primeiro. Dá pra usar isso na próxima reunião." },
+      { t:"😃 Quase perfeito",
+        x:"Faltou um detalhe. O essencial você já domina: posição, motivo e próximo passo." },
+      { t:"🤩 Acertou tudo",
+        x:"Agora a parte que vale de verdade: na próxima pergunta que te fizerem, responda primeiro e explique depois." }
+    ]
   }
 
-  /* Próximo treino: copie um bloco acima, troque o código ("1.3") e o conteúdo. */
+  /* Próximo treino: copie um bloco acima, troque o código ("2.2") e o conteúdo. */
 };
 
 /* =====================================================================
@@ -646,6 +955,73 @@ const TIPOS = {
   }
 };
 
+/* Relógio: o motor monta a casca; cada pergunta entra uma por vez. */
+TIPOS.relogio = {
+  montar:function(p){
+    relIdx = 0;
+    return '<div id="lista"></div>' +
+      '<div class="retorno" id="retorno"></div>' +
+      '<button class="botao oculto" id="b-seguir" onclick="seguir()">' + rotuloSeguir() + '</button>';
+  },
+  depois:function(){ mostrarPergunta(); }
+};
+
+let relIdx = 0, relTimer = null;
+
+function pararRelogio(){ if(relTimer){ clearInterval(relTimer); relTimer = null; } }
+
+function mostrarPergunta(){
+  const p = parte(), it = p.itens[relIdx];
+  const caixa = document.createElement("div");
+  caixa.className = "item";
+  caixa.style.marginBottom = "22px";
+  caixa.innerHTML =
+    '<div class="frase">' + (relIdx + 1) + ' de ' + p.itens.length + ' · ' + it.pergunta + '</div>' +
+    '<div class="trilho" style="margin:0 0 10px"><i class="rel-barra" style="width:100%;transition:width .1s linear"></i></div>' +
+    '<div class="lista">' + it.ops.map(function(o,k){
+      return '<button class="op" onclick="responderRelogio(' + k + ')"><span class="mk">✓</span><span>' + o + '</span></button>';
+    }).join("") + '</div>';
+  el("lista").appendChild(caixa);
+  const barra = caixa.querySelector(".rel-barra");
+  const inicio = Date.now(), total = (p.tempo || 10) * 1000;
+  pararRelogio();
+  relTimer = setInterval(function(){
+    const resta = Math.max(0, total - (Date.now() - inicio));
+    barra.style.width = (resta / total * 100) + "%";
+    if(resta <= total * 0.3) barra.style.background = "var(--vermelho)";
+    if(resta === 0) responderRelogio(-1);
+  }, 100);
+  enquadrar();
+}
+
+function responderRelogio(k){
+  const p = parte(), it = p.itens[relIdx];
+  const caixas = document.querySelectorAll("#lista > .item");
+  const caixa = caixas[caixas.length - 1];
+  const g = caixa.querySelectorAll(".op");
+  if(g[0].disabled) return;
+  pararRelogio();
+  g.forEach(function(b){ b.disabled = true; });
+  g[it.certa].classList.add("certa");
+  const acertou = k === it.certa;
+  if(acertou) acertos++; else if(k >= 0) g[k].classList.add("errada");
+  const d = document.createElement("div");
+  d.className = "nota" + (acertou ? " nota-ok" : " nota-erro");
+  d.innerHTML = acertou ? "<b>✅ Correto</b>" : (k < 0 ? "<b>⏱ Tempo esgotado</b>" : "<b>🛑 Errado</b>");
+  caixa.appendChild(d);
+  if(relIdx < p.itens.length - 1){
+    const b = document.createElement("button");
+    b.className = "botao fantasma";
+    b.textContent = "Próxima pergunta";
+    b.onclick = function(){ b.remove(); relIdx++; mostrarPergunta(); };
+    caixa.appendChild(b);
+    return;
+  }
+  if(acertos >= p.minimo) pontos++;
+  mostrarRetorno(null, preencher(p.fim, { n:acertos, total:p.itens.length }));
+  el("b-seguir").classList.remove("oculto");
+}
+
 /* Ordem embaralhada de 0..n-1 que nunca sai já na ordem certa. */
 function embaralhar(n){
   const a = []; for(let k=0;k<n;k++) a.push(k);
@@ -826,6 +1202,7 @@ function mostrarSecao(id){
 }
 
 function ir(i){
+  if(typeof pararRelogio === "function") pararRelogio();
   atual = i; marcadas = []; acertos = 0;
   const p = parte(), total = TREINO.partes.length;
   el("parte").innerHTML =
@@ -834,6 +1211,7 @@ function ir(i){
     (p.instrucao ? '<p class="instrucao">' + p.instrucao + '</p>' : '') +
     TIPOS[p.tipo].montar(p);
   mostrarSecao("parte");
+  if(TIPOS[p.tipo].depois) TIPOS[p.tipo].depois(p);
   el("passo").textContent = (i + 1) + " de " + total;
   el("trilho").style.width = ((i + 1) / total * 100) + "%";
   enquadrar();
