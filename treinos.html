@@ -291,11 +291,12 @@ const TREINOS = {
         ajuda:"O Diego tem uma oficina mecânica e precisa avisar um cliente que o carro vai atrasar.",
         instrucao:"Escolha uma versão.",
         itens:[
-          { fala:"O Diego liga para o cliente.",
-            ops:["\"Então, o seu carro, a gente desmontou e viu que o problema era maior, e a peça que precisa não tinha no estoque, aí eu liguei pro distribuidor e ele falou que talvez chegue amanhã, mas não garantiu…\"",
-                 "\"A peça do seu carro só chega amanhã. O carro fica pronto quinta, às 10h. Pode buscar nesse horário?\""],
-            certa:1,
-            p:"Na segunda, cada ideia vira uma frase curta, e o cliente sabe o que fazer." }
+          { fala:"O Diego liga para o cliente. As três versões são curtas e educadas.",
+            ops:["\"A peça do seu carro atrasou. O distribuidor teve um problema no estoque e só vai entregar amanhã.\"",
+                 "\"Seu carro vai atrasar um pouquinho, mas fica tranquilo que a gente já tá resolvendo. Assim que tiver novidade, eu te aviso, tá bom?\"",
+                 "\"A peça do seu carro só chega amanhã, então ele fica pronto quinta, às 10h. Pode buscar nesse horário?\""],
+            certa:2,
+            p:"Ser curto não basta. A terceira tem as três âncoras (peça, quinta, buscar) e termina no objetivo: o cliente sabe exatamente o que fazer." }
         ],
         minimo:1,
         fim:"{n} de {total} certa." },
