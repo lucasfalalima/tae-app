@@ -220,6 +220,10 @@ const PAINEL = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmY
               cortar: quantas o aluno precisa tirar
               certo / errado: retorno
 
+   "ordenar"  Frases embaralhadas: o aluno toca na ordem certa.
+              itens:  [{ contexto, frases:[na ordem CERTA], rotulos:[opcional], p }]
+              minimo e fim: como no binário (conta itens com a ordem toda certa)
+
    Em todos: titulo, ajuda (texto cinza) e instrucao (texto amarelo).
    ===================================================================== */
 
@@ -322,9 +326,121 @@ const TREINOS = {
       { t:"🤩 Acertou tudo",
         x:"Agora a parte que vale de verdade: use na sua próxima conversa." }
     ]
+  },
+
+  /* ---------------- Treino 2 · Sequência lógica ---------------- */
+  "1.2": {
+    numero:2, nome:"Sequência lógica", selo:"🧭", minutos:3,
+    partes:[
+      { tipo:"escolha",
+        titulo:"Isso é Fato, Motivo ou Objetivo?",
+        ajuda:"Fato é o que aconteceu. Motivo é por que importa. Objetivo é o pedido.",
+        instrucao:"Escolha uma opção em cada frase.",
+        itens:[
+          { fala:"\"As vendas caíram 15% em setembro.\"",
+            ops:["Fato", "Motivo", "Objetivo"], certa:0,
+            p:"É o que aconteceu, com número." },
+          { fala:"\"Sem o sistema novo, a equipe vai continuar fazendo hora extra.\"",
+            ops:["Fato", "Motivo", "Objetivo"], certa:1,
+            p:"Mostra por que isso importa." },
+          { fala:"\"Quero sua aprovação pra contratar mais uma pessoa até o fim do mês.\"",
+            ops:["Fato", "Motivo", "Objetivo"], certa:2,
+            p:"É o pedido: o que você quer que o outro faça." },
+          { fala:"\"Recebemos 40 reclamações de clientes na última semana.\"",
+            ops:["Fato", "Motivo", "Objetivo"], certa:0,
+            p:"É o que aconteceu. E o número dá força." }
+        ],
+        minimo:3,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"ordenar",
+        titulo:"Coloque na ordem certa",
+        ajuda:"Toque nas frases na ordem em que você falaria.",
+        instrucao:"Toque de novo para desfazer.",
+        itens:[
+          { contexto:"A Marina quer mudar o horário da reunião.",
+            frases:["Nas últimas quatro reuniões, a gente começou com 20 minutos de atraso.",
+                    "Às 8h, três pessoas do time ainda estão no trânsito.",
+                    "Preciso mudar a reunião de segunda pras 10h."],
+            rotulos:["Fato", "Motivo", "Objetivo"],
+            p:"Fato com número, depois o motivo, e o pedido no fim." },
+          { contexto:"O Pedro quer que a empresa pague um curso.",
+            frases:["Gasto umas 5 horas por semana montando relatório na mão.",
+                    "Com o curso, isso cai pra uma hora e sobra tempo pros clientes.",
+                    "Queria que a empresa pagasse o curso de Excel avançado."],
+            rotulos:["Fato", "Motivo", "Objetivo"],
+            p:"Quando o pedido chega, o chefe já tem motivo pra dizer sim." }
+        ],
+        minimo:2,
+        fim:"{n} de {total} na ordem certa." },
+
+      { tipo:"escolha",
+        titulo:"Qual versão convence mais?",
+        ajuda:"Mesma pessoa, mesmo pedido. Só muda a ordem.",
+        instrucao:"Escolha uma versão em cada caso.",
+        itens:[
+          { fala:"O Bruno quer folgar na sexta.",
+            ops:["\"Então, semana passada eu fiquei até tarde três dias, e no fim de semana também trabalhei, e eu tava pensando se dava pra folgar sexta…\"",
+                 "\"Fiz 12 horas extras nas últimas duas semanas pra fechar o projeto. Ele foi entregue ontem, no prazo. Queria folgar na sexta.\""],
+            certa:1,
+            p:"Na segunda, o número vem primeiro e o pedido fica no fim. A primeira conta a história na ordem do tempo." },
+          { fala:"A Lúcia quer que o time teste uma ferramenta nova.",
+            ops:["\"Hoje a gente perde 4 horas por semana atualizando planilha. Essa ferramenta faz isso sozinha. Quero testar com o time por um mês.\"",
+                 "\"Então, eu tava vendo umas ferramentas, e tem uma que parece legal, o pessoal de outra empresa usa, e talvez valesse a pena testar…\""],
+            certa:0,
+            p:"Na primeira, o fato tem número e o pedido é claro. A segunda termina num \"talvez\"." }
+        ],
+        minimo:2,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"marcar",
+        titulo:"Qual fato é mais forte?",
+        ajuda:"Fato forte é aquele que ninguém consegue discutir.",
+        instrucao:"Marque todos que convencem.",
+        opcoes:[
+          { t:"O sistema anda lento", ok:false },
+          { t:"O sistema caiu 4 vezes este mês", ok:true },
+          { t:"Os clientes estão reclamando bastante", ok:false },
+          { t:"Recebemos 23 reclamações em outubro", ok:true },
+          { t:"A equipe tá sobrecarregada", ok:false },
+          { t:"Cada pessoa atendeu 60 chamados por dia", ok:true }
+        ],
+        certo:"Opinião dá pra discordar. Número, não.",
+        errado:"Os fortes são os que têm número. Opinião dá pra discordar; número, não." },
+
+      { tipo:"cortar",
+        titulo:"Fique com os 3 melhores",
+        ajuda:"A Júlia vai pedir pra trocar de fornecedor. Tire os 3 motivos mais fracos.",
+        instrucao:"Toque para tirar da fala.",
+        cortar:3,
+        opcoes:[
+          { t:"O atual atrasou 5 entregas este ano", fica:true },
+          { t:"O atendente do atual é meio grosso", fica:false },
+          { t:"O novo é 18% mais barato", fica:true },
+          { t:"Vi uma propaganda boa do novo", fica:false },
+          { t:"O novo dá garantia de 2 anos", fica:true },
+          { t:"Todo mundo tá falando do novo", fica:false }
+        ],
+        certo:"Ficaram prazo, custo e garantia. Três motivos, e todos com número.",
+        errado:"Os fortes são prazo, custo e garantia: os três com número. O resto é impressão." }
+    ],
+    mensagens:[
+      { t:"😞 Não foi dessa vez",
+        x:"Você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
+      { t:"😕 Você acertou uma",
+        x:"Já tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
+      { t:"😐 Metade do caminho",
+        x:"Você está pegando a ordem. Falta repetir até virar automático." },
+      { t:"🙂 Bom resultado",
+        x:"Você já sabe montar um pedido em Fato, Motivo e Objetivo. Dá pra usar isso hoje." },
+      { t:"😃 Quase perfeito",
+        x:"Faltou um detalhe. O essencial você já domina: número primeiro, pedido no fim." },
+      { t:"🤩 Acertou tudo",
+        x:"Agora a parte que vale de verdade: no próximo pedido que você fizer, use FMO." }
+    ]
   }
 
-  /* Próximo treino: copie o bloco acima, troque o código ("1.2") e o conteúdo. */
+  /* Próximo treino: copie um bloco acima, troque o código ("1.3") e o conteúdo. */
 };
 
 /* =====================================================================
@@ -456,6 +572,8 @@ let atual = 0;          /* índice da parte na tela */
 let pontos = 0;         /* partes acertadas */
 let marcadas = [];      /* índices marcados ou cortados na parte atual */
 let acertos = 0;        /* acertos dentro da parte atual (binário e escolha) */
+let ordens = [];        /* ordenar: índices tocados, por item */
+let embaralhadas = [];  /* ordenar: ordem em que as frases aparecem, por item */
 
 function el(id){ return document.getElementById(id); }
 function preencher(txt, vars){
@@ -509,8 +627,33 @@ const TIPOS = {
         '</div><div class="contador">faltam tirar <span id="contagem">' + p.cortar + '</span></div>' +
         retornoEBotao(true);
     }
+  },
+
+  ordenar:{
+    montar:function(p){
+      ordens = p.itens.map(function(){ return []; });
+      embaralhadas = p.itens.map(function(it){ return embaralhar(it.frases.length); });
+      return '<div id="lista">' + p.itens.map(function(it,i){
+        return '<div class="item" style="margin-bottom:22px"><div class="frase">' + it.contexto + '</div><div class="lista">' +
+          embaralhadas[i].map(function(j){
+            return '<button class="op" data-j="' + j + '" onclick="ordenarToque(' + i + ',' + j + ')">' +
+              '<span class="mk"></span><span>' + it.frases[j] + '</span></button>';
+          }).join("") + '</div></div>';
+      }).join("") + '</div>' +
+        '<div class="retorno" id="retorno"></div>' +
+        '<button class="botao" id="b-seguir" onclick="conferirOrdenar()" disabled>Conferir</button>';
+    }
   }
 };
+
+/* Ordem embaralhada de 0..n-1 que nunca sai já na ordem certa. */
+function embaralhar(n){
+  const a = []; for(let k=0;k<n;k++) a.push(k);
+  do{
+    for(let k=n-1;k>0;k--){ const r = Math.floor(Math.random()*(k+1)); const t = a[k]; a[k] = a[r]; a[r] = t; }
+  }while(n > 1 && a.every(function(v,k){ return v === k; }));
+  return a;
+}
 
 /* Caixa de retorno + botão de seguir (escondido até a parte terminar). */
 function retornoEBotao(escondido){
@@ -611,6 +754,48 @@ function cortar(i){
   if(certo) pontos++;
   mostrarRetorno(certo, certo ? p.certo : p.errado);
   el("b-seguir").classList.remove("oculto");
+}
+
+/* Ordenar: tocar numera a frase; tocar de novo tira ela (e renumera). */
+function ordenarToque(i, j){
+  const it = parte().itens[i];
+  const caixa = document.querySelectorAll("#lista > .item")[i];
+  const bs = caixa.querySelectorAll(".op");
+  if(bs[0].disabled) return;
+  const o = ordens[i], pos = o.indexOf(j);
+  if(pos >= 0) o.splice(pos, 1); else o.push(j);
+  bs.forEach(function(b){
+    const k = o.indexOf(parseInt(b.dataset.j, 10));
+    b.classList.toggle("marcada", k >= 0);
+    b.querySelector(".mk").textContent = k >= 0 ? (k + 1) : "";
+  });
+  const completos = ordens.every(function(x, n){ return x.length === parte().itens[n].frases.length; });
+  el("b-seguir").disabled = !completos;
+}
+
+function conferirOrdenar(){
+  const p = parte();
+  let n = 0;
+  p.itens.forEach(function(it, i){
+    const caixa = document.querySelectorAll("#lista > .item")[i];
+    const certo = ordens[i].every(function(j, k){ return j === k; });
+    if(certo) n++;
+    caixa.querySelectorAll(".op").forEach(function(b){
+      const j = parseInt(b.dataset.j, 10);
+      b.disabled = true;
+      b.classList.remove("marcada");
+      b.classList.add(ordens[i].indexOf(j) === j ? "certa" : "errada");
+      if(it.rotulos) b.querySelector(".mk").textContent = j + 1;
+      if(it.rotulos) b.lastChild.textContent = it.frases[j] + " (" + it.rotulos[j] + ")";
+    });
+    notaItem(i, it.p, certo);
+  });
+  acertos = n;
+  if(n >= p.minimo) pontos++;
+  mostrarRetorno(null, preencher(p.fim, { n:n, total:p.itens.length }));
+  const b = el("b-seguir");
+  b.textContent = rotuloSeguir();
+  b.onclick = seguir;
 }
 
 /* certo = true/false mostra ✅/🛑; null mostra só o resumo em negrito. */
