@@ -91,6 +91,30 @@ body{
 .lp-barra i.cheia{background:var(--verde)}
 .lp-cont{flex:0 0 auto;font-size:12px;color:var(--texto-fraco);min-width:30px;text-align:right}
 
+.qe-cartao{padding:22px 18px 18px}
+.qe-titulo{text-align:center;font-size:21px;font-weight:800;color:var(--texto-forte);letter-spacing:-.02em;line-height:1.2;margin:0 0 4px}
+.qe-gauge{position:relative;width:230px;max-width:100%;margin:6px auto 0}
+.qe-gauge svg{display:block;width:100%;height:auto;overflow:visible}
+.qe-centro{position:absolute;left:0;right:0;top:34%;text-align:center}
+.qe-centro span{display:block;font-size:11.5px;font-weight:700;letter-spacing:.12em;color:var(--amarelo);text-transform:uppercase}
+.qe-centro b{display:block;font-size:56px;font-weight:800;color:var(--texto-forte);line-height:1.05;letter-spacing:-.03em}
+.qe-centro small{display:block;font-size:13px;color:var(--texto-fraco)}
+.qe-comp{display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0 6px}
+.qe-comp[hidden]{display:none}
+.qe-pill{background:var(--cartao-alto);border:1px solid var(--borda);border-radius:12px;padding:8px 16px;text-align:center;min-width:92px}
+.qe-pill span{display:block;font-size:11.5px;color:var(--texto-fraco);font-weight:600}
+.qe-pill b{display:block;font-size:24px;font-weight:800;color:var(--texto-forte);line-height:1.15}
+.qe-pill.hoje b{color:var(--amarelo)}
+.qe-seta{color:var(--amarelo);font-size:22px;font-weight:700}
+.qe-dica{text-align:center;font-size:13.5px;color:var(--texto-fraco);line-height:1.45;margin:6px 0 4px}
+.qe-grade{margin-top:14px;padding-top:14px;border-top:1px solid var(--borda)}
+.qe-linha-p{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.qe-linha-p:last-child{margin-bottom:0}
+.qe-nome-p{flex:0 0 96px;font-size:13px;font-weight:600;color:var(--texto)}
+.qe-cel{flex:1;aspect-ratio:1;max-width:40px;border-radius:9px;background:var(--fundo);border:1px solid var(--borda);display:flex;align-items:center;justify-content:center}
+.qe-cel svg{width:56%;height:56%}
+.qe-cel.feito{border-color:rgba(247,208,70,.45)}
+.qe-tot{flex:0 0 38px;text-align:right;font-size:12px;color:var(--texto-fraco)}
 .grupo-conq{font-size:11.5px;font-weight:700;letter-spacing:.09em;color:var(--texto-fraco);
   text-transform:uppercase;margin:18px 0 4px;padding-top:14px;border-top:1px solid var(--borda)}
 .grupo-conq:first-child{margin-top:0;padding-top:0;border-top:0}
@@ -278,6 +302,25 @@ body{
     <p>O que você construiu até aqui.</p>
   </div>
 
+  <div class="cartao qe-cartao">
+    <div class="etiqueta" style="text-align:center">Sua evolução, medida</div>
+    <div class="qe-titulo">Seu Quociente de Expressividade (QE)</div>
+    <div class="qe-gauge">
+      <svg viewBox="0 0 240 200" aria-hidden="true">
+        <path id="qe-trilho" fill="none" stroke="#2c3034" stroke-width="16" stroke-linecap="round"/>
+        <path id="qe-arco" fill="none" stroke="#f7d046" stroke-width="16" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(247,208,70,.45))"/>
+      </svg>
+      <div class="qe-centro"><span id="qe-rot">Hoje</span><b id="qe-g-num">0</b><small>de 100</small></div>
+    </div>
+    <div class="qe-comp" id="qe-comp" hidden>
+      <div class="qe-pill"><span id="qe-ini-rot">Início</span><b id="qe-ini">0</b></div>
+      <div class="qe-seta">→</div>
+      <div class="qe-pill hoje"><span>Hoje</span><b id="qe-hoje">0</b></div>
+    </div>
+    <p class="qe-dica" id="qe-dica"></p>
+    <div class="qe-grade" id="qe-grade"></div>
+  </div>
+
   <div class="numeros">
     <div class="numero"><b id="e-seq">0</b><span>dias seguidos</span></div>
     <div class="numero"><b id="e-feitos">0</b><span>treinos feitos</span></div>
@@ -454,7 +497,20 @@ function pilarBloqueado(id){ return ALUNO.gratuito && id > PILARES_GRATUITOS; }
 let NOTAS = {};
 let SEQUENCIA = 0;
 
+/* Modo demonstração (?demo=1): dados de exemplo para gravar telas da VSL.
+   Não lê nem grava progresso de ninguém. Use ?demo=1&tela=evolucao para abrir direto na aba. */
+const PARAMS = new URLSearchParams(window.location.search);
+const DEMO = PARAMS.get("demo") === "1";
+function diasAtras(n){ const d = new Date(); d.setDate(d.getDate() - n); return d.toLocaleDateString("sv-SE"); }
+function notasDemo(){
+  const n = {}; const feitos = [5,4,5,3];
+  feitos.forEach(function(q, i){ for(let t = 1; t <= q; t++) n[(i+1) + "." + t] = 5; });
+  n["q" + diasAtras(21)] = 35; n["q" + diasAtras(10)] = 62; n["q" + hojeTexto()] = 85;
+  return n;
+}
+
 function carregar(){
+  if(DEMO){ NOTAS = notasDemo(); SEQUENCIA = 21; return; }
   const quem = ALUNO.id || "visitante";
   try{ NOTAS = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}"); }
   catch(e){ NOTAS = {}; }
@@ -462,6 +518,23 @@ function carregar(){
   try{ dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]"); }
   catch(e){ dias = []; }
   SEQUENCIA = calcularSequencia(dias);
+  registrarQE(quem);
+}
+
+/* Guarda o QE do dia como "qAAAA-MM-DD=valor" junto das notas.
+   Vai para o Cademí na mesma nota de progresso e alimenta a comparação
+   "Início → Hoje" da aba Evolução. Como o QE nunca cai, vale a maior. */
+function registrarQE(quem){
+  const qe = calcularQE();
+  if(!qe) return;
+  const k = "q" + hojeTexto();
+  if(NOTAS[k] >= qe) return;
+  NOTAS[k] = qe;
+  try{
+    const salvas = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
+    salvas[k] = qe;
+    localStorage.setItem("tae_notas_" + quem, JSON.stringify(salvas));
+  }catch(e){}
 }
 
 /* ================= PROGRESSO NO CADEMÍ =================
@@ -510,7 +583,9 @@ function juntarProgresso(a, b){
 }
 
 function montarCorpo(p){
-  const partes = Object.keys(p.notas).sort().map(function(k){ return k + "=" + p.notas[k]; });
+  const qs = Object.keys(p.notas).filter(function(k){ return k.charAt(0) === "q"; }).sort().slice(-60);
+  const partes = Object.keys(p.notas).filter(function(k){ return k.charAt(0) !== "q"; }).concat(qs).sort()
+    .map(function(k){ return k + "=" + p.notas[k]; });
   const dias = p.dias.slice().sort().slice(-DIAS_GUARDADOS).map(function(d){ return "d" + d; });
   return "TAE|" + partes.concat(dias).map(function(x){ return x + "|"; }).join("");
 }
@@ -603,7 +678,7 @@ function redesenhar(){
 /* Busca o progresso no Cademí (no máximo a cada SYNC_MINUTOS por aparelho),
    junta com o do navegador e reenvia o que só existia aqui. */
 function sincronizar(forcar){
-  if(!ALUNO.id) return;
+  if(!ALUNO.id || DEMO) return;
   const quem = ALUNO.id;
   try{
     const ultima = parseInt(localStorage.getItem("tae_sync_" + quem) || "0", 10);
@@ -640,7 +715,8 @@ function sincronizar(forcar){
     /* Um envio por treino novo, para os pontos entrarem certo.
        Normalmente é um só. */
     let fila = Promise.resolve(servidor.nota);
-    const envios = novos.length ? novos : [""];
+    const semQE = novos.filter(function(k){ return k.charAt(0) !== "q"; });
+    const envios = semQE.length ? semQE : [""];
     envios.forEach(function(k){
       fila = fila.then(function(nota){
         /* Pontos no ranking só para treino; preparação vai sem código. */
@@ -971,7 +1047,82 @@ function montarPilares(){
 }
 
 /* ---------- Evolução ---------- */
+/* Cartão do QE: medidor, comparação Início → Hoje e grade dos pilares. */
+let qeAnim = 0;
+function arcoQE(r, a0, a1){
+  const p = function(a){ return [120 + r*Math.cos(a*Math.PI/180), 112 + r*Math.sin(a*Math.PI/180)]; };
+  const x = p(a0), y = p(a1);
+  return "M" + x[0].toFixed(2) + " " + x[1].toFixed(2) + " A" + r + " " + r + " 0 " + (a1 - a0 > 180 ? 1 : 0) + " 1 " + y[0].toFixed(2) + " " + y[1].toFixed(2);
+}
+function montarQE(){
+  const atual = calcularQE();
+  const hist = Object.keys(NOTAS).filter(function(k){ return /^q\d{4}-\d{2}-\d{2}$/.test(k); }).sort();
+  const hoje = hojeTexto();
+  const primeiro = hist.length ? hist[0].slice(1) : null;
+  const inicio = primeiro && primeiro < hoje ? NOTAS[hist[0]] : null;
+  const comparar = inicio !== null && inicio < atual;
+
+  const trilho = document.getElementById("qe-trilho"), arco = document.getElementById("qe-arco");
+  trilho.setAttribute("d", arcoQE(90, 135, 405));
+  arco.setAttribute("d", arcoQE(90, 135, 405));
+  const total = 90 * 270 * Math.PI / 180;
+  arco.setAttribute("stroke-dasharray", total);
+
+  const num = document.getElementById("qe-g-num"), rot = document.getElementById("qe-rot");
+  const desenhar = function(v){
+    num.textContent = Math.round(v);
+    arco.style.opacity = v < 0.5 ? 0 : 1;
+    arco.setAttribute("stroke-dashoffset", total * (1 - v / 100));
+  };
+
+  document.getElementById("qe-comp").hidden = !comparar;
+  const dica = document.getElementById("qe-dica");
+  if(comparar){
+    const dias = Math.round((new Date(hoje) - new Date(primeiro)) / 86400000);
+    const p = primeiro.split("-");
+    document.getElementById("qe-ini-rot").textContent = "Em " + p[2] + "/" + p[1];
+    document.getElementById("qe-ini").textContent = inicio;
+    document.getElementById("qe-hoje").textContent = atual;
+    dica.textContent = "+" + (atual - inicio) + " pontos em " + dias + (dias === 1 ? " dia" : " dias") + " de treino.";
+  }else if(!atual){
+    dica.textContent = "Cada treino vale até 5 estrelas. Faça seu primeiro treino e veja seu QE subir.";
+  }else{
+    dica.textContent = "Cada treino vale até 5 estrelas. Somando os 20, você chega a 100.";
+  }
+
+  /* Grade: uma casa por treino. Estrela cheia = 5 estrelas; apagada = feito com menos. */
+  document.getElementById("qe-grade").innerHTML = PILARES.map(function(pl){
+    let soma = 0;
+    const cels = pl.treinos.map(function(t){
+      const v = nota(pl.id, t.n);
+      if(v === undefined) return '<div class="qe-cel"><svg viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" fill="none" stroke="#4a5056" stroke-width="1.6" stroke-linejoin="round"/></svg></div>';
+      soma += v;
+      return '<div class="qe-cel feito" title="' + v + ' de 5"><svg viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" fill="#f7d046" fill-opacity="' + (0.35 + 0.13 * v).toFixed(2) + '"/></svg></div>';
+    }).join("");
+    return '<div class="qe-linha-p"><div class="qe-nome-p">' + pl.nome + '</div>' + cels + '<div class="qe-tot">' + soma + '/25</div></div>';
+  }).join("");
+
+  /* Animação: sobe do início até hoje (ou de 0 até o QE atual). */
+  const id = ++qeAnim;
+  const de = comparar ? inicio : 0;
+  rot.textContent = comparar ? "Em " + primeiro.split("-")[2] + "/" + primeiro.split("-")[1] : "Hoje";
+  desenhar(0);
+  const t0 = performance.now(), espera = comparar ? 900 : 0;
+  const passo = function(agora){
+    if(id !== qeAnim) return;
+    const t = agora - t0;
+    const e = function(x){ x = Math.max(0, Math.min(1, x)); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2; };
+    let v = de * e(t / 700);
+    if(comparar && t > espera){ rot.textContent = "Hoje"; v = de + (atual - de) * e((t - espera) / 1400); }
+    else if(!comparar) v = atual * e(t / 1200);
+    desenhar(v);
+    if(t < espera + 1500) requestAnimationFrame(passo);
+  };
+  requestAnimationFrame(passo);
+}
+
 function montarEvolucao(){
+  montarQE();
   const r = resumo();
   document.getElementById("e-seq").textContent = r.sequencia;
   document.getElementById("e-feitos").textContent = r.feitos;
@@ -1010,6 +1161,8 @@ document.addEventListener("visibilitychange", function(){
     sincronizar();
   }
 });
+
+if(PARAMS.get("tela") && document.getElementById("tela-" + PARAMS.get("tela"))) irPara(PARAMS.get("tela"));
 
 const adotou = adotarVisitante();
 if(adotou) carregar();
