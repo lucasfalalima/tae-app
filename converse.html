@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treino de conversa</title>
+<style>
+:root{
+  --fundo:#111213;--cartao:#1b1d1f;--alto:#232629;--borda:#2c3034;
+  --amarelo:#f7d046;--amarelo2:#d9b32c;--texto:#dee2e6;--forte:#fff;
+  --fraco:#8d9499;--verde:#4ade80;--vermelho:#f87171;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.caixa{max-width:720px;margin:0 auto;padding:4px 2px 18px}
+.cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;padding:22px}
+.topo{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.etiqueta{font-size:13px;font-weight:700;color:var(--amarelo)}
+.passo{margin-left:auto;font-size:12.5px;color:var(--fraco);white-space:nowrap}
+h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
+.ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
+.oculto{display:none!important}
+
+.botao{display:block;width:100%;margin-top:14px;border:0;cursor:pointer;text-align:center;
+  background:var(--amarelo);color:#1a1500;font-size:15.5px;font-weight:700;
+  font-family:inherit;padding:14px;border-radius:10px;text-decoration:none;transition:background .14s}
+.botao:hover{background:var(--amarelo2)}
+.botao:disabled{opacity:.45;cursor:default}
+.botao:focus-visible,.link:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.botao.fantasma{background:transparent;color:var(--texto);border:1px solid var(--borda)}
+.botao.fantasma:hover{background:var(--alto)}
+.botao.parar{background:var(--alto);color:var(--forte);border:1px solid var(--borda)}
+.link{background:none;border:0;color:var(--fraco);font:inherit;font-size:13px;cursor:pointer;
+  text-decoration:underline;padding:4px}
+.centro{text-align:center}
+
+/* ---------- abertura ---------- */
+.abertura{text-align:center;padding:10px 0 2px}
+.abertura .icone{font-size:40px;line-height:1;margin-bottom:12px}
+.abertura h2{font-size:20px}
+.instrucoes{background:var(--alto);border-radius:12px;padding:14px 16px;margin:6px 0 4px}
+.instrucoes b{display:block;color:var(--amarelo);font-size:13.5px;margin-bottom:4px}
+.instrucoes p{margin:0;font-size:14.5px;line-height:1.6;color:var(--texto)}
+.aviso{margin-top:14px;padding:12px 14px;border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.55;
+  background:rgba(248,113,113,.08);border-left:3px solid var(--vermelho)}
+.contador{margin:12px 0 0;text-align:center;font-size:13px;color:var(--fraco)}
+.contador b{color:var(--forte)}
+.privacidade{font-size:12.5px;color:var(--fraco);margin:12px 0 0;text-align:center;line-height:1.5}
+
+/* ---------- cena ---------- */
+.pessoa{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.avatar{flex:none;width:56px;height:56px;border-radius:50%;background:var(--alto);border:1px solid var(--borda);
+  display:flex;align-items:center;justify-content:center;font-size:28px}
+.pessoa small{display:block;font-size:12.5px;color:var(--fraco);margin-bottom:2px}
+.pessoa b{display:block;font-size:18px;color:var(--forte)}
+.cena{background:var(--alto);border-radius:12px;padding:16px 18px;font-size:15.5px;line-height:1.6;color:var(--forte)}
+.cena small{display:block;color:var(--fraco);font-size:12.5px;margin-bottom:6px}
+
+/* ---------- conversa ---------- */
+.conversa-topo{display:flex;align-items:center;gap:10px;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--borda)}
+.conversa-topo .avatar{width:40px;height:40px;font-size:20px}
+.conversa-topo b{display:block;color:var(--forte);font-size:15px}
+.conversa-topo small{color:var(--fraco);font-size:12.5px}
+.chat{display:flex;flex-direction:column;gap:10px;min-height:120px}
+.bolha{max-width:86%;padding:11px 14px;border-radius:16px;font-size:16px;line-height:1.5;position:relative;
+  animation:entra .25s ease}
+@keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.bolha.dele{align-self:flex-start;background:var(--alto);color:var(--forte);border-bottom-left-radius:4px}
+.bolha.minha{align-self:flex-end;background:rgba(247,208,70,.14);color:var(--forte);border:1px solid rgba(247,208,70,.3);border-bottom-right-radius:4px}
+.ouvir-fala{background:none;border:0;cursor:pointer;color:var(--fraco);font-size:13px;padding:6px 0 0;display:block;font-family:inherit}
+.ouvir-fala:hover{color:var(--forte)}
+.digitando{align-self:flex-start;background:var(--alto);border-radius:16px;border-bottom-left-radius:4px;padding:12px 16px;display:flex;gap:5px}
+.digitando i{width:7px;height:7px;border-radius:50%;background:var(--fraco);animation:pula 1.2s infinite}
+.digitando i:nth-child(2){animation-delay:.15s}.digitando i:nth-child(3){animation-delay:.3s}
+@keyframes pula{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-4px)}}
+
+.resposta{margin-top:16px;padding-top:14px;border-top:1px solid var(--borda)}
+.resposta .rotulo{font-size:13px;font-weight:700;color:var(--forte);margin:0 0 8px}
+.microfone{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;border:0;cursor:pointer;
+  background:var(--amarelo);color:#1a1500;border-radius:14px;padding:16px;font:inherit;font-size:16px;font-weight:700}
+.microfone:hover{background:var(--amarelo2)}
+.microfone span{font-size:30px;line-height:1}
+.ao-vivo{background:#0d0e0f;border:1px solid var(--borda);border-radius:12px;padding:14px;min-height:90px;
+  font-size:17px;line-height:1.6;color:var(--forte)}
+.ao-vivo .provisorio{color:var(--fraco)}
+.ao-vivo .vazio{color:var(--fraco);font-size:15px}
+.mic{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--fraco)}
+.mic .bolinha{width:9px;height:9px;border-radius:50%;background:var(--vermelho);animation:pisca 1s infinite}
+@keyframes pisca{50%{opacity:.25}}
+textarea{width:100%;min-height:96px;resize:vertical;background:#0d0e0f;color:var(--forte);border:1px solid var(--borda);
+  border-radius:12px;padding:12px 14px;font:inherit;font-size:16px;line-height:1.55}
+textarea:focus{outline:2px solid var(--amarelo);outline-offset:1px;border-color:transparent}
+.linha-links{display:flex;justify-content:center;gap:18px;margin-top:8px}
+.encerrada{text-align:center;font-size:14px;color:var(--fraco);margin:4px 0 0}
+
+/* ---------- avaliando ---------- */
+.carregando{text-align:center;padding:40px 0}
+.roda{width:42px;height:42px;border-radius:50%;border:4px solid var(--borda);border-top-color:var(--amarelo);
+  margin:0 auto 16px;animation:gira .9s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+
+/* ---------- resultado ---------- */
+.placar{text-align:center;padding:2px 0 4px}
+.estrelas{font-size:28px;letter-spacing:5px;color:var(--fraco);margin-bottom:8px}
+.estrelas b{color:var(--amarelo);font-weight:400}
+.placar h2{font-size:21px}
+.placar p{margin:0;font-size:14.5px;line-height:1.6}
+.criterios{margin:16px 0 4px;display:flex;flex-direction:column;gap:8px}
+.criterio{display:flex;gap:12px;background:var(--alto);border-radius:12px;padding:12px 14px}
+.criterio .marca{flex:none;font-size:20px;line-height:1.2;color:var(--fraco)}
+.criterio.ok .marca{color:var(--amarelo)}
+.criterio b{display:block;color:var(--forte);font-size:14.5px;margin-bottom:2px}
+.criterio p{margin:0;font-size:13.5px;line-height:1.5;color:var(--texto)}
+.dica{padding:13px 15px;border-radius:0 10px 10px 0;background:rgba(247,208,70,.08);
+  border-left:3px solid var(--amarelo);font-size:14px;line-height:1.6;margin:12px 0 4px}
+.dica b{display:block;color:var(--forte);margin-bottom:2px}
+.dica.verde{background:rgba(74,222,128,.07);border-left-color:var(--verde)}
+.dica.exemplo{background:var(--alto);border-left-color:var(--fraco)}
+.dica.exemplo q{font-style:italic;color:var(--forte)}
+details{margin:14px 0 0;background:var(--alto);border-radius:12px;padding:12px 14px}
+summary{cursor:pointer;font-size:13.5px;font-weight:700;color:var(--forte)}
+.historico{margin-top:10px;font-size:14px;line-height:1.55}
+.historico p{margin:0 0 8px}
+.historico b{color:var(--amarelo)}
+.nota-repetir{margin:14px 0 0;font-size:13px;color:var(--fraco);text-align:center}
+
+@media(max-width:520px){
+  .cartao{padding:16px}
+  .bolha{max-width:92%;font-size:15.5px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="caixa">
+ <div class="cartao">
+
+  <div class="topo">
+    <span class="etiqueta" id="titulo-topo">Treino de conversa</span>
+    <span class="passo" id="passo"></span>
+  </div>
+
+  <!-- ===== ABERTURA ===== -->
+  <section class="etapa" id="e-abertura">
+    <div class="abertura">
+      <div class="icone" id="a-icone">💬</div>
+      <h2 id="a-titulo">Converse</h2>
+    </div>
+    <div class="instrucoes">
+      <b>Instruções</b>
+      <p id="a-instrucoes">Carregando…</p>
+    </div>
+    <div class="aviso oculto" id="a-erro"></div>
+    <p class="contador oculto" id="a-contador"></p>
+    <p class="privacidade">🔒 Sua voz não é gravada. O navegador transforma sua fala em texto, e só o texto da conversa vai para a inteligência artificial que faz o personagem. Nada fica salvo.</p>
+    <button class="botao" id="a-comecar" onclick="abrirCena()" disabled>Começar</button>
+    <a class="botao fantasma" id="b-voltar-abertura" href="#" target="_top">Voltar ao Painel</a>
+  </section>
+
+  <!-- ===== CENA ===== -->
+  <section class="etapa oculto" id="e-cena">
+    <div class="pessoa">
+      <div class="avatar" id="c-emoji">🙂</div>
+      <div><small id="c-papel">—</small><b id="c-nome">—</b></div>
+    </div>
+    <div class="cena"><small>A situação</small><span id="c-cena">—</span></div>
+    <div style="text-align:right"><button class="link" onclick="sortearOutro()">Sortear outra situação</button></div>
+    <p class="ajuda" style="margin-top:10px">A pessoa vai falar primeiro. Responda como você responderia de verdade.</p>
+    <button class="botao" onclick="comecarConversa()">Começar a conversa</button>
+  </section>
+
+  <!-- ===== CONVERSA ===== -->
+  <section class="etapa oculto" id="e-conversa">
+    <div class="conversa-topo">
+      <div class="avatar" id="v-emoji">🙂</div>
+      <div><b id="v-nome">—</b><small id="v-papel">—</small></div>
+    </div>
+    <div class="chat" id="chat" aria-live="polite"></div>
+
+    <div class="resposta" id="r-area">
+      <div class="aviso oculto" id="r-erro"></div>
+
+      <!-- pronto para responder -->
+      <div id="r-pronto">
+        <button class="microfone" onclick="comecarFalar()"><span>🎙️</span>Toque e responda falando</button>
+        <div class="linha-links"><button class="link" onclick="abrirDigitar()">Prefiro digitar</button></div>
+      </div>
+
+      <!-- ouvindo -->
+      <div id="r-ouvindo" class="oculto">
+        <div class="ao-vivo" id="ao-vivo"><span class="vazio">Pode falar…</span></div>
+        <div class="mic"><span class="bolinha"></span>Ouvindo</div>
+        <button class="botao" onclick="terminarFala()">Pronto, terminei</button>
+      </div>
+
+      <!-- confirmar ou digitar -->
+      <div id="r-texto" class="oculto">
+        <p class="rotulo" id="r-texto-rotulo">Confira sua resposta. Se o app entendeu algo errado, corrija antes de enviar.</p>
+        <textarea id="r-caixa" maxlength="700" placeholder="Escreva sua resposta…"></textarea>
+        <button class="botao" id="r-enviar" onclick="enviarResposta()">Enviar resposta</button>
+        <div class="linha-links">
+          <button class="link" id="r-falar-de-novo" onclick="comecarFalar()">Falar de novo</button>
+        </div>
+      </div>
+
+      <!-- fim da conversa -->
+      <div id="r-fim" class="oculto">
+        <p class="encerrada">Conversa encerrada.</p>
+        <button class="botao" onclick="avaliar()">Ver minha nota</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AVALIANDO ===== -->
+  <section class="etapa oculto" id="e-avaliando">
+    <div class="carregando">
+      <div class="roda"></div>
+      <h2>Avaliando sua conversa…</h2>
+      <p class="ajuda">Leva uns segundos.</p>
+    </div>
+    <div class="aviso oculto" id="av-erro"></div>
+    <button class="botao oculto" id="av-tentar" onclick="avaliar()">Tentar de novo</button>
+  </section>
+
+  <!-- ===== RESULTADO ===== -->
+  <section class="etapa oculto" id="e-fim">
+    <div class="placar">
+      <div class="estrelas" id="f-estrelas"></div>
+      <h2 id="f-titulo">—</h2>
+      <p id="f-texto">—</p>
+    </div>
+    <div class="criterios" id="f-criterios"></div>
+    <div class="dica verde" id="f-forte"></div>
+    <div class="dica" id="f-melhorar"></div>
+    <div class="dica exemplo" id="f-exemplo"></div>
+    <details>
+      <summary>Rever a conversa</summary>
+      <div class="historico" id="f-historico"></div>
+    </details>
+    <p class="nota-repetir">Repita quantas vezes quiser. Sua nota mais alta é a que vale.</p>
+    <p class="contador" id="f-contador"></p>
+    <button class="botao" id="f-de-novo" onclick="deNovo()">Conversar de novo</button>
+    <a class="botao fantasma" id="b-proximo" href="#" target="_top">Voltar ao Painel</a>
+  </section>
+
+  <!-- ===== LIMITE DO DIA ===== -->
+  <section class="etapa oculto" id="e-limite">
+    <div class="abertura">
+      <div class="icone">🌙</div>
+      <h2>Por hoje é isso</h2>
+      <p class="ajuda" id="l-texto">Você já fez as conversas de hoje. Amanhã tem mais.</p>
+    </div>
+    <a class="botao" id="b-voltar-limite" href="#" target="_top">Voltar ao Painel</a>
+  </section>
+
+ </div>
+</div>
+
+<script>
+/* ================= PROGRESSO NO CADEMÍ =================
+   Mesmo código dos outros treinos.
+   Formato da nota: TAE|1.1=5|2.3=4|d2026-10-07| */
+const PROGRESSO_URL = "https://hook.us1.make.com/a9bpauyn4nsdi1dsq9pag166skfidr28";
+const DIAS_GUARDADOS = 90;
+const CACHE_MINUTOS = 10;
+
+function hojeTexto(){ return new Date().toLocaleDateString("sv-SE"); }
+
+function lerTextoProgresso(texto, destino){
+  if(!texto || texto.indexOf("TAE|") !== 0) return;
+  texto.split("|").forEach(function(parte){
+    if(/^d\d{4}-\d{2}-\d{2}$/.test(parte)){
+      if(destino.dias.indexOf(parte.slice(1)) === -1) destino.dias.push(parte.slice(1));
+    }else if(parte.indexOf("=") > 0){
+      const k = parte.split("=")[0], v = parseInt(parte.split("=")[1], 10);
+      if(!isNaN(v) && (!destino.notas[k] || v > destino.notas[k])) destino.notas[k] = v;
+    }
+  });
+}
+function lerRespostaCademi(texto){
+  const r = { nota:"", notas:{}, dias:[] };
+  const lista = (JSON.parse(texto).data || []).filter(function(n){
+    return n.body && n.body.indexOf("TAE|") === 0;
+  });
+  lista.sort(function(a,b){ return (b.updated_at || "").localeCompare(a.updated_at || ""); });
+  if(lista.length) r.nota = lista[0].id;
+  lista.forEach(function(n){ lerTextoProgresso(n.body, r); });
+  return r;
+}
+function juntarProgresso(a, b){
+  const r = { notas:Object.assign({}, a.notas), dias:a.dias.slice() };
+  Object.keys(b.notas).forEach(function(k){ if(!r.notas[k] || b.notas[k] > r.notas[k]) r.notas[k] = b.notas[k]; });
+  b.dias.forEach(function(d){ if(r.dias.indexOf(d) === -1) r.dias.push(d); });
+  return r;
+}
+function montarCorpo(p){
+  const partes = Object.keys(p.notas).sort().map(function(k){ return k + "=" + p.notas[k]; });
+  const dias = p.dias.slice().sort().slice(-DIAS_GUARDADOS).map(function(d){ return "d" + d; });
+  return "TAE|" + partes.concat(dias).map(function(x){ return x + "|"; }).join("");
+}
+function buscarCademi(aluno){
+  return fetch(PROGRESSO_URL + "?acao=ler&aluno=" + encodeURIComponent(aluno))
+    .then(function(r){ return r.text(); })
+    .then(function(t){ const p = lerRespostaCademi(t); guardarCache(aluno, p); return p; });
+}
+function salvarCademi(aluno, nota, progresso, treino, primeira){
+  const url = PROGRESSO_URL + "?acao=salvar&aluno=" + encodeURIComponent(aluno) +
+    "&corpo=" + encodeURIComponent(montarCorpo(progresso)) +
+    "&treino=" + encodeURIComponent(treino || "") + "&primeira=" + (primeira ? "sim" : "nao") +
+    (nota ? "&nota=" + encodeURIComponent(nota) : "");
+  return fetch(url).then(function(r){ return r.text(); }).then(function(t){
+    t = (t || "").trim();
+    const id = /^note_\d+$/.test(t) ? t : nota;
+    guardarCache(aluno, { nota:id, notas:progresso.notas, dias:progresso.dias });
+    return id;
+  });
+}
+function guardarCache(aluno, p){
+  try{ localStorage.setItem("tae_cademi_" + aluno, JSON.stringify({ nota:p.nota, notas:p.notas, dias:p.dias, quando:Date.now() })); }catch(e){}
+}
+/* ================= FIM PROGRESSO NO CADEMÍ ================= */
+
+function guardarNota(estrelas){
+  const hoje = hojeTexto();
+  let quem = "visitante";
+  const local = { notas:{}, dias:[] };
+  try{
+    quem = localStorage.getItem("tae_aluno_atual") || "visitante";
+    local.notas = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
+    if(local.notas[CODIGO] === undefined || estrelas > local.notas[CODIGO]) local.notas[CODIGO] = estrelas;
+    localStorage.setItem("tae_notas_" + quem, JSON.stringify(local.notas));
+    local.dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]");
+    if(local.dias.indexOf(hoje) === -1) local.dias.push(hoje);
+    localStorage.setItem("tae_dias_" + quem, JSON.stringify(local.dias));
+  }catch(e){}
+  if(quem === "visitante") return;
+  buscarCademi(quem).then(function(servidor){
+    const juntas = juntarProgresso(servidor, local);
+    return salvarCademi(quem, servidor.nota, juntas, CODIGO, servidor.notas[CODIGO] === undefined);
+  }).catch(function(){ /* sem internet: o painel reenvia depois */ });
+}
+
+/* Painel do TAE no Cademí. */
+const PROXIMO = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+
+/* ======================= CONFIGURAÇÃO =======================
+   O conteúdo (personagens, critérios, técnica) fica em api/_conversas.js.
+   Esta página é só a mecânica: serve para todo treino de conversa.
+   Endereço: converse.html?t=3.1 (sem ?t= abre o Treino 11). */
+const CODIGO = new URLSearchParams(window.location.search).get("t") || "3.1";
+const API = "/api/converse";
+const LIMITE_PADRAO = 5;
+
+/* ======================= MOTOR ======================= */
+const Reconhecedor = window.SpeechRecognition || window.webkitSpeechRecognition;
+let TREINO = null;          /* vem da API */
+let personagem = null, ultimoSorteado = -1;
+let conversa = [];          /* [{quem, texto}] */
+let rec = null, ouvindo = false, textoFinal = "", textoProvisorio = "";
+let ocupado = false;
+
+function $(id){ return document.getElementById(id); }
+function escapar(s){ return String(s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); }
+function aluno(){ try{ return localStorage.getItem("tae_aluno_atual") || "visitante"; }catch(e){ return "visitante"; } }
+
+function mostrar(id){
+  if(window.speechSynthesis) try{ speechSynthesis.cancel(); }catch(e){}
+  document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); });
+  $(id).classList.remove("oculto");
+  const alvo = document.querySelector(".cartao");
+  if(alvo && alvo.scrollIntoView) alvo.scrollIntoView({ block:"start", behavior:"smooth" });
+}
+
+/* ---------- limite do dia (no aparelho; o servidor também confere) ---------- */
+function chaveDia(){ return "tae_conversas_" + aluno(); }
+function usadasLocal(){
+  try{
+    const c = JSON.parse(localStorage.getItem(chaveDia()) || "null");
+    return c && c.dia === hojeTexto() ? c.n : 0;
+  }catch(e){ return 0; }
+}
+function contarLocal(){
+  try{ localStorage.setItem(chaveDia(), JSON.stringify({ dia:hojeTexto(), n:usadasLocal() + 1 })); }catch(e){}
+}
+let usadasServidor = 0;
+function usadas(){ return Math.max(usadasLocal(), usadasServidor || 0); }
+function limite(){ return (TREINO && TREINO.limite) || LIMITE_PADRAO; }
+function restam(){ return Math.max(0, limite() - usadas()); }
+function textoContador(){
+  const r = restam();
+  return r === 0 ? "Você já usou as " + limite() + " conversas de hoje."
+    : "Você tem <b>" + r + (r === 1 ? " conversa" : " conversas") + "</b> hoje.";
+}
+function mostrarLimite(){
+  $("l-texto").textContent = "Você já fez as " + limite() + " conversas de hoje. Amanhã tem mais.";
+  mostrar("e-limite");
+}
+
+/* ---------- carregar o treino ---------- */
+function carregar(){
+  fetch(API + "?treino=" + encodeURIComponent(CODIGO) + "&aluno=" + encodeURIComponent(aluno()))
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(t){
+      TREINO = t;
+      usadasServidor = t.usadas || 0;
+      $("titulo-topo").textContent = t.titulo;
+      document.title = t.titulo;
+      $("a-icone").textContent = t.icone || "💬";
+      $("a-titulo").textContent = t.titulo.replace(/^Treino \d+: /, "");
+      $("a-instrucoes").textContent = t.instrucoes;
+      $("a-contador").innerHTML = textoContador();
+      $("a-contador").classList.remove("oculto");
+      if(!t.pronto){
+        $("a-erro").textContent = "O treino ainda não está ligado à inteligência artificial (falta a chave na Vercel).";
+        $("a-erro").classList.remove("oculto");
+        return;
+      }
+      $("a-comecar").disabled = false;
+    })
+    .catch(function(){
+      $("a-instrucoes").textContent = "Não consegui carregar o treino.";
+      $("a-erro").textContent = "Confira sua internet e recarregue a página.";
+      $("a-erro").classList.remove("oculto");
+    });
+}
+
+/* ---------- cena ---------- */
+function sortear(){
+  const n = TREINO.personagens.length;
+  let i = Math.floor(Math.random() * n);
+  if(n > 1 && i === ultimoSorteado) i = (i + 1 + Math.floor(Math.random() * (n - 1))) % n;
+  ultimoSorteado = i;
+  personagem = TREINO.personagens[i];
+  $("c-emoji").textContent = personagem.emoji;
+  $("c-papel").textContent = personagem.papel;
+  $("c-nome").textContent = personagem.nome;
+  $("c-cena").textContent = personagem.cena;
+}
+function abrirCena(){
+  if(restam() === 0) return mostrarLimite();
+  sortear();
+  $("passo").textContent = "";
+  mostrar("e-cena");
+}
+function sortearOutro(){ sortear(); }
+
+/* ---------- conversa ---------- */
+function respostasDadas(){ return conversa.filter(function(m){ return m.quem === "aluno"; }).length; }
+function atualizarPasso(){
+  const n = respostasDadas();
+  $("passo").textContent = "Resposta " + Math.min(n + 1, TREINO.maxRespostas) + " de até " + TREINO.maxRespostas;
+}
+
+function comecarConversa(){
+  conversa = [{ quem:"personagem", texto:personagem.abertura }];
+  $("v-emoji").textContent = personagem.emoji;
+  $("v-nome").textContent = personagem.nome;
+  $("v-papel").textContent = personagem.papel;
+  $("chat").innerHTML = "";
+  adicionarBolha("personagem", personagem.abertura);
+  atualizarPasso();
+  modoResposta(Reconhecedor ? "pronto" : "digitar");
+  mostrar("e-conversa");
+}
+
+function adicionarBolha(quem, texto){
+  const b = document.createElement("div");
+  b.className = "bolha " + (quem === "aluno" ? "minha" : "dele");
+  b.innerHTML = escapar(texto);
+  if(quem !== "aluno" && window.speechSynthesis){
+    const o = document.createElement("button");
+    o.className = "ouvir-fala"; o.type = "button"; o.textContent = "🔈 Ouvir";
+    o.onclick = function(){ falarEmVoz(texto); };
+    b.appendChild(o);
+  }
+  $("chat").appendChild(b);
+  b.scrollIntoView({ block:"nearest", behavior:"smooth" });
+}
+function falarEmVoz(texto){
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(texto);
+    u.lang = "pt-BR";
+    const voz = speechSynthesis.getVoices().find(function(v){ return /pt-BR|pt_BR/i.test(v.lang); });
+    if(voz) u.voice = voz;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+function mostrarDigitando(sim){
+  const d = $("digitando");
+  if(sim && !d){
+    const el = document.createElement("div");
+    el.className = "digitando"; el.id = "digitando";
+    el.innerHTML = "<i></i><i></i><i></i>";
+    $("chat").appendChild(el);
+    el.scrollIntoView({ block:"nearest", behavior:"smooth" });
+  }else if(!sim && d) d.remove();
+}
+
+/* Modos da área de resposta: pronto, ouvindo, confirmar, digitar, esperando, fim */
+function modoResposta(m){
+  ["r-pronto", "r-ouvindo", "r-texto", "r-fim"].forEach(function(id){ $(id).classList.add("oculto"); });
+  $("r-erro").classList.add("oculto");
+  if(m === "pronto") $("r-pronto").classList.remove("oculto");
+  if(m === "ouvindo") $("r-ouvindo").classList.remove("oculto");
+  if(m === "confirmar" || m === "digitar"){
+    $("r-texto").classList.remove("oculto");
+    $("r-texto-rotulo").textContent = m === "confirmar"
+      ? "Confira sua resposta. Se o app entendeu algo errado, corrija antes de enviar."
+      : "Escreva sua resposta como se estivesse falando.";
+    $("r-falar-de-novo").textContent = m === "confirmar" ? "Falar de novo" : "Prefiro falar";
+    $("r-falar-de-novo").classList.toggle("oculto", !Reconhecedor);
+    $("r-enviar").disabled = false;
+  }
+  if(m === "fim") $("r-fim").classList.remove("oculto");
+}
+function erroResposta(msg){
+  $("r-erro").textContent = msg;
+  $("r-erro").classList.remove("oculto");
+}
+
+function abrirDigitar(){
+  pararReconhecimento();
+  $("r-caixa").value = "";
+  modoResposta("digitar");
+  $("r-caixa").focus();
+}
+
+/* ---------- voz ---------- */
+function desenharAoVivo(){
+  const f = textoFinal.trim(), p = textoProvisorio.trim();
+  $("ao-vivo").innerHTML = !f && !p ? '<span class="vazio">Pode falar…</span>'
+    : escapar(f) + (p ? ' <span class="provisorio">' + escapar(p) + "</span>" : "");
+}
+function comecarFalar(){
+  if(!Reconhecedor) return abrirDigitar();
+  if(window.speechSynthesis) try{ speechSynthesis.cancel(); }catch(e){}
+  textoFinal = ""; textoProvisorio = "";
+  desenharAoVivo();
+  modoResposta("ouvindo");
+  rec = new Reconhecedor();
+  rec.lang = "pt-BR"; rec.continuous = true; rec.interimResults = true;
+  rec.onresult = function(ev){
+    let prov = "";
+    for(let i = ev.resultIndex; i < ev.results.length; i++){
+      const r = ev.results[i];
+      if(r.isFinal) textoFinal += " " + r[0].transcript;
+      else prov += r[0].transcript;
+    }
+    textoProvisorio = prov;
+    desenharAoVivo();
+  };
+  rec.onend = function(){ if(ouvindo){ try{ rec.start(); }catch(e){} } };
+  rec.onerror = function(e){
+    if(e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture"){
+      ouvindo = false;
+      $("r-caixa").value = "";
+      modoResposta("digitar");
+      erroResposta("Não consegui usar o microfone. Libere o microfone no cadeado ao lado do endereço, ou escreva sua resposta aqui.");
+    }
+  };
+  ouvindo = true;
+  try{ rec.start(); }catch(e){}
+}
+function pararReconhecimento(){
+  ouvindo = false;
+  if(rec){ try{ rec.stop(); }catch(e){} }
+}
+function terminarFala(){
+  pararReconhecimento();
+  /* Espera um instante: o navegador ainda entrega o último pedaço. */
+  setTimeout(function(){
+    const texto = (textoFinal + " " + textoProvisorio).replace(/\s+/g, " ").trim();
+    $("r-caixa").value = texto ? texto.charAt(0).toUpperCase() + texto.slice(1) : "";
+    modoResposta("confirmar");
+    if(!texto) erroResposta("Não ouvi nada. Toque em \"Falar de novo\" e fale um pouco mais alto, ou escreva sua resposta.");
+  }, 600);
+}
+
+/* ---------- enviar ---------- */
+function chamarApi(acao){
+  return fetch(API, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ acao:acao, treino:CODIGO, personagem:personagem.id,
+      aluno: aluno() === "visitante" ? "" : aluno(), conversa:conversa })
+  }).then(function(r){
+    return r.json().catch(function(){ return {}; }).then(function(j){ j._status = r.status; return j; });
+  });
+}
+
+function enviarResposta(){
+  if(ocupado) return;
+  const texto = $("r-caixa").value.replace(/\s+/g, " ").trim();
+  if(texto.length < 2){ erroResposta("Escreva ou fale sua resposta antes de enviar."); return; }
+  ocupado = true;
+  $("r-enviar").disabled = true;
+  conversa.push({ quem:"aluno", texto:texto });
+  adicionarBolha("aluno", texto);
+  ["r-pronto", "r-ouvindo", "r-texto", "r-fim"].forEach(function(id){ $(id).classList.add("oculto"); });
+  $("r-erro").classList.add("oculto");
+  mostrarDigitando(true);
+  const primeira = respostasDadas() === 1;
+
+  chamarApi("fala").then(function(j){
+    mostrarDigitando(false);
+    ocupado = false;
+    if(j._status === 429){ mostrarLimite(); return; }
+    if(j._status !== 200 || !j.fala) throw new Error(j.erro || "falha");
+    if(primeira) contarLocal();
+    conversa.push({ quem:"personagem", texto:j.fala });
+    adicionarBolha("personagem", j.fala);
+    if(j.fim){
+      $("passo").textContent = "conversa encerrada";
+      modoResposta("fim");
+    }else{
+      atualizarPasso();
+      modoResposta(Reconhecedor ? "pronto" : "digitar");
+      if(!Reconhecedor) $("r-caixa").value = "";
+    }
+  }).catch(function(){
+    mostrarDigitando(false);
+    ocupado = false;
+    /* Desfaz a resposta para o aluno poder enviar de novo. */
+    conversa.pop();
+    const bolhas = $("chat").querySelectorAll(".bolha.minha");
+    if(bolhas.length) bolhas[bolhas.length - 1].remove();
+    $("r-caixa").value = texto;
+    modoResposta("confirmar");
+    erroResposta("Não consegui falar com " + personagem.nome + " agora. Confira sua internet e toque em Enviar de novo.");
+  });
+}
+
+/* ---------- avaliação ---------- */
+function avaliar(){
+  mostrar("e-avaliando");
+  $("av-erro").classList.add("oculto");
+  $("av-tentar").classList.add("oculto");
+  document.querySelector("#e-avaliando .carregando").classList.remove("oculto");
+  chamarApi("avaliar").then(function(j){
+    if(j._status !== 200 || !Array.isArray(j.criterios)) throw new Error(j.erro || "falha");
+    final(j);
+  }).catch(function(){
+    document.querySelector("#e-avaliando .carregando").classList.add("oculto");
+    $("av-erro").textContent = "Não consegui avaliar sua conversa agora. Confira sua internet e tente de novo.";
+    $("av-erro").classList.remove("oculto");
+    $("av-tentar").classList.remove("oculto");
+  });
+}
+
+function final(r){
+  const estrelas = Math.max(0, Math.min(5, r.estrelas | 0));
+  $("passo").textContent = "concluído";
+  $("f-estrelas").innerHTML = "<b>" + "★".repeat(estrelas) + "</b>" + "★".repeat(5 - estrelas);
+  const TIT = ["😞 Não foi dessa vez", "😕 Uma estrela", "😐 Metade do caminho", "🙂 Bom resultado",
+    "😃 Quase perfeito", "🤩 Assertividade: 5 estrelas"];
+  $("f-titulo").textContent = TIT[estrelas];
+  $("f-texto").textContent = "Você cumpriu " + estrelas + " de " + r.criterios.length + " pontos da técnica.";
+  $("f-criterios").innerHTML = r.criterios.map(function(c){
+    return '<div class="criterio' + (c.ok ? " ok" : "") + '"><div class="marca">' + (c.ok ? "★" : "☆") + "</div>" +
+      "<div><b>" + escapar(c.nome) + "</b><p>" + escapar(c.comentario || "") + "</p></div></div>";
+  }).join("");
+  $("f-forte").innerHTML = "<b>O que funcionou</b>" + escapar(r.forte || "");
+  $("f-melhorar").innerHTML = "<b>Para a próxima</b>" + escapar(r.melhorar || "");
+  $("f-exemplo").innerHTML = "<b>Uma resposta assertiva seria</b><q>" + escapar(r.exemplo || "") + "</q>";
+  $("f-forte").classList.toggle("oculto", !r.forte);
+  $("f-melhorar").classList.toggle("oculto", !r.melhorar);
+  $("f-exemplo").classList.toggle("oculto", !r.exemplo);
+  $("f-historico").innerHTML = conversa.map(function(m){
+    return "<p><b>" + (m.quem === "aluno" ? "Você" : escapar(personagem.nome)) + ":</b> " + escapar(m.texto) + "</p>";
+  }).join("");
+  $("f-contador").innerHTML = textoContador();
+  $("f-de-novo").disabled = restam() === 0;
+  $("f-de-novo").textContent = restam() === 0 ? "Amanhã tem mais conversas" : "Conversar de novo";
+  mostrar("e-fim");
+  guardarNota(estrelas);
+}
+
+function deNovo(){ abrirCena(); }
+
+/* ---------- início ---------- */
+$("b-proximo").href = PROXIMO;
+$("b-voltar-abertura").href = PROXIMO;
+$("b-voltar-limite").href = PROXIMO;
+$("r-caixa").addEventListener("keydown", function(e){
+  if(e.key === "Enter" && (e.metaKey || e.ctrlKey)) enviarResposta();
+});
+if(window.speechSynthesis) try{ speechSynthesis.getVoices(); }catch(e){}
+carregar();
+</script>
+</body>
+</html>
