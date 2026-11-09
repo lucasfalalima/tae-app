@@ -415,8 +415,8 @@ const TREINOS = {
         errado:"Os fortes são os que têm número. Opinião dá pra discordar; número, não." },
 
       { tipo:"cortar",
-        titulo:"Fique com os 3 melhores",
-        ajuda:"A Júlia vai pedir pra trocar de fornecedor. Tire os 3 motivos mais fracos.",
+        titulo:"Fique com os motivos que têm prova",
+        ajuda:"A Júlia vai pedir pra trocar de fornecedor. Tire os 3 motivos sem número.",
         instrucao:"Toque para tirar da fala.",
         cortar:3,
         opcoes:[
@@ -427,8 +427,8 @@ const TREINOS = {
           { t:"O novo dá garantia de 2 anos", fica:true },
           { t:"Todo mundo tá falando do novo", fica:false }
         ],
-        certo:"Ficaram prazo, custo e garantia. Três motivos, e todos com número.",
-        errado:"Os fortes são prazo, custo e garantia: os três com número. O resto é impressão." }
+        certo:"Ficaram os que têm número: prazo, custo e garantia. Ninguém discute com eles.",
+        errado:"Os que ficam são os que têm número: prazo, custo e garantia. O resto é impressão, e impressão dá pra discordar." }
     ],
     mensagens:[
       { t:"😞 Não foi dessa vez",
@@ -486,7 +486,7 @@ const TREINOS = {
         ajuda:"Em vez de duas palavras fracas, uma palavra forte.",
         instrucao:"Escolha a melhor troca em cada uma.",
         itens:[
-          { fala:"\"muito cansado\"", ops:["exausto", "bem cansado", "cansadão"], certa:0,
+          { fala:"\"muito bravo\"", ops:["bem bravo", "furioso", "bravo demais"], certa:1,
             p:"Uma palavra só, e mais forte." },
           { fala:"\"muito importante\"", ops:["super importante", "essencial", "importante demais"], certa:1,
             p:"\"Essencial\" diz mais que qualquer \"muito\"." },
@@ -513,14 +513,14 @@ const TREINOS = {
 
       { tipo:"escolha",
         titulo:"Qual notícia parece de quem tem o controle?",
-        ajuda:"A Carla vai contar ao time como foi o trimestre.",
+        ajuda:"A Sônia é síndica e vai contar aos moradores como foi o ano do condomínio.",
         instrucao:"Escolha uma versão.",
         itens:[
-          { fala:"Como foi o trimestre?",
-            ops:["\"Foi um trimestre bem positivo. A gente cresceu bastante e o time tá de parabéns.\"",
-                 "\"Crescemos 18% no trimestre. Foram 40 clientes novos. O time bateu a meta três semanas antes.\""],
+          { fala:"Como foi o ano do condomínio?",
+            ops:["\"Foi um ano bem positivo. A gente economizou bastante e o prédio tá muito mais bem cuidado.\"",
+                 "\"Economizamos R$ 18 mil no ano. Trocamos as 40 lâmpadas da garagem por LED. E a taxa não sobe em 2027.\""],
             certa:1,
-            p:"Na segunda, cada frase tem um número. A primeira dá parabéns, mas não diz pelo quê." }
+            p:"Na segunda, cada frase tem um número. A primeira diz que foi bom, mas não diz o quê." }
         ],
         minimo:1,
         fim:"{n} de {total} certa." }
@@ -574,12 +574,12 @@ const TREINOS = {
                  "Os detalhes do contrato que vocês tinham com ela"],
             certa:1,
             p:"Chefe quer impacto e prazo. O resto, se ele quiser, pergunta." },
-          { fala:"A entrega de um cliente atrasou. O que você diz primeiro para o cliente?",
-            ops:["Por que o caminhão quebrou no caminho",
-                 "Quem foi o responsável pelo atraso",
-                 "Quando a entrega chega e o que muda pra ele"],
+          { fala:"A escola liga pra mãe: o filho dela caiu no recreio. O que a escola diz primeiro?",
+            ops:["Como o acidente aconteceu",
+                 "Quem estava cuidando das crianças na hora",
+                 "Que ele está bem e foi só um arranhão"],
             certa:2,
-            p:"Cliente quer saber quando chega e o que fazer. O porquê é problema seu." }
+            p:"A mãe quer saber se o filho está bem. O resto ela ouve depois, já mais calma." }
         ],
         minimo:2,
         fim:"{n} de {total} certas." },
@@ -601,20 +601,20 @@ const TREINOS = {
         errado:"ERP, SKU, backoffice e reprocessamento são palavras de quem é da área. O cliente não precisa delas." },
 
       { tipo:"cortar",
-        titulo:"Tire o que o cliente não precisa",
-        ajuda:"O Marcos vai avisar um cliente que a entrega atrasou. Tire 3 frases.",
+        titulo:"Tire o que ela não precisa",
+        ajuda:"O Sérgio é eletricista e vai explicar à Dona Neide, de 70 anos, o que aconteceu com o chuveiro. Tire 3 frases.",
         instrucao:"Toque para tirar da fala.",
         cortar:3,
         opcoes:[
-          { t:"Sua entrega chega na quinta, e não na terça", fica:true },
-          { t:"O caminhão quebrou na Via Dutra", fica:false },
-          { t:"O frete dessa vez é por nossa conta", fica:true },
-          { t:"Nosso sistema de rota tava desatualizado", fica:false },
-          { t:"Se precisar antes, é só me ligar", fica:true },
-          { t:"Isso nunca tinha acontecido em cinco anos", fica:false }
+          { t:"A fiação do chuveiro esquentou e pode dar curto", fica:true },
+          { t:"O disjuntor é de 32 amperes e devia ser de 40", fica:false },
+          { t:"O conserto fica R$ 350, e eu faço amanhã de manhã", fica:true },
+          { t:"Quem fez a instalação antes fez tudo errado", fica:false },
+          { t:"Até lá, a senhora não usa o chuveiro", fica:true },
+          { t:"Isso é muito comum em casa antiga", fica:false }
         ],
-        certo:"Ficou o que muda a vida do cliente: quando chega, quanto custa e o que fazer.",
-        errado:"Fica o que muda a vida do cliente: quando chega, quanto custa e o que fazer. O resto era explicação pra você." },
+        certo:"Ficou o que muda a vida dela: o perigo, o preço e o que fazer até amanhã.",
+        errado:"Fica o que muda a vida dela: o perigo, o preço e o que fazer até amanhã. O resto era detalhe de eletricista." },
 
       { tipo:"escolha",
         titulo:"Qual versão a cliente entende?",
@@ -652,17 +652,17 @@ const TREINOS = {
     partes:[
       { tipo:"escolha",
         titulo:"Cadê a resposta?",
-        ajuda:"O chefe perguntou: \"A campanha deu resultado?\". A Renata respondeu com cinco frases.",
+        ajuda:"A cliente perguntou ao Seu João, pintor: \"Quanto fica pra pintar o apartamento todo?\". Ele respondeu com cinco frases.",
         instrucao:"Toque na frase que de fato responde.",
         itens:[
-          { fala:"\"A campanha deu resultado?\"",
-            ops:["\"Então, a gente mudou bastante coisa no meio do caminho.\"",
-                 "\"O público respondeu diferente do que a gente esperava.\"",
-                 "\"No fim, vendemos 30% a mais que a campanha anterior.\"",
-                 "\"Teve um problema com o vídeo na primeira semana.\"",
-                 "\"Mas o time se dedicou muito.\""],
-            certa:2,
-            p:"A resposta estava na terceira frase. Quem perguntou teve que esperar duas frases pra ouvir." }
+          { fala:"\"Quanto fica pra pintar o apartamento todo?\"",
+            ops:["\"Então, depende muito da tinta que a senhora escolher.\"",
+                 "\"Apartamento de dois quartos dá um trabalho bom.\"",
+                 "\"Tem que ver se as paredes vão precisar de massa corrida.\"",
+                 "\"Fica uns R$ 3.200, já com o material.\"",
+                 "\"E eu consigo começar na segunda.\""],
+            certa:3,
+            p:"A resposta estava na quarta frase. A cliente teve que ouvir três explicações antes de saber o preço." }
         ],
         minimo:1,
         fim:"{n} de {total} certa." },
@@ -692,12 +692,12 @@ const TREINOS = {
                     "Já estou negociando dois contratos pra cobrir em dezembro."],
             rotulos:["Posição", "Motivo", "Próximo passo"],
             p:"A resposta vem primeiro. O próximo passo mostra que você está no controle." },
-          { contexto:"\"O sistema novo tá funcionando?\"",
-            frases:["Ainda não, falta a parte de relatórios.",
-                    "O fornecedor pediu mais uma semana.",
-                    "Te mando a data final na sexta."],
+          { contexto:"A esposa pergunta: \"Dá pra gente viajar em julho?\"",
+            frases:["Dá, mas só uma semana.",
+                    "Preciso guardar a outra semana de férias pra mudança em setembro.",
+                    "Hoje à noite a gente escolhe o lugar juntos."],
             rotulos:["Posição", "Motivo", "Próximo passo"],
-            p:"Mesmo sem boa notícia, a resposta fica clara e segura." }
+            p:"Mesmo com um \"mas\", a resposta vem primeiro e a conversa termina com um plano." }
         ],
         minimo:2,
         fim:"{n} de {total} na ordem certa." },
