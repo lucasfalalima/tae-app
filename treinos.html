@@ -125,6 +125,21 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
   font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--amarelo);
   text-transform:uppercase;margin:22px 0 9px;
 }
+.respira{display:flex;flex-direction:column;align-items:center;padding:8px 0 4px}
+.respira .bola{width:170px;height:170px;border-radius:50%;background:rgba(247,208,70,.14);
+  border:2px solid var(--amarelo);display:flex;align-items:center;justify-content:center;
+  transform:scale(.55);transition:transform 4s ease-in-out}
+.respira .bola span{font-size:22px;font-weight:700;color:var(--forte)}
+.respira .fase{margin-top:14px;font-size:15px;font-weight:600;color:var(--amarelo)}
+.respira .ciclos{margin-top:6px;font-size:13px;color:var(--fraco)}
+.tema-fala{background:var(--alto);border-radius:12px;padding:16px 18px;margin-bottom:6px}
+.tema-fala small{display:block;color:var(--fraco);font-size:12.5px;margin-bottom:5px}
+.tema-fala p{margin:0;color:var(--forte);font-size:17px;line-height:1.45;font-weight:600}
+.cronometro{text-align:center;font-size:54px;font-weight:800;color:var(--amarelo);padding:10px 0 2px;font-variant-numeric:tabular-nums}
+.cronometro-rotulo{text-align:center;font-size:13.5px;color:var(--fraco)}
+.medidor{height:10px;background:var(--borda);border-radius:99px;overflow:hidden;margin:14px 0 4px}
+.medidor i{display:block;height:100%;width:0;background:var(--verde);transition:width .08s}
+.link-mini{background:none;border:0;color:var(--fraco);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline;padding:4px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -228,6 +243,16 @@ const PAINEL = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmY
    "ordenar"  Frases embaralhadas: o aluno toca na ordem certa.
               itens:  [{ contexto, frases:[na ordem CERTA], rotulos:[opcional], p }]
               minimo e fim: como no binário (conta itens com a ordem toda certa)
+
+   "respirar" Respiração guiada: um círculo cresce (puxa o ar) e diminui (solta).
+              puxa, solta: segundos de cada fase; ciclos: quantas vezes.
+              certo: retorno. A estrela vem ao completar os ciclos.
+
+   "falar"    Fala-surpresa com microfone: tema sorteado, tempo para preparar
+              a primeira frase e tempo de fala com medidor de voz.
+              temas:[...], preparo e fala: segundos; minimo: segundos de fala
+              (do primeiro ao último som) para ganhar a estrela.
+              certo / errado: retorno. O áudio não é gravado nem enviado.
 
    Em todos: titulo, ajuda (texto cinza) e instrucao (texto amarelo).
    ===================================================================== */
@@ -748,6 +773,191 @@ const TREINOS = {
       { t:"🤩 Acertou tudo",
         x:"Agora a parte que vale de verdade: na próxima pergunta que te fizerem, responda primeiro e explique depois." }
     ]
+  },
+
+  /* ---------------- Treino 8 · Fale sem se diminuir ---------------- */
+  "2.3": {
+    numero:8, nome:"Fale sem se diminuir", selo:"💪", minutos:3,
+    partes:[
+      { tipo:"binario",
+        titulo:"Diminui ou afirma?",
+        ajuda:"Diminui é a frase que pede licença para existir. Afirma é a que diz o que precisa ser dito.",
+        instrucao:"Escolha uma em cada frase.",
+        botoes:["Afirma", "Diminui"],
+        itens:[
+          { t:"\"É só uma perguntinha rápida sobre o relatório.\"", ok:false, p:"\"Só\" e \"perguntinha\" avisam que não é importante." },
+          { t:"\"Proponho trocar a reunião de segunda pra terça.\"", ok:true, p:"Diz o que quer, sem pedir licença." },
+          { t:"\"Não sei se faz sentido, mas a taxa do condomínio podia baixar.\"", ok:false, p:"A frase pede licença antes de existir." },
+          { t:"\"Obrigada por esperar. Seu pedido já está pronto.\"", ok:true, p:"Gentil e firme ao mesmo tempo." }
+        ],
+        minimo:3,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"marcar",
+        titulo:"Ache o que pede licença",
+        ajuda:"A Júlia é estagiária e escreveu para a chefe.",
+        instrucao:"Marque os trechos que diminuem a mensagem.",
+        fala:"\"Oi, Marta, desculpa incomodar, é só pra perguntar se você conseguiu ver o relatório. Sem pressa, tá? Se não fizer sentido, pode ignorar.\"",
+        opcoes:[
+          { t:"desculpa incomodar", ok:true },
+          { t:"Oi, Marta", ok:false },
+          { t:"é só", ok:true },
+          { t:"o relatório", ok:false },
+          { t:"sem pressa, tá?", ok:true },
+          { t:"se não fizer sentido, pode ignorar", ok:true }
+        ],
+        certo:"Sem esses trechos, sobra o pedido: você conseguiu ver o relatório?",
+        errado:"Os trechos que diminuem são: desculpa incomodar, é só, sem pressa, tá? e se não fizer sentido, pode ignorar. Sem eles, sobra o pedido." },
+
+      { tipo:"escolha",
+        titulo:"Desculpa ou obrigado?",
+        ajuda:"Troque o \"desculpa\" por \"obrigado\": a gentileza continua, sem você se culpar.",
+        instrucao:"Escolha a melhor frase em cada situação.",
+        itens:[
+          { fala:"O cliente esperou 15 minutos na fila da loja.",
+            ops:["\"Desculpa, desculpa mesmo pela demora…\"", "\"Obrigada por esperar! Em que posso ajudar?\""],
+            certa:1, p:"Agradecer a paciência é mais forte que pedir desculpa." },
+          { fala:"A mãe ajudou a montar o móvel.",
+            ops:["\"Obrigado pela ajuda, mãe.\"", "\"Desculpa te dar esse trabalho todo.\""],
+            certa:0, p:"Ela ajudou porque quis. Agradeça." },
+          { fala:"O motorista de aplicativo se perdeu e atrasou.",
+            ops:["\"Desculpa, o GPS me levou pro lado errado, desculpa mesmo…\"", "\"Obrigado pela paciência. Chegamos em 5 minutos.\""],
+            certa:1, p:"Agradece e já diz o que importa: quando chega." }
+        ],
+        minimo:2,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"cortar",
+        titulo:"Tire o que diminui",
+        ajuda:"O Sandro é eletricista e vai mandar um orçamento por mensagem. Tire 3 frases.",
+        instrucao:"Toque para tirar da mensagem.",
+        cortar:3,
+        opcoes:[
+          { t:"A troca da fiação da cozinha fica R$ 600", fica:true },
+          { t:"Desculpa a demora pra responder", fica:false },
+          { t:"O material está incluso", fica:true },
+          { t:"Não sei se ficou caro pra você", fica:false },
+          { t:"Consigo fazer na quinta às 8h", fica:true },
+          { t:"Se achar muito, a gente vê", fica:false }
+        ],
+        certo:"Ficou o que o cliente precisa saber: preço, o que está incluso e quando.",
+        errado:"Fica o que o cliente precisa saber: preço, o que está incluso e quando. O resto era pedido de desculpa por cobrar." },
+
+      { tipo:"escolha",
+        titulo:"Qual versão soa segura?",
+        ajuda:"A professora Luísa quer marcar uma reunião com os pais de um aluno.",
+        instrucao:"Escolha uma versão.",
+        itens:[
+          { fala:"Como a professora escreve para os pais?",
+            ops:["\"Oi, desculpa incomodar, não sei se vocês têm um tempinho, mas acho que seria bom a gente conversar rapidinho sobre o Pedro…\"",
+                 "\"Olá! Gostaria de conversar com vocês sobre o Pedro. Podem vir na quinta, às 17h?\""],
+            certa:1,
+            p:"A segunda é tão educada quanto a primeira. A diferença é que os pais entendem que a conversa é importante." }
+        ],
+        minimo:1,
+        fim:"{n} de {total} certa." }
+    ],
+    mensagens:[
+      { t:"😞 Não foi dessa vez",
+        x:"Você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
+      { t:"😕 Você acertou uma",
+        x:"Já tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
+      { t:"😐 Metade do caminho",
+        x:"Você já percebe o que diminui. Falta cortar no automático." },
+      { t:"🙂 Bom resultado",
+        x:"Você já sabe falar sem pedir licença. Dá pra usar isso hoje." },
+      { t:"😃 Quase perfeito",
+        x:"Faltou um detalhe. O essencial você já domina: cortar a licença e trocar desculpa por obrigado." },
+      { t:"🤩 Acertou tudo",
+        x:"Agora a parte que vale de verdade: na sua próxima mensagem, troque um \"desculpa\" por \"obrigado\"." }
+    ]
+  },
+
+  /* ---------------- Treino 10 · Calma sob pressão ---------------- */
+  "2.5": {
+    numero:10, nome:"Calma sob pressão", selo:"🧘", minutos:4,
+    partes:[
+      { tipo:"binario",
+        titulo:"Verdade ou mito?",
+        ajuda:"Antes das ferramentas, o que é verdade sobre o nervoso.",
+        instrucao:"Escolha uma em cada frase.",
+        botoes:["Verdade", "Mito"],
+        itens:[
+          { t:"\"Quem fica nervoso não serve pra falar em público.\"", ok:false, p:"Todo mundo fica nervoso. Quem fala bem aprendeu a falar junto com o nervoso." },
+          { t:"\"Soltar o ar mais devagar do que puxou ajuda a acalmar.\"", ok:true, p:"É o segredo da Respiração 4-6." },
+          { t:"\"Uma pausa de dois segundos, pra quem ouve, parece que você está pensando.\"", ok:true, p:"Só você sabe que deu branco." },
+          { t:"\"O melhor jeito de não dar branco é decorar o texto inteiro.\"", ok:false, p:"Decorar tudo é o que mais dá branco. Decore só a primeira frase." }
+        ],
+        minimo:3,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"respirar",
+        titulo:"Respiração 4-6",
+        ajuda:"Puxe o ar pelo nariz enquanto o círculo cresce. Solte devagar pela boca enquanto ele diminui.",
+        instrucao:"Faça os três ciclos até o fim.",
+        puxa:4, solta:6, ciclos:3,
+        certo:"Três respirações, quase 30 segundos. Faça isso antes de entrar na próxima reunião." },
+
+      { tipo:"escolha",
+        titulo:"Qual primeira frase está pronta?",
+        ajuda:"A primeira frase é a mais difícil. Por isso ela vem decorada.",
+        instrucao:"Escolha uma opção em cada situação.",
+        itens:[
+          { fala:"O Marcos vai apresentar o resultado do trimestre na reunião de vendas.",
+            ops:["\"Bom, então, é… deixa eu ver por onde começo…\"",
+                 "\"Bom dia. Fechamos o trimestre 12% acima da meta, e eu vou mostrar como.\"",
+                 "\"Desculpa, eu tô um pouco nervoso hoje…\""],
+            certa:1, p:"Pronta, curta e já diz do que se trata." },
+          { fala:"A Dona Lúcia vai falar na reunião do condomínio sobre a reforma da piscina.",
+            ops:["\"Boa noite. Eu tenho uma proposta pra reforma da piscina que cabe no caixa do prédio.\"",
+                 "\"Gente, eu não sou muito boa nisso, mas…\"",
+                 "\"Então… sobre aquele assunto da piscina, né…\""],
+            certa:0, p:"Começa firme e já entrega o assunto." }
+        ],
+        minimo:2,
+        fim:"{n} de {total} certas." },
+
+      { tipo:"escolha",
+        titulo:"Deu branco. E agora?",
+        ajuda:"O Fernando está apresentando um projeto e, no meio, esquece o que ia dizer.",
+        instrucao:"Escolha a melhor reação.",
+        itens:[
+          { fala:"O que o Fernando faz?",
+            ops:["Pede desculpas e diz que esqueceu",
+                 "Fala rápido qualquer coisa pra não ficar em silêncio",
+                 "Para, respira e diz: \"Como eu dizia, o projeto reduz os custos…\""],
+            certa:2, p:"Pare, respire e volte pra última âncora. A pausa parece que você está pensando." }
+        ],
+        minimo:1,
+        fim:"{n} de {total} certa." },
+
+      { tipo:"falar",
+        titulo:"Fala-surpresa",
+        ajuda:"Agora use tudo: respire, prepare a primeira frase e fale. Pode dar branco: é pra treinar justamente isso.",
+        instrucao:"Você vai precisar do microfone. Nada é gravado.",
+        temas:["Uma coisa que você aprendeu no último ano",
+               "O melhor conselho que você já recebeu",
+               "Um lugar que você indicaria pra um amigo",
+               "O que faz um bom chefe",
+               "Uma comida que lembra a sua infância"],
+        preparo:15, fala:30, minimo:20,
+        certo:"Você falou até o fim, mesmo sem roteiro. É isso que o nervoso não consegue tirar de você.",
+        errado:"Você parou antes dos 20 segundos. Tudo bem: respire, volte pra última ideia e tente de novo." }
+    ],
+    mensagens:[
+      { t:"😞 Não foi dessa vez",
+        x:"Você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
+      { t:"😕 Você acertou uma",
+        x:"Já tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
+      { t:"😐 Metade do caminho",
+        x:"Você já conhece as ferramentas. Falta usar com o coração acelerado." },
+      { t:"🙂 Bom resultado",
+        x:"Você já sabe respirar, começar e voltar quando dá branco. Dá pra usar isso hoje." },
+      { t:"😃 Quase perfeito",
+        x:"Faltou um detalhe. O essencial você já domina: respiração 4-6, primeira frase pronta e volta pra âncora." },
+      { t:"🤩 Acertou tudo",
+        x:"Agora a parte que vale de verdade: antes da sua próxima fala importante, faça três respirações 4-6." }
+    ]
   }
 
   /* Próximo treino: copie um bloco acima, troque o código ("2.2") e o conteúdo. */
@@ -955,6 +1165,139 @@ const TIPOS = {
     }
   }
 };
+
+
+/* Respiração guiada: o círculo cresce (puxa) e diminui (solta). */
+let respTimer = null;
+TIPOS.respirar = {
+  montar:function(p){
+    return '<div class="respira"><div class="bola" id="bola"><span id="bola-n"></span></div>' +
+      '<div class="fase" id="fase">Toque em Começar</div><div class="ciclos" id="ciclos"></div></div>' +
+      '<button class="botao" id="b-resp" onclick="comecarRespirar()">Começar</button>' +
+      retornoEBotao(true);
+  }
+};
+function pararRespirar(){ if(respTimer){ clearTimeout(respTimer); respTimer = null; } }
+function comecarRespirar(){
+  const p = parte(), bola = el("bola");
+  el("b-resp").classList.add("oculto");
+  let ciclo = 0;
+  function contar(n, total, fim){
+    el("bola-n").textContent = n;
+    if(n >= total){ respTimer = setTimeout(fim, 1000); return; }
+    respTimer = setTimeout(function(){ contar(n + 1, total, fim); }, 1000);
+  }
+  function puxa(){
+    ciclo++;
+    el("ciclos").textContent = "Ciclo " + ciclo + " de " + p.ciclos;
+    el("fase").textContent = "Puxe o ar pelo nariz…";
+    bola.style.transitionDuration = p.puxa + "s";
+    bola.style.transform = "scale(1)";
+    contar(1, p.puxa, solta);
+  }
+  function solta(){
+    el("fase").textContent = "Solte devagar pela boca…";
+    bola.style.transitionDuration = p.solta + "s";
+    bola.style.transform = "scale(.55)";
+    contar(1, p.solta, function(){ if(ciclo < p.ciclos) puxa(); else fim(); });
+  }
+  function fim(){
+    respTimer = null;
+    el("fase").textContent = "Pronto.";
+    el("bola-n").textContent = "✓";
+    pontos++;
+    mostrarRetorno(true, p.certo);
+    el("b-seguir").classList.remove("oculto");
+  }
+  puxa();
+}
+
+/* Fala-surpresa: tema, tempo de preparo e tempo de fala com medidor.
+   Conta o tempo entre o primeiro e o último som de voz. Nada é gravado. */
+let falaFluxo = null, falaCtx = null, falaTimer = null, falaQuadro = null, falaTema = -1;
+TIPOS.falar = {
+  montar:function(p){
+    falaTema = Math.floor(Math.random() * p.temas.length);
+    return '<div class="tema-fala"><small>Seu tema:</small><p id="tema-txt">' + p.temas[falaTema] + '</p></div>' +
+      '<div style="text-align:right"><button class="link-mini" id="b-outro" onclick="outroTema()">Sortear outro tema</button></div>' +
+      '<div id="fala-area"></div>' +
+      '<div class="aviso-mic oculto" id="aviso-mic" style="margin-top:12px;font-size:13.5px;line-height:1.55;color:var(--vermelho)">Não consegui usar o microfone. Libere o microfone no cadeado ao lado do endereço e toque em Começar de novo.</div>' +
+      '<button class="botao" id="b-falar" onclick="comecarFala()">Começar</button>' +
+      retornoEBotao(true);
+  }
+};
+function outroTema(){
+  const p = parte();
+  falaTema = (falaTema + 1 + Math.floor(Math.random() * (p.temas.length - 1))) % p.temas.length;
+  el("tema-txt").textContent = p.temas[falaTema];
+}
+function pararFala(){
+  if(falaTimer){ clearInterval(falaTimer); falaTimer = null; }
+  if(falaQuadro){ cancelAnimationFrame(falaQuadro); falaQuadro = null; }
+  if(falaFluxo){ falaFluxo.getTracks().forEach(function(t){ t.stop(); }); falaFluxo = null; }
+  if(falaCtx){ try{ falaCtx.close(); }catch(e){} falaCtx = null; }
+}
+function comecarFala(){
+  const p = parte();
+  el("aviso-mic").classList.add("oculto");
+  el("retorno").className = "retorno";
+  el("b-seguir").classList.add("oculto");
+  navigator.mediaDevices.getUserMedia({ audio:true }).then(function(s){
+    falaFluxo = s;
+    el("b-falar").classList.add("oculto");
+    el("b-outro").classList.add("oculto");
+    let resta = p.preparo;
+    el("fala-area").innerHTML = '<div class="cronometro" id="crono">' + resta + '</div>' +
+      '<div class="cronometro-rotulo" id="crono-txt">Respire e prepare a sua primeira frase</div>';
+    falaTimer = setInterval(function(){
+      resta--;
+      el("crono").textContent = resta;
+      if(resta <= 0){ clearInterval(falaTimer); falaTimer = null; falarAgora(); }
+    }, 1000);
+  }).catch(function(){ el("aviso-mic").classList.remove("oculto"); });
+}
+function falarAgora(){
+  const p = parte();
+  el("crono-txt").textContent = "Fale agora";
+  el("fala-area").insertAdjacentHTML("beforeend", '<div class="medidor"><i id="nivel"></i></div>');
+  falaCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const an = falaCtx.createAnalyser();
+  an.fftSize = 1024;
+  falaCtx.createMediaStreamSource(falaFluxo).connect(an);
+  const buf = new Float32Array(an.fftSize);
+  const inicio = Date.now();
+  let primeiro = 0, ultimo = 0, piso = 0.01;
+  (function loop(){
+    an.getFloatTimeDomainData(buf);
+    let soma = 0; for(let k = 0; k < buf.length; k++) soma += buf[k] * buf[k];
+    const rms = Math.sqrt(soma / buf.length);
+    const t = (Date.now() - inicio) / 1000;
+    if(t < 0.6) piso = Math.max(piso, rms * 1.8);
+    if(rms > Math.max(0.015, piso)){ if(!primeiro) primeiro = t; ultimo = t; }
+    el("nivel").style.width = Math.min(100, rms * 600) + "%";
+    falaQuadro = requestAnimationFrame(loop);
+  })();
+  let resta = p.fala;
+  el("crono").textContent = resta;
+  falaTimer = setInterval(function(){
+    resta--;
+    el("crono").textContent = Math.max(0, resta);
+    if(resta <= 0){
+      pararFala();
+      const falou = primeiro ? Math.round(ultimo - primeiro) : 0;
+      const ok = falou >= p.minimo;
+      if(ok) pontos++;
+      el("crono-txt").textContent = "Você falou por cerca de " + falou + " segundos.";
+      mostrarRetorno(ok, ok ? p.certo : p.errado);
+      el("b-seguir").classList.remove("oculto");
+      if(!ok){
+        el("b-falar").textContent = "Tentar de novo";
+        el("b-falar").classList.remove("oculto");
+        el("b-outro").classList.remove("oculto");
+      }
+    }
+  }, 1000);
+}
 
 /* Relógio: o motor monta a casca; cada pergunta entra uma por vez. */
 TIPOS.relogio = {
@@ -1204,6 +1547,7 @@ function mostrarSecao(id){
 
 function ir(i){
   if(typeof pararRelogio === "function") pararRelogio();
+  pararRespirar(); pararFala();
   atual = i; marcadas = []; acertos = 0;
   const p = parte(), total = TREINO.partes.length;
   el("parte").innerHTML =
