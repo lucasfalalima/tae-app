@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treino 7: Voz de certeza</title>
+<style>
+:root{
+  --fundo:#111213;--cartao:#1b1d1f;--alto:#232629;--borda:#2c3034;
+  --amarelo:#f7d046;--amarelo2:#d9b32c;--texto:#dee2e6;--forte:#fff;
+  --fraco:#8d9499;--verde:#4ade80;--vermelho:#f87171;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--texto);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.caixa{max-width:720px;margin:0 auto;padding:4px 2px 18px}
+.cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:14px;padding:22px}
+.topo{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.etiqueta{font-size:11.5px;font-weight:700;letter-spacing:.09em;color:var(--amarelo);text-transform:uppercase}
+.passo{margin-left:auto;font-size:12.5px;color:var(--fraco);white-space:nowrap}
+.trilho{height:4px;background:var(--borda);border-radius:99px;overflow:hidden;margin-bottom:20px}
+.trilho i{display:block;height:100%;background:var(--amarelo);border-radius:99px;transition:width .35s ease}
+h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--forte)}
+.ajuda{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--fraco)}
+.instrucao{margin:-8px 0 16px;font-size:12.5px;font-weight:600;color:var(--amarelo)}
+.oculto{display:none!important}
+.botao{display:block;width:100%;margin-top:14px;border:0;cursor:pointer;text-align:center;
+  background:var(--amarelo);color:#1a1500;font-size:15.5px;font-weight:700;font-family:inherit;
+  padding:14px;border-radius:10px;text-decoration:none;transition:background .14s}
+.botao:hover{background:var(--amarelo2)}
+.botao:disabled{opacity:.35;cursor:default}
+.botao.fantasma{background:transparent;color:var(--texto);border:1px solid var(--borda)}
+.botao.gravando{background:var(--vermelho);color:#2b0a0a}
+.voltar-painel{display:block;text-align:center;margin-top:12px;background:var(--alto);border:1px solid var(--borda);
+  border-radius:10px;color:var(--fraco);font-size:14px;font-weight:600;text-decoration:none;padding:13px}
+.abertura{text-align:center;padding:14px 0 4px}
+.abertura .selo{font-size:40px;line-height:1;margin-bottom:14px}
+.abertura h2{font-size:20px;margin-bottom:9px}
+.abertura .ajuda{margin:0 auto;max-width:420px}
+.privacidade{font-size:12.5px;color:var(--fraco);margin:14px 0 0;text-align:center;line-height:1.5}
+.aviso{margin-top:14px;padding:12px 14px;border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.55;
+  background:rgba(248,113,113,.08);border-left:3px solid var(--vermelho)}
+.frase{background:var(--alto);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.frase .txt{font-size:18px;line-height:1.5;color:var(--forte);font-weight:600}
+.frase .res{margin-top:8px;font-size:13.5px;line-height:1.5;color:var(--fraco)}
+.frase .res.ok{color:var(--verde)} .frase .res.erro{color:var(--vermelho)}
+.frase .botao{margin-top:10px;padding:11px;font-size:14.5px}
+.texto-ler{background:#0d0e0f;border:1px solid var(--borda);border-radius:12px;padding:16px;font-size:17px;line-height:1.7;color:var(--forte);margin-bottom:12px}
+.medidor{position:relative;height:16px;background:var(--borda);border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.medidor .faixa{position:absolute;top:0;bottom:0;background:rgba(74,222,128,.18)}
+.medidor i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--fraco);border-radius:99px;transition:width .06s}
+.medidor i.bom{background:var(--verde)}
+.legenda{display:flex;justify-content:space-between;font-size:12px;color:var(--fraco)}
+.grande{text-align:center;font-size:52px;font-weight:800;color:var(--amarelo);padding:6px 0 0;font-variant-numeric:tabular-nums}
+.grande-rotulo{text-align:center;font-size:13.5px;color:var(--fraco);margin-bottom:6px}
+.op{display:block;width:100%;text-align:left;background:var(--alto);border:1.5px solid var(--borda);border-radius:11px;
+  padding:12px 14px;margin-top:8px;cursor:pointer;font:inherit;font-size:15px;color:var(--texto)}
+.op:disabled{cursor:default}
+.op.certa{border-color:var(--verde);background:rgba(74,222,128,.09)}
+.op.errada{border-color:var(--vermelho);background:rgba(248,113,113,.07)}
+.pergunta{font-size:15px;line-height:1.55;color:var(--forte);margin:16px 0 4px}
+.pergunta:first-child{margin-top:0}
+.retorno{margin-top:14px;padding:13px 15px;border-radius:0 10px 10px 0;font-size:14px;line-height:1.6;
+  background:rgba(74,222,128,.09);border-left:3px solid var(--verde)}
+.retorno.erro{background:rgba(248,113,113,.07);border-left-color:var(--vermelho)}
+.placar{text-align:center;padding:4px 0 2px}
+.estrelas{font-size:26px;letter-spacing:5px;margin-bottom:12px}
+.estrelas.cheias{color:var(--amarelo)}
+.placar h2{font-size:21px;margin-bottom:8px}
+.placar p{margin:0;font-size:14.5px;line-height:1.6}
+.nota-repetir{margin-top:12px!important;font-size:13px!important;color:var(--fraco)!important}
+@media(max-width:520px){.cartao{padding:16px}}
+</style>
+</head>
+<body>
+<div class="caixa"><div class="cartao">
+  <div class="topo oculto" id="cabecalho"><span class="etiqueta" id="etiqueta">Treino 7 · Voz de certeza</span><span class="passo" id="passo"></span></div>
+  <div class="trilho oculto" id="barra"><i id="trilho"></i></div>
+
+  <section class="etapa" id="abertura">
+    <div class="abertura">
+      <div class="selo">🎙️</div>
+      <h2>Treino 7 · Voz de certeza</h2>
+      <p class="ajuda">Assista à aula acima antes de começar. Você vai usar o microfone, e o app mostra se a sua voz desceu no fim da frase, o seu volume e o seu tom.</p>
+    </div>
+    <div class="aviso oculto" id="sem-mic">Não consegui usar o microfone. Libere o microfone no cadeado ao lado do endereço e toque em Começar de novo.</div>
+    <p class="privacidade">🔒 Sua voz é analisada só no seu aparelho. Nada é gravado nem enviado.</p>
+    <button class="botao" onclick="comecar()">Começar treino</button>
+    <a class="voltar-painel" id="b-voltar-abertura" href="#" target="_top">← Voltar ao Painel</a>
+  </section>
+
+  <section class="etapa oculto" id="parte"></section>
+
+  <section class="etapa oculto" id="fim">
+    <div class="placar">
+      <div class="estrelas" id="f-estrelas"></div>
+      <h2 id="f-titulo">—</h2>
+      <p id="f-texto">—</p>
+      <p class="nota-repetir">Você pode repetir o treino quantas vezes quiser. Sua nota mais alta é a que vale.</p>
+    </div>
+    <a class="botao" id="b-proximo" href="#" target="_top">Voltar ao Painel</a>
+    <button class="botao fantasma" onclick="location.reload()">Repetir treino</button>
+  </section>
+</div></div>
+
+<script>
+/* ================= PROGRESSO NO CADEMÍ =================
+   Mesmo código dos outros treinos.
+   Formato da nota: TAE|1.1=5|2.3=4|d2026-10-07| */
+const PROGRESSO_URL = "https://hook.us1.make.com/a9bpauyn4nsdi1dsq9pag166skfidr28";
+const DIAS_GUARDADOS = 90;
+const CACHE_MINUTOS = 10;
+
+function hojeTexto(){ return new Date().toLocaleDateString("sv-SE"); }
+
+function lerTextoProgresso(texto, destino){
+  if(!texto || texto.indexOf("TAE|") !== 0) return;
+  texto.split("|").forEach(function(parte){
+    if(/^d\d{4}-\d{2}-\d{2}$/.test(parte)){
+      if(destino.dias.indexOf(parte.slice(1)) === -1) destino.dias.push(parte.slice(1));
+    }else if(parte.indexOf("=") > 0){
+      const k = parte.split("=")[0], v = parseInt(parte.split("=")[1], 10);
+      if(!isNaN(v) && (!destino.notas[k] || v > destino.notas[k])) destino.notas[k] = v;
+    }
+  });
+}
+function lerRespostaCademi(texto){
+  const r = { nota:"", notas:{}, dias:[] };
+  const lista = (JSON.parse(texto).data || []).filter(function(n){
+    return n.body && n.body.indexOf("TAE|") === 0;
+  });
+  lista.sort(function(a,b){ return (b.updated_at || "").localeCompare(a.updated_at || ""); });
+  if(lista.length) r.nota = lista[0].id;
+  lista.forEach(function(n){ lerTextoProgresso(n.body, r); });
+  return r;
+}
+function juntarProgresso(a, b){
+  const r = { notas:Object.assign({}, a.notas), dias:a.dias.slice() };
+  Object.keys(b.notas).forEach(function(k){ if(!r.notas[k] || b.notas[k] > r.notas[k]) r.notas[k] = b.notas[k]; });
+  b.dias.forEach(function(d){ if(r.dias.indexOf(d) === -1) r.dias.push(d); });
+  return r;
+}
+function montarCorpo(p){
+  const partes = Object.keys(p.notas).sort().map(function(k){ return k + "=" + p.notas[k]; });
+  const dias = p.dias.slice().sort().slice(-DIAS_GUARDADOS).map(function(d){ return "d" + d; });
+  return "TAE|" + partes.concat(dias).map(function(x){ return x + "|"; }).join("");
+}
+function buscarCademi(aluno){
+  return fetch(PROGRESSO_URL + "?acao=ler&aluno=" + encodeURIComponent(aluno))
+    .then(function(r){ return r.text(); })
+    .then(function(t){ const p = lerRespostaCademi(t); guardarCache(aluno, p); return p; });
+}
+function salvarCademi(aluno, nota, progresso, treino, primeira){
+  const url = PROGRESSO_URL + "?acao=salvar&aluno=" + encodeURIComponent(aluno) +
+    "&corpo=" + encodeURIComponent(montarCorpo(progresso)) +
+    "&treino=" + encodeURIComponent(treino || "") + "&primeira=" + (primeira ? "sim" : "nao") +
+    (nota ? "&nota=" + encodeURIComponent(nota) : "");
+  return fetch(url).then(function(r){ return r.text(); }).then(function(t){
+    t = (t || "").trim();
+    const id = /^note_\d+$/.test(t) ? t : nota;
+    guardarCache(aluno, { nota:id, notas:progresso.notas, dias:progresso.dias });
+    return id;
+  });
+}
+function guardarCache(aluno, p){
+  try{ localStorage.setItem("tae_cademi_" + aluno, JSON.stringify({ nota:p.nota, notas:p.notas, dias:p.dias, quando:Date.now() })); }catch(e){}
+}
+/* ================= FIM PROGRESSO NO CADEMÍ ================= */
+
+function guardarNota(estrelas){
+  const hoje = hojeTexto();
+  let quem = "visitante";
+  const local = { notas:{}, dias:[] };
+  try{
+    quem = localStorage.getItem("tae_aluno_atual") || "visitante";
+    local.notas = JSON.parse(localStorage.getItem("tae_notas_" + quem) || "{}");
+    if(local.notas[CODIGO] === undefined || estrelas > local.notas[CODIGO]) local.notas[CODIGO] = estrelas;
+    localStorage.setItem("tae_notas_" + quem, JSON.stringify(local.notas));
+    local.dias = JSON.parse(localStorage.getItem("tae_dias_" + quem) || "[]");
+    if(local.dias.indexOf(hoje) === -1) local.dias.push(hoje);
+    localStorage.setItem("tae_dias_" + quem, JSON.stringify(local.dias));
+  }catch(e){}
+  if(quem === "visitante") return;
+  buscarCademi(quem).then(function(servidor){
+    const juntas = juntarProgresso(servidor, local);
+    return salvarCademi(quem, servidor.nota, juntas, CODIGO, servidor.notas[CODIGO] === undefined);
+  }).catch(function(){ /* sem internet: o painel reenvia depois */ });
+}
+
+/* Painel do TAE no Cademí. */
+const PROXIMO = "https://aluno.falalima.com.br/area/embed/L2Njbi55cnBlcmkuYXJpcmYtY2NuLXJuZy8vOmZjZ2d1?1";
+
+
+/* ======================= CONFIGURAÇÃO ======================= */
+const CODIGO = new URLSearchParams(window.location.search).get("t") || "2.2";
+
+/* Exercícios. Cada um vale 1 estrela.
+   tipo "final":   frases lidas uma a uma; ganha se a voz não subir no fim (minimo de acertos).
+   tipo "volume":  texto lido com medidor; ganha se ficar na faixa verde em boa parte do tempo.
+   tipo "sopro":   "sssss" longo; ganha se sustentar o som por "segundos".
+   tipo "tom":     "hum-hum" e depois uma frase; ganha se a frase ficar perto do tom do hum-hum.
+   tipo "escolha": perguntas de escolha, sem microfone. */
+const PARTES = [
+  { tipo:"final", titulo:"O Ponto Final na Voz",
+    ajuda:"Leia cada frase em voz alta e pouse a voz no fim, como quem coloca um copo na mesa.",
+    instrucao:"Toque em Gravar, leia a frase e toque em Parar.",
+    frases:["A entrega chega na terça.", "O valor total é trezentos reais.", "Eu começo na segunda-feira.", "O jantar é às oito."],
+    minimo:3,
+    certo:"Sua voz pousou no fim. Assim, o que você afirma soa como certeza.",
+    errado:"Em algumas frases a voz subiu no fim e soou como pergunta. Leia de novo pousando o copo na última palavra." },
+  { tipo:"volume", titulo:"A Voz de Sala",
+    ajuda:"Leia o texto como se falasse para a pessoa mais distante da sala. Não é gritar: é a voz chegar inteira lá no fim.",
+    instrucao:"Mantenha a barra na faixa verde enquanto lê.",
+    texto:"Bom dia a todos. Hoje eu vou apresentar o resultado do mês. Fechamos com doze por cento acima da meta, e eu vou mostrar como chegamos lá.",
+    alvo:0.65,
+    certo:"Sua voz ficou na faixa de quem quer ser ouvido.",
+    errado:"Sua voz ficou baixa em boa parte do texto. Respire pela barriga e fale para quem está no fundo da sala." },
+  { tipo:"sopro", titulo:"Respire pela barriga",
+    ajuda:"Coloque a mão na barriga, puxe o ar pelo nariz enchendo a barriga, e solte fazendo \"sssss\" bem devagar, até o ar acabar.",
+    instrucao:"Toque em Começar e faça o \"sssss\" o mais longo que conseguir.",
+    segundos:10,
+    certo:"Ar de barriga sustenta a voz até o fim da frase.",
+    errado:"O ar acabou rápido. Encha a barriga, não o peito, e solte mais devagar." },
+  { tipo:"tom", titulo:"O seu tom natural",
+    ajuda:"Primeiro faça o \"hum-hum\" de quem concorda, de boca fechada. Depois fale a frase começando nesse mesmo tom.",
+    instrucao:"Grave o hum-hum, depois grave a frase.",
+    frase:"A reunião é amanhã.",
+    semitons:4,
+    certo:"Sua frase ficou no seu tom confortável. É ele que passa calma.",
+    errado:"Sua voz subiu bem acima do seu tom natural. Faça o hum-hum e comece a frase lá embaixo, no mesmo lugar." },
+  { tipo:"escolha", titulo:"A palavra que importa",
+    ajuda:"A ênfase vai na palavra que você quer que o outro guarde.",
+    instrucao:"Escolha uma opção em cada pergunta.",
+    itens:[
+      { p:"Você quer deixar claro que o importante é o dia. Em \"O prazo é sexta\", onde vai a ênfase?", ops:["prazo", "sexta"], certa:1 },
+      { p:"Você quer deixar claro quem vai apresentar. Em \"Eu apresento amanhã\", onde vai a ênfase?", ops:["Eu", "amanhã"], certa:0 }
+    ],
+    minimo:2,
+    certo:"A ênfase está na palavra que você quer que fique.",
+    errado:"A ênfase vai na palavra que muda o sentido do que você quer dizer. Uma por frase." }
+];
+
+const MENSAGENS = [
+  { t:"😞 Não foi dessa vez", x:"Você fez o treino inteiro, e isso já conta. Assista à aula de novo com calma e volte aqui." },
+  { t:"😕 Você acertou uma", x:"Já tem coisa entendida aí. Repita o treino agora, enquanto a aula está fresca." },
+  { t:"😐 Metade do caminho", x:"Sua voz já está mudando. Falta repetir até virar automático." },
+  { t:"🙂 Bom resultado", x:"Você já sabe pousar a voz e falar no volume certo. Dá pra usar isso hoje." },
+  { t:"😃 Quase perfeito", x:"Faltou um detalhe. O essencial você já domina: voz que pousa, volume de sala e tom natural." },
+  { t:"🤩 Acertou tudo", x:"Agora a parte que vale de verdade: na sua próxima reunião, pouse a voz no fim de cada frase." }
+];
+
+/* ======================= ÁUDIO ======================= */
+let fluxo = null, ctx = null, an = null, buf = null, quadro = null;
+function abrirMic(){
+  if(fluxo) return Promise.resolve();
+  return navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false } })
+    .then(function(s){
+      fluxo = s;
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      an = ctx.createAnalyser(); an.fftSize = 2048;
+      ctx.createMediaStreamSource(s).connect(an);
+      buf = new Float32Array(an.fftSize);
+    });
+}
+function rmsAgora(){
+  an.getFloatTimeDomainData(buf);
+  let s = 0; for(let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
+  return Math.sqrt(s / buf.length);
+}
+/* Altura da voz (Hz) por autocorrelação; 0 quando não há voz clara. */
+/* Para caber em celular simples: reduz o áudio pela metade antes de comparar. */
+let meio = null;
+function alturaAgora(rms){
+  if(rms < 0.01) return 0;
+  const n = buf.length >> 1, sr = ctx.sampleRate / 2;
+  if(!meio || meio.length !== n) meio = new Float32Array(n);
+  for(let i = 0; i < n; i++) meio[i] = (buf[2 * i] + buf[2 * i + 1]) / 2;
+  const minL = Math.floor(sr / 400), maxL = Math.min(Math.floor(sr / 70), n - 64);
+  let melhor = 0, melhorL = 0;
+  for(let L = minL; L <= maxL; L++){
+    let c = 0, e1 = 0, e2 = 0;
+    for(let i = 0; i < n - L; i++){ const a = meio[i], b = meio[i + L]; c += a * b; e1 += a * a; e2 += b * b; }
+    const v = c / Math.sqrt(e1 * e2 + 1e-12);
+    if(v > melhor){ melhor = v; melhorL = L; }
+  }
+  return melhor > 0.75 ? sr / melhorL : 0;
+}
+function mediana(a){ if(!a.length) return 0; const b = a.slice().sort(function(x, y){ return x - y; }); return b[Math.floor(b.length / 2)]; }
+function semitons(a, b){ return 12 * Math.log2(a / b); }
+
+/* Grava pedaços de análise até chamar parar(). */
+let coleta = null;
+function iniciarColeta(aoQuadro){
+  if(ctx && ctx.state === "suspended") ctx.resume();
+  coleta = { inicio:performance.now(), quadros:[] };
+  (function loop(){
+    const r = rmsAgora();
+    const f = alturaAgora(r);
+    const q = { t:(performance.now() - coleta.inicio) / 1000, r:r, f:f };
+    coleta.quadros.push(q);
+    if(aoQuadro) aoQuadro(q);
+    quadro = requestAnimationFrame(loop);
+  })();
+}
+function pararColeta(){ if(quadro){ cancelAnimationFrame(quadro); quadro = null; } const c = coleta; coleta = null; return c; }
+
+/* ======================= MOTOR ======================= */
+let atual = 0, pontos = 0, estado = {};
+function el(id){ return document.getElementById(id); }
+function enquadrar(){ const a = document.querySelector(".cartao"); if(a && a.scrollIntoView) a.scrollIntoView({ block:"start", behavior:"smooth" }); }
+function mostrar(id){ document.querySelectorAll(".etapa").forEach(function(s){ s.classList.add("oculto"); }); el(id).classList.remove("oculto"); }
+function rotuloSeguir(){ return atual === PARTES.length - 1 ? "Ver resultado" : "Continuar"; }
+function rodape(){ return '<div id="retorno"></div><button class="botao oculto" id="b-seguir" onclick="seguir()">' + rotuloSeguir() + '</button>'; }
+function fechar(ok){
+  const p = PARTES[atual];
+  if(estado.fechado) return;
+  estado.fechado = true;
+  if(ok) pontos++;
+  el("retorno").innerHTML = '<div class="retorno' + (ok ? "" : " erro") + '"><b>' + (ok ? "✅ " : "🛑 ") + '</b>' + (ok ? p.certo : p.errado) + '</div>';
+  el("b-seguir").classList.remove("oculto");
+}
+
+function ir(i){
+  if(coleta) pararColeta();
+  atual = i; estado = {};
+  const p = PARTES[i];
+  el("parte").innerHTML = '<h2>' + p.titulo + '</h2><p class="ajuda">' + p.ajuda + '</p><p class="instrucao">' + p.instrucao + '</p>' + MONTAR[p.tipo](p) + rodape();
+  mostrar("parte");
+  el("passo").textContent = (i + 1) + " de " + PARTES.length;
+  el("trilho").style.width = ((i + 1) / PARTES.length * 100) + "%";
+  enquadrar();
+}
+function seguir(){ if(atual < PARTES.length - 1) ir(atual + 1); else terminar(); }
+
+const MONTAR = {
+  final:function(p){
+    estado.res = p.frases.map(function(){ return null; });
+    return p.frases.map(function(f, k){
+      return '<div class="frase"><div class="txt">' + f + '</div><div class="res" id="res' + k + '"></div>' +
+        '<button class="botao" id="g' + k + '" onclick="gravarFinal(' + k + ')">🎙️ Gravar</button></div>';
+    }).join("");
+  },
+  volume:function(p){
+    return '<div class="texto-ler">' + p.texto + '</div>' +
+      '<div class="medidor"><div class="faixa" style="left:30%;right:0"></div><i id="nivel"></i></div>' +
+      '<div class="legenda"><span>baixo</span><span>faixa verde</span></div>' +
+      '<button class="botao" id="g0" onclick="gravarVolume()">🎙️ Começar a ler</button>';
+  },
+  sopro:function(p){
+    return '<div class="grande" id="seg">0,0</div><div class="grande-rotulo">segundos de "sssss" (meta: ' + p.segundos + ')</div>' +
+      '<div class="medidor"><i id="nivel"></i></div>' +
+      '<button class="botao" id="g0" onclick="gravarSopro()">Começar</button>';
+  },
+  tom:function(p){
+    return '<div class="frase"><div class="txt">1. Hum-hum</div><div class="res" id="res0"></div><button class="botao" id="g0" onclick="gravarTom(0)">🎙️ Gravar o hum-hum</button></div>' +
+      '<div class="frase"><div class="txt">2. "' + p.frase + '"</div><div class="res" id="res1"></div><button class="botao" id="g1" onclick="gravarTom(1)" disabled>🎙️ Gravar a frase</button></div>';
+  },
+  escolha:function(p){
+    estado.resp = 0; estado.acertos = 0;
+    return p.itens.map(function(it, k){
+      return '<div class="pergunta">' + it.p + '</div>' + it.ops.map(function(o, j){
+        return '<button class="op" data-k="' + k + '" onclick="responder(' + k + ',' + j + ',this)">' + o + '</button>';
+      }).join("");
+    }).join("");
+  }
+};
+
+/* --- Ponto Final na Voz --- */
+function gravarFinal(k){
+  const b = el("g" + k);
+  if(coleta && estado.gravando === k){
+    const c = pararColeta(); estado.gravando = null;
+    b.classList.remove("gravando"); b.textContent = "🎙️ Gravar de novo";
+    document.querySelectorAll(".frase .botao").forEach(function(x){ x.disabled = false; });
+    const fs = c.quadros.filter(function(q){ return q.f; }).map(function(q){ return q.f; });
+    const r = el("res" + k);
+    if(fs.length < 12){ r.className = "res erro"; r.textContent = "Não ouvi a frase. Fale um pouco mais alto e grave de novo."; estado.res[k] = null; return; }
+    const n = fs.length, fim = fs.slice(Math.floor(n * 0.75)), meio = fs.slice(Math.floor(n * 0.25), Math.floor(n * 0.65));
+    const d = semitons(mediana(fim), mediana(meio));
+    const ok = d <= 1;
+    estado.res[k] = ok;
+    r.className = "res " + (ok ? "ok" : "erro");
+    r.textContent = ok ? "↘ A voz pousou no fim." : "↗ A voz subiu no fim, como pergunta.";
+    const feitos = estado.res.filter(function(x){ return x !== null; });
+    if(feitos.length === estado.res.length){
+      const n2 = estado.res.filter(Boolean).length;
+      if(n2 >= PARTES[atual].minimo) fechar(true);
+      else if(!estado.avisou){ estado.avisou = true; el("retorno").innerHTML = '<div class="retorno erro">Você acertou ' + n2 + ' de ' + estado.res.length + '. Grave de novo as frases em vermelho, ou siga em frente.</div>'; el("b-seguir").classList.remove("oculto"); }
+      else if(n2 < PARTES[atual].minimo){ el("retorno").innerHTML = '<div class="retorno erro">Você acertou ' + n2 + ' de ' + estado.res.length + '. Grave de novo as frases em vermelho, ou siga em frente.</div>'; }
+    }
+    return;
+  }
+  if(coleta) return;
+  abrirMic().then(function(){
+    estado.gravando = k;
+    document.querySelectorAll(".frase .botao").forEach(function(x){ x.disabled = x !== b; });
+    b.classList.add("gravando"); b.textContent = "⏹ Parar";
+    iniciarColeta();
+  }).catch(semMic);
+}
+
+/* --- Voz de Sala --- */
+const LIMIAR_SALA = 0.03, ESCALA = 400;
+function gravarVolume(){
+  const b = el("g0"), p = PARTES[atual];
+  if(coleta){
+    const c = pararColeta();
+    b.classList.remove("gravando"); b.textContent = "🎙️ Ler de novo";
+    const voz = c.quadros.filter(function(q){ return q.r > 0.008; });
+    if(voz.length < 30){ el("retorno").innerHTML = '<div class="retorno erro">Não ouvi a leitura. Confira o microfone e tente de novo.</div>'; return; }
+    const bons = voz.filter(function(q){ return q.r >= LIMIAR_SALA; }).length / voz.length;
+    const pct = '<p class="ajuda" style="margin:10px 0 0">Na faixa verde: ' + Math.round(bons * 100) + '% do tempo.</p>';
+    if(bons >= p.alvo){ fechar(true); b.classList.add("oculto"); }
+    else { el("retorno").innerHTML = '<div class="retorno erro">' + p.errado + '</div>'; el("b-seguir").classList.remove("oculto"); }
+    el("retorno").insertAdjacentHTML("afterbegin", pct);
+    return;
+  }
+  abrirMic().then(function(){
+    b.classList.add("gravando"); b.textContent = "⏹ Terminei";
+    iniciarColeta(function(q){
+      const i = el("nivel"); if(!i) return;
+      i.style.width = Math.min(100, Math.sqrt(q.r) * 100 / Math.sqrt(0.12)) + "%";
+      i.classList.toggle("bom", q.r >= LIMIAR_SALA);
+    });
+  }).catch(semMic);
+}
+
+/* --- Respire pela barriga (sssss) --- */
+function gravarSopro(){
+  const b = el("g0"), p = PARTES[atual];
+  abrirMic().then(function(){
+    b.classList.add("oculto");
+    let piso = 0, melhor = 0, inicioSom = null, ultimoSom = 0;
+    iniciarColeta(function(q){
+      if(q.t < 1.2){ piso = Math.max(piso, q.r); el("seg").textContent = "Puxe o ar…"; return; }
+      const lim = Math.max(0.006, Math.min(0.02, piso * 2));
+      if(inicioSom === null && melhor === 0) el("seg").textContent = "Agora: sssss";
+      const som = q.r > lim;
+      el("nivel").style.width = Math.min(100, q.r * 900) + "%";
+      if(som){ if(inicioSom === null) inicioSom = q.t; ultimoSom = q.t; }
+      if(inicioSom !== null){
+        const dur = (som || q.t - ultimoSom < 0.35) ? q.t - inicioSom : ultimoSom - inicioSom;
+        if(dur > melhor) melhor = dur;
+        el("seg").textContent = melhor.toFixed(1).replace(".", ",");
+        if(!som && q.t - ultimoSom >= 0.35){
+          if(melhor >= 1.5){ pararColeta(); acabouSopro(melhor); return; }
+          inicioSom = null;
+        }
+      }
+      if(q.t > 40){ pararColeta(); acabouSopro(melhor); }
+    });
+  }).catch(semMic);
+}
+function acabouSopro(s){
+  const p = PARTES[atual];
+  const ok = s >= p.segundos;
+  if(ok) fechar(true);
+  else {
+    el("retorno").innerHTML = '<div class="retorno erro">' + p.errado + '</div>';
+    const b = el("g0"); b.textContent = "Tentar de novo"; b.classList.remove("oculto");
+    el("b-seguir").classList.remove("oculto");
+  }
+}
+
+/* --- Tom natural --- */
+function gravarTom(k){
+  const b = el("g" + k), p = PARTES[atual];
+  if(coleta && estado.gravando === k){
+    const c = pararColeta(); estado.gravando = null;
+    b.classList.remove("gravando");
+    const fs = c.quadros.filter(function(q){ return q.f; }).map(function(q){ return q.f; });
+    const r = el("res" + k);
+    if(fs.length < 10){ r.className = "res erro"; r.textContent = "Não ouvi. Grave de novo, um pouco mais alto."; b.textContent = "🎙️ Gravar de novo"; if(k === 0) el("g1").disabled = true; return; }
+    if(k === 0){
+      estado.hum = mediana(fs);
+      r.className = "res ok"; r.textContent = "Tom do hum-hum guardado.";
+      b.textContent = "🎙️ Gravar de novo"; el("g1").disabled = false;
+    } else {
+      const d = semitons(mediana(fs), estado.hum);
+      const ok = Math.abs(d) <= p.semitons;
+      r.className = "res " + (ok ? "ok" : "erro");
+      r.textContent = ok ? "A frase ficou perto do seu tom natural." : "A frase ficou bem acima do seu tom natural.";
+      b.textContent = "🎙️ Gravar de novo";
+      if(ok) fechar(true);
+      else { el("retorno").innerHTML = '<div class="retorno erro">' + p.errado + '</div>'; el("b-seguir").classList.remove("oculto"); }
+    }
+    el("g0").disabled = false;
+    return;
+  }
+  if(coleta) return;
+  abrirMic().then(function(){
+    estado.gravando = k;
+    el("g" + (1 - k)).disabled = true;
+    b.classList.add("gravando"); b.textContent = "⏹ Parar";
+    iniciarColeta();
+  }).catch(semMic);
+}
+
+/* --- Escolha --- */
+function responder(k, j, bt){
+  const p = PARTES[atual];
+  const bs = document.querySelectorAll('.op[data-k="' + k + '"]');
+  if(bs[0].disabled) return;
+  bs.forEach(function(x){ x.disabled = true; });
+  bs[p.itens[k].certa].classList.add("certa");
+  if(j === p.itens[k].certa) estado.acertos++; else bt.classList.add("errada");
+  estado.resp++;
+  if(estado.resp === p.itens.length) fechar(estado.acertos >= p.minimo);
+}
+
+function semMic(){ mostrar("abertura"); el("sem-mic").classList.remove("oculto"); }
+
+function terminar(){
+  if(fluxo) fluxo.getTracks().forEach(function(t){ t.stop(); });
+  mostrar("fim");
+  el("passo").textContent = "concluído"; el("trilho").style.width = "100%";
+  const estrelas = Math.round(pontos / PARTES.length * 5);
+  const e = el("f-estrelas");
+  e.textContent = "★".repeat(estrelas) + "☆".repeat(5 - estrelas);
+  e.classList.toggle("cheias", estrelas === 5);
+  el("f-titulo").textContent = MENSAGENS[estrelas].t;
+  el("f-texto").textContent = MENSAGENS[estrelas].x;
+  guardarNota(estrelas);
+  enquadrar();
+}
+
+function comecar(){
+  el("sem-mic").classList.add("oculto");
+  abrirMic().then(function(){
+    el("cabecalho").classList.remove("oculto"); el("barra").classList.remove("oculto");
+    ir(0);
+  }).catch(semMic);
+}
+
+el("b-proximo").href = PROXIMO;
+el("b-voltar-abertura").href = PROXIMO;
+</script>
+</body>
+</html>
