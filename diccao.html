@@ -140,6 +140,9 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
 .barra i{display:block;height:100%;width:0;background:var(--amarelo);border-radius:99px}
 .tempo{flex:none;min-width:84px;text-align:right;font-size:14px;color:var(--fraco);font-variant-numeric:tabular-nums}
 .texto-alvo.com-foco .ok:not(.foco){background:none;box-shadow:none;color:var(--forte)}
+.confere{margin:14px 0 4px;padding:14px;border:1px solid var(--borda);border-radius:12px}
+.confere p{margin:0 0 4px;font-size:14px;color:var(--forte)}
+.confere .botao{margin-top:10px}
 .selo{margin:10px 0 2px;font-size:13.5px;font-weight:700;color:var(--fraco)}
 .selo.ganhou{color:var(--amarelo)}
 .privacidade{font-size:12.5px;color:var(--fraco);margin:12px 0 0;text-align:center;line-height:1.5}
@@ -187,6 +190,7 @@ h2{margin:0 0 7px;font-size:18px;font-weight:700;line-height:1.45;color:var(--fo
     <div class="mic oculto" id="l-mic"><span class="bolinha"></span>Ouvindo<span class="nivel"><i class="nivel-barra"></i></span></div>
     <div class="dica oculto" id="l-retorno"></div>
     <div class="ouvir oculto" id="l-ouvir"><div class="ouvir-topo">🔈 Ouça sua gravação</div><div class="player"><button class="play" id="l-play" onclick="tocar('l')" aria-label="Tocar">▶</button><div class="barra" id="l-barra" onclick="pular(event, 'l')"><i id="l-prog"></i></div><span class="tempo" id="l-tempo">0:00</span></div><audio id="l-audio" preload="auto"></audio></div>
+    <div class="confere oculto" id="l-confere"><p><b>Ouça a gravação nas palavras marcadas.</b> Elas saíram inteiras?</p><button class="botao" onclick="confirmarLeitura(true)">Ouvi: saíram inteiras</button><button class="botao fantasma" onclick="confirmarLeitura(false)">Ouvi: engoli mesmo</button></div>
     <button class="botao" id="l-botao" onclick="botaoLeitura()">Começar a ler</button>
     <button class="botao fantasma oculto" id="l-repetir" onclick="repetirLeitura()">Ler este texto de novo</button>
   </section>
@@ -405,7 +409,7 @@ const LEITURAS = [
     texto:"Hoje eu vou *apresentar* o projeto e *mostrar* como podemos *reduzir* os custos. Depois, quero *ouvir* vocês e *decidir* juntos o que *fazer* primeiro." },
   { titulo:"Nível 2: o S final e os plurais", curto:"Plurais (S)", tipo:"s", nomeFoco:"plurais",
     ajuda:"As palavras sublinhadas estão no plural. Leia e não deixe o S sumir: \"os projetoS\", não \"os projeto\".",
-    texto:"Os *resultados* dos *projetos* mostram que as *reuniões* *semanais* *ajudaram* os *clientes* e deixaram as *equipes* mais *organizadas*." },
+    texto:"Os *resultados* dos *projetos* mostram que as *reuniões* *semanais* deixaram os *clientes* mais *satisfeitos* e as *equipes* mais *organizadas*." },
   { titulo:"Nível 3: o gerúndio inteiro", curto:"Gerúndio", tipo:"g", nomeFoco:"gerúndios",
     ajuda:"As palavras sublinhadas terminam em -NDO. Leia e pronuncie o D: \"finalizaNDO\", não \"finalizano\".",
     texto:"Estamos *finalizando* o relatório, *revisando* os números e *preparando* a apresentação. A equipe está *trabalhando* bem e *entregando* tudo no prazo." },
@@ -423,6 +427,7 @@ const TOLERANCIA_FOCO = 1;
 const MAX_VICIOS_FALA = 1;
 function ganhouEstrela(r){
   if(!r) return false;
+  if(r.confirmado === true) return true;
   if(r.tipo === "p") return r.pausas >= r.pausasPedidas - 1 && (!r.ppm || r.ppm <= RAPIDO);
   if(r.tipo) return r.focoOk >= r.focoTotal - TOLERANCIA_FOCO;
   return r.total >= 20 && r.vicios <= MAX_VICIOS_FALA;
@@ -477,7 +482,7 @@ const Reconhecedor = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, ouvindo = false, fluxo = null, audioCtx = null, quadro = null;
 let etapa = 0, inicio = 0, primeiraPalavra = 0, ultimaPalavra = 0, relogio = null;
 let historico = [];
-let textoFinal = "", textoProvisorio = "", confiancas = [], ultimoTotal = 0, temaAtual = -1;
+let finais = [], textoFinal = "", textoProvisorio = "", confiancas = [], ultimoTotal = 0, temaAtual = -1;
 const resultados = [];
 
 const NUM = { "0":"zero","1":"um","2":"dois","3":"tres","4":"quatro","5":"cinco",
@@ -485,7 +490,7 @@ const NUM = { "0":"zero","1":"um","2":"dois","3":"tres","4":"quatro","5":"cinco"
 
 /* Para comparar: minúsculas, sem acento, sem pontuação, números por extenso. */
 function norm(w){
-  w = w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
+  w = w.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]/g,"");
   return NUM[w] || w;
 }
 function iguais(a, b){
@@ -622,7 +627,7 @@ function analisarTudo(){
 }
 
 function ouvir(aoMudar){
-  textoFinal = ""; textoProvisorio = ""; confiancas = []; hesitacoes = []; pausas = []; aoMudarAtual = aoMudar;
+  textoFinal = ""; finais = []; textoProvisorio = ""; confiancas = []; hesitacoes = []; pausas = []; aoMudarAtual = aoMudar;
   gravar();
   primeiraPalavra = 0; ultimaPalavra = 0; historico = [];
   rec = new Reconhecedor();
@@ -631,7 +636,16 @@ function ouvir(aoMudar){
     let prov = "";
     for(let i = ev.resultIndex; i < ev.results.length; i++){
       const r = ev.results[i];
-      if(r.isFinal){ textoFinal += " " + r[0].transcript; if(r[0].confidence > 0) confiancas.push(r[0].confidence); }
+      if(r.isFinal){
+        /* No Android, o resultado final às vezes vem com o trecho anterior repetido
+           ("hoje eu vou" + "hoje eu vou apresentar"). Se o novo começa com o último,
+           ele substitui o último em vez de somar. */
+        const novo = r[0].transcript.trim(), ult = finais.length ? finais[finais.length - 1] : "";
+        if(ult && norm(novo.split(/\s+/).slice(0, 3).join("")) === norm(ult.split(/\s+/).slice(0, 3).join("")) && novo.length >= ult.length) finais[finais.length - 1] = novo;
+        else finais.push(novo);
+        textoFinal = finais.join(" ");
+        if(r[0].confidence > 0) confiancas.push(r[0].confidence);
+      }
       else prov += r[0].transcript;
     }
     textoProvisorio = prov;
@@ -773,7 +787,13 @@ function alinhar(final){
   alvo.forEach(function(w){ w.s = ""; });
   let p = 0, vicios = 0;
   ditas.forEach(function(d){
-    for(let j = p; j < Math.min(p + 4, alvo.length); j++){
+    /* O Chrome do Android às vezes repete o trecho já reconhecido: ignora a repetição. */
+    if(p > 0 && alvo[p - 1].n === d) return;
+    /* Palavras curtas ("o", "e", "de") só valem na posição esperada:
+       antes, um "o" solto casava com um "os" lá na frente e o app pulava
+       palavras ditas corretamente, marcando-as como engolidas. */
+    const janela = d.length <= 2 ? 1 : 6;
+    for(let j = p; j < Math.min(p + janela, alvo.length); j++){
       /* No nível de plurais, a palavra-foco precisa sair com o S: sem tolerância. */
       const bate = alvo[j].foco && LEITURAS[etapa].tipo === "s" ? alvo[j].n === d : iguais(alvo[j].n, d);
       if(bate){
@@ -833,6 +853,7 @@ function abrirLeitura(n){
   ["l-clareza","l-ppm","l-vicios"].forEach(function(id){ document.getElementById(id).parentNode.classList.remove("boa","ruim"); });
   document.getElementById("l-retorno").classList.add("oculto");
   document.getElementById("l-ouvir").classList.add("oculto");
+  document.getElementById("l-confere").classList.add("oculto");
   document.getElementById("l-repetir").classList.add("oculto");
   document.getElementById("l-mic").classList.add("oculto");
   const b = document.getElementById("l-botao");
@@ -880,13 +901,13 @@ function fecharLeitura(){
     const lista = escapar(a.focoPerdidos.slice(0, 6).join(", "));
     let msg;
     if(L.tipo === "r") msg = a.focoPerdidos.length
-      ? "<b>O R final sumiu em: " + lista + ".</b> Feche a palavra com o R, sem medo de exagerar no começo."
+      ? "<b>O app não ouviu com clareza o R final em: " + lista + ".</b> " + AVISO_RECONHECIMENTO
       : "<b>Todos os R finais saíram inteiros.</b>";
     else if(L.tipo === "s") msg = a.focoPerdidos.length
-      ? "<b>O S final sumiu em: " + lista + ".</b> No plural, o S é o que mostra que são vários: não deixe ele cair."
+      ? "<b>O app não ouviu com clareza o S final em: " + lista + ".</b> " + AVISO_RECONHECIMENTO
       : "<b>Todos os plurais saíram com o S.</b>";
     else if(L.tipo === "g") msg = a.focoPerdidos.length
-      ? "<b>O gerúndio não saiu inteiro em: " + lista + ".</b> Pronuncie o D: -NDO."
+      ? "<b>O app não ouviu com clareza o final em: " + lista + ".</b> " + AVISO_RECONHECIMENTO
       : "<b>Todos os gerúndios saíram inteiros.</b> O reconhecimento de voz às vezes corrige o \"-no\" sozinho, então confira ouvindo a sua gravação.";
     else msg = a.pausas >= a.pausasPedidas - 1
       ? "<b>Boas pausas: " + a.pausas + " de " + a.pausasPedidas + ".</b> É assim que a fala ganha peso."
@@ -897,6 +918,7 @@ function fecharLeitura(){
     const ret = document.getElementById("l-retorno");
     ret.innerHTML = msg; ret.classList.remove("oculto");
     mostrarGravacao("l");
+    document.getElementById("l-confere").classList.toggle("oculto", !(L.tipo !== "p" && !focoBom && gravador));
 
     const b = document.getElementById("l-botao");
     b.className = "botao"; b.dataset.estado = "feito";
@@ -913,6 +935,26 @@ function pintar(id, valor, bom){
 }
 
 function repetirLeitura(){ abrirLeitura(etapa); }
+
+/* O reconhecimento de voz do navegador adivinha a palavra pelo contexto:
+   às vezes "ouve" um R que não saiu, às vezes perde um que saiu.
+   Por isso a última palavra é do aluno, ouvindo a própria gravação. */
+const AVISO_RECONHECIMENTO = "O reconhecimento de voz às vezes erra, principalmente no final das palavras. Ouça sua gravação nesses pontos e confirme abaixo.";
+function confirmarLeitura(saiu){
+  const r = resultados[etapa]; if(!r) return;
+  r.confirmado = saiu;
+  document.getElementById("l-confere").classList.add("oculto");
+  const ret = document.getElementById("l-retorno");
+  if(saiu){
+    pintar("l-clareza", r.focoTotal + "/" + r.focoTotal, true);
+    ret.innerHTML = "<b>Boa: você conferiu e as palavras saíram inteiras.</b> Estrela garantida neste nível.";
+  }else{
+    const DICA = { r:"Feche cada verbo com o R, sem medo de exagerar no começo: apresentaR, decidiR.",
+      s:"No plural, o S é o que mostra que são vários: marque bem cada S.",
+      g:"Pronuncie o D do gerúndio: finalizaNDO, não finalizano." };
+    ret.innerHTML = "<b>Valeu a sinceridade: ouvir a própria voz é o treino.</b> " + (DICA[r.tipo] || "") + " Leia de novo se quiser tentar a estrela.";
+  }
+}
 
 function proximaEtapa(){
   if(etapa < NL - 1) abrirLeitura(etapa + 1);
