@@ -490,7 +490,7 @@ const NUM = { "0":"zero","1":"um","2":"dois","3":"tres","4":"quatro","5":"cinco"
 
 /* Para comparar: minúsculas, sem acento, sem pontuação, números por extenso. */
 function norm(w){
-  w = w.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]/g,"");
+  w = w.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]/g,"");
   return NUM[w] || w;
 }
 function iguais(a, b){
