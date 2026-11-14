@@ -1232,20 +1232,46 @@ function outroTema(){
   el("tema-txt").textContent = p.temas[falaTema];
 }
 function pararFala(){
+  if(falaVigia){ clearInterval(falaVigia); falaVigia = null; }
   if(falaTimer){ clearInterval(falaTimer); falaTimer = null; }
   if(falaQuadro){ cancelAnimationFrame(falaQuadro); falaQuadro = null; }
   if(falaFluxo){ falaFluxo.getTracks().forEach(function(t){ t.stop(); }); falaFluxo = null; }
   if(falaCtx){ try{ falaCtx.close(); }catch(e){} falaCtx = null; }
 }
+/* Microfone sem os filtros do navegador (supressão de ruído e volume
+   automático mudam o volume sozinhos e confundem a medição). */
+function pedirMicCru(){
+  return navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false } })
+    .catch(function(){ return navigator.mediaDevices.getUserMedia({ audio:true }); });
+}
+let falaRms = 0, falaVigia = null;
 function comecarFala(){
   const p = parte();
   el("aviso-mic").classList.add("oculto");
   el("retorno").className = "retorno";
   el("b-seguir").classList.add("oculto");
-  navigator.mediaDevices.getUserMedia({ audio:true }).then(function(s){
+  pedirMicCru().then(function(s){
     falaFluxo = s;
     el("b-falar").classList.add("oculto");
     el("b-outro").classList.add("oculto");
+    /* O medidor começa já no preparo: assim o barulho da sala é medido
+       enquanto a pessoa pensa, e não no começo da fala. Antes, quem
+       começava a falar na hora tinha a própria voz tomada por "ruído". */
+    falaCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(falaCtx.state === "suspended" && falaCtx.resume) falaCtx.resume();
+    const an = falaCtx.createAnalyser();
+    an.fftSize = 1024;
+    falaCtx.createMediaStreamSource(falaFluxo).connect(an);
+    const buf = new Float32Array(an.fftSize);
+    (function loop(){
+      an.getFloatTimeDomainData(buf);
+      let soma = 0; for(let k = 0; k < buf.length; k++) soma += buf[k] * buf[k];
+      falaRms = Math.sqrt(soma / buf.length);
+      if(falaAmostras) falaAmostras.push(falaRms);
+      const n = el("nivel"); if(n) n.style.width = Math.min(100, falaRms * 600) + "%";
+      falaQuadro = requestAnimationFrame(loop);
+    })();
+    falaAmostras = [];
     let resta = p.preparo;
     el("fala-area").innerHTML = '<div class="cronometro" id="crono">' + resta + '</div>' +
       '<div class="cronometro-rotulo" id="crono-txt">Respire e prepare a sua primeira frase</div>';
@@ -1256,33 +1282,29 @@ function comecarFala(){
     }, 1000);
   }).catch(function(){ el("aviso-mic").classList.remove("oculto"); });
 }
+let falaAmostras = null;
 function falarAgora(){
   const p = parte();
+  /* Ruído da sala = os 20% mais baixos do preparo. */
+  const ord = (falaAmostras || []).slice().sort(function(a, b){ return a - b; });
+  const baixo = ord.length ? ord[Math.floor(ord.length * 0.2)] : 0.005;
+  const limiar = Math.max(0.012, baixo * 3);
+  falaAmostras = null;
   el("crono-txt").textContent = "Fale agora";
   el("fala-area").insertAdjacentHTML("beforeend", '<div class="medidor"><i id="nivel"></i></div>');
-  falaCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const an = falaCtx.createAnalyser();
-  an.fftSize = 1024;
-  falaCtx.createMediaStreamSource(falaFluxo).connect(an);
-  const buf = new Float32Array(an.fftSize);
   const inicio = Date.now();
-  let primeiro = 0, ultimo = 0, piso = 0.01;
-  (function loop(){
-    an.getFloatTimeDomainData(buf);
-    let soma = 0; for(let k = 0; k < buf.length; k++) soma += buf[k] * buf[k];
-    const rms = Math.sqrt(soma / buf.length);
+  let primeiro = 0, ultimo = 0;
+  falaVigia = setInterval(function(){
     const t = (Date.now() - inicio) / 1000;
-    if(t < 0.6) piso = Math.max(piso, rms * 1.8);
-    if(rms > Math.max(0.015, piso)){ if(!primeiro) primeiro = t; ultimo = t; }
-    el("nivel").style.width = Math.min(100, rms * 600) + "%";
-    falaQuadro = requestAnimationFrame(loop);
-  })();
+    if(falaRms > limiar){ if(!primeiro) primeiro = t || 0.01; ultimo = t; }
+  }, 50);
   let resta = p.fala;
   el("crono").textContent = resta;
   falaTimer = setInterval(function(){
     resta--;
     el("crono").textContent = Math.max(0, resta);
     if(resta <= 0){
+      clearInterval(falaVigia); falaVigia = null;
       pararFala();
       const falou = primeiro ? Math.round(ultimo - primeiro) : 0;
       const ok = falou >= p.minimo;
@@ -1550,6 +1572,12 @@ function ir(i){
   pararRespirar(); pararFala();
   atual = i; marcadas = []; acertos = 0;
   const p = parte(), total = TREINO.partes.length;
+  /* "Marque" e "Tire": a ordem muda a cada vez, para o aluno não decorar
+     a posição das certas (várias listas alternavam certa/errada). */
+  if((p.tipo === "marcar" || p.tipo === "cortar") && p.opcoes){
+    const ordem = embaralhar(p.opcoes.length);
+    p.opcoes = ordem.map(function(k){ return p.opcoes[k]; });
+  }
   el("parte").innerHTML =
     '<h2>' + p.titulo + '</h2>' +
     (p.ajuda ? '<p class="ajuda">' + p.ajuda + '</p>' : '') +
